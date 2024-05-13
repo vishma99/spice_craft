@@ -1,0 +1,13 @@
+*{
+    padding: 0;
+    margin: 0;
+
+}
+.button1{
+    
+    background-color: #A91D3A;
+}
+.button1 :hover {
+    background-color: #C73659;
+    
+}
