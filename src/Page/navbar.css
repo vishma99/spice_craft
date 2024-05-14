@@ -3,11 +3,18 @@
     margin: 0;
 
 }
+.homePage{
+    font-size: 20px;
+}
+.homePage:hover{
+    color: #C73659;
+}
 .button1{
     
     background-color: #A91D3A;
 }
 .button1 :hover {
-    background-color: #C73659;
+    background-color: #C73659 !important;
+    border: none !important;
     
 }

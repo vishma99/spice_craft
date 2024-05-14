@@ -14,9 +14,9 @@ export default function Shop() {
     <div>
       <NavBar/>
 
-      <div className='pagination' style={{ justifyContent:'center',alignItems:'center', paddingTop:'40px'}}   >
-      <h1 style={{position: 'absolute' , fontSize:'30px'}} >Our Product</h1>
-      </div>
+      <div className="heading">
+        <h1>Our Product</h1>
+    </div>
 
       <div className="card-container">
       

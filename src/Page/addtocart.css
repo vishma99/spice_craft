@@ -71,7 +71,7 @@ body{
 }
 .about-content .read-more{
     display: inline-block;
-    background-color: #4caf50;
+    background-color: #A91D3A;
     padding: 10px 20px;
     color: #fff;
     font-size: 19px;
@@ -82,7 +82,7 @@ body{
 
 }
 .about-content .read-more:hover{
-    background-color: #3e8e41;
+    background-color: #C73659;
 }
 button{
     padding: 5px 10px;

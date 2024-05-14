@@ -11,17 +11,17 @@ export default function NavBar() {
         {/* <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">SpiceCraft</span> */}
       </Navbar.Brand>
       <Navbar.Toggle />
-      <Navbar.Collapse>
-        <Navbar.Link href="#" active>
+      <Navbar.Collapse >
+        {/* <Navbar.Link href="#" active>
           Home
-        </Navbar.Link>
-        <Navbar.Link href="#">Home</Navbar.Link>
-        <Navbar.Link href="#">About Us</Navbar.Link>
-        <Navbar.Link href="/shop">Our Product</Navbar.Link>
-        <Navbar.Link href="#">Contact Us</Navbar.Link>
+        </Navbar.Link> */}
+        <Navbar.Link className='homePage' href="#">Home</Navbar.Link>
+        <Navbar.Link className='homePage' href="/about">About Us</Navbar.Link>
+        <Navbar.Link className='homePage' href="/shop">Our Product</Navbar.Link>
+        <Navbar.Link className='homePage' href="#">Contact Us</Navbar.Link>
         
         
-        <Navbar.Link href="#deets"><i class="fa-solid fa-cart-shopping"></i></Navbar.Link>
+        <Navbar.Link className='homePage' href="#deets"><i class="fa-solid fa-cart-shopping"></i></Navbar.Link>
         
       </Navbar.Collapse>
       <div className="flex md:order-2">

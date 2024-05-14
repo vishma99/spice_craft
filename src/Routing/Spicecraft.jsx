@@ -3,6 +3,7 @@ import Shop from '../Page/Shop'
 import Home from '../Page/Home'
 import AddtoCard from '../Page/AddToCart'
 import Login from '../Page/Login'
+import About from "../Page/About";
 
 export default function Spicecraft() {
   return (
@@ -13,6 +14,8 @@ export default function Spicecraft() {
           <Route path="/shop" element={<Shop/>}></Route>
           <Route path="/addtocart" element={<AddtoCard/>}></Route>
           <Route path="/login" element={<Login/>}></Route>
+          <Route path="/about" element={<About/>}></Route>
+          
         </Routes>
       </BrowserRouter>
     </div>
