@@ -1,7 +1,7 @@
 import React from 'react'
 import './shop.css';
 import NavBar from '../Component/NavBar';
-import Footer from '../Component/Footer';
+import FooTer from '../Component/FooTer';
 import SpicesCard from '../Component/SpicesCard';
 import '../Page/shop.css';
 
@@ -31,7 +31,7 @@ export default function Shop() {
 
      
       </div>
-      <Footer/>
+      <FooTer/>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import '../Page/about.css'
 import NavBar from '../Component/NavBar'
-import Footer from '../Component/Footer'
+import FooTer from '../Component/FooTer'
 
 export default function About() {
   return (
@@ -27,7 +27,7 @@ export default function About() {
         </div>
     </div>
   </section>
-  <Footer/>
+  <FooTer/>
   </>
   )
 }

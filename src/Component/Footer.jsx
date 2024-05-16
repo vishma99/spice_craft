@@ -1,59 +1,37 @@
 import React from 'react'
-import Nav from 'react-bootstrap/Nav';
-import '../Page/footer.css';
+import { Footer } from "flowbite-react";
 
-export default function Footer() {
+
+export default function FooTer() {
   return (
     <>
-     <br></br><br></br><br></br><br></br>
-     <div className="footer1">
-     <Nav className="justify-content-center">
-        <Nav.Item >
-          <Nav.Link className='contact' href="/home">Home</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link className='contact' eventKey="link-1">Shop</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link className='contact' eventKey="link-2">Order</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link className='contact' eventKey="link-2">Wishlist</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link className='contact' eventKey="link-2">Customization</Nav.Link>
-        </Nav.Item>
-     
-
-
-     
-      </Nav>
-      <Nav className="justify-content-center">
-        <Nav.Item>
-          <Nav.Link href="/home" className='contact'><i class="fa-brands fa-facebook"></i></Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="link-1" className='contact'><i class="fa-brands fa-instagram"></i></Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="link-2" className='contact'><i class="fa-brands fa-twitter"></i></Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="link-2" className='contact'><i class="fa-brands fa-whatsapp"></i></Nav.Link>
-        </Nav.Item>
+<Footer container >
+      <div className="w-full text-center" >
+        <div className="w-full justify-between sm:flex sm:items-center sm:justify-between">
+          <Footer.Brand
+            href="#"
+            src="/src/image/Logo/logo-no-background.png"  style={{width: '150px',height:'100px', paddingLeft:'5px', paddingTop:'5px'}}
+           
+            
+          />
+          <Footer.LinkGroup style={{fontSize: '16px'}}>
+          <Footer.Link href="/home">Home</Footer.Link>
+            <Footer.Link href="/about">About Us</Footer.Link>
+            <Footer.Link href="/shop">Our Product</Footer.Link>
+            <Footer.Link href="/contact">Contact Us</Footer.Link>
+            
+          </Footer.LinkGroup>
+          
+        </div>
         
-
-
-     
-      </Nav>
-
-
-     <br></br>
-     
-     <hr></hr>
-      <p className="text-center mt-4 mb-4">Copyright © 2024 | SpiceCraft</p>
-      
+        <hr></hr>
+        
+        <Footer.Copyright href="#" by="SpiceCraft" year={2024}  style={{paddingTop:'20px' ,fontSize: '16px'}}/>
+        
       </div>
+    </Footer>
+
+    
     </>
   )
 }

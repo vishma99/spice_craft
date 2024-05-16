@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './addtocart.css';
 import NavBar from '../Component/NavBar';
-import Footer from '../Component/Footer';
+// import FooTer from '../Component/FooTer';
 
 
 export default function AddToCart() {
@@ -68,7 +68,7 @@ const Weight3 = ()=>{
 
 
 
-      <Footer/>
+      {/* <FooTer/> */}
     </div>
   )
 }

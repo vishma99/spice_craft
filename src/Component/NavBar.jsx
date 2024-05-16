@@ -15,10 +15,10 @@ export default function NavBar() {
         {/* <Navbar.Link href="#" active>
           Home
         </Navbar.Link> */}
-        <Navbar.Link className='homePage' href="#">Home</Navbar.Link>
+        <Navbar.Link className='homePage' href="/home">Home</Navbar.Link> 
         <Navbar.Link className='homePage' href="/about">About Us</Navbar.Link>
         <Navbar.Link className='homePage' href="/shop">Our Product</Navbar.Link>
-        <Navbar.Link className='homePage' href="#">Contact Us</Navbar.Link>
+        <Navbar.Link className='homePage' href="/contact">Contact Us</Navbar.Link>
         
         
         <Navbar.Link className='homePage' href="#deets"><i class="fa-solid fa-cart-shopping"></i></Navbar.Link>
