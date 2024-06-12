@@ -6,7 +6,7 @@ import FooTer from '../Component/FooTer'
 export default function About() {
   return (
   <>
-  <NavBar/>
+ 
   <section className='hero'>
     <div className="heading">
         <h1>About Us</h1>
@@ -27,7 +27,7 @@ export default function About() {
         </div>
     </div>
   </section>
-  <FooTer/>
+ 
   </>
   )
 }

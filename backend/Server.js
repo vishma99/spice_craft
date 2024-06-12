@@ -129,6 +129,15 @@ app.get('/card/:productId', (req, res) => {
 });
 
 
+//add to cart
+
+
+// app.get('/addtocart', (req, res) => {
+//   const productId = req.params.productId;
+//   const sql = "SELECT * FROM product WHERE productId = ?";
+// })
+
+
 
 // display
 

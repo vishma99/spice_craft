@@ -3,7 +3,7 @@ import {Button, Navbar } from "flowbite-react";
 import '../Page/navbar.css';
 
 
-export default function NavBar() {
+export default function NavBar({setShow,size}) {
   return (
     <Navbar fluid rounded style={{paddingBottom: '40px'}}>
       <Navbar.Brand href="">
@@ -17,11 +17,12 @@ export default function NavBar() {
         </Navbar.Link> */}
         <Navbar.Link className='homePage' href="/home">Home</Navbar.Link> 
         <Navbar.Link className='homePage' href="/about">About Us</Navbar.Link>
-        <Navbar.Link className='homePage' href="/shop">Our Product</Navbar.Link>
+        <Navbar.Link className='homePage' href="/shop" onClick={()=>setShow(true)}>Our Product</Navbar.Link>
         <Navbar.Link className='homePage' href="/contact">Contact Us</Navbar.Link>
         
         
-        <Navbar.Link className='homePage' href="#deets"><i class="fa-solid fa-cart-shopping"></i></Navbar.Link>
+        <Navbar.Link className='homePage' href="#deets" ><i class="fa-solid fa-cart-shopping"></i> <span>{size}</span></Navbar.Link>
+        
         
       </Navbar.Collapse>
       <div className="flex md:order-2">

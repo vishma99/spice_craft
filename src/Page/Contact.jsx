@@ -7,7 +7,7 @@ import "./contact.css";
 export default function contact() {
   return (
     <>
-      <NavBar />
+    
       <div className="heading">
         <h1>Contact Us</h1>
       </div>
@@ -66,7 +66,7 @@ export default function contact() {
         
       </section>
 
-      <FooTer />
+     
     </>
   );
 }

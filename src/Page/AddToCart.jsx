@@ -59,12 +59,19 @@ const fetchData = (productId) => {
         setProduct(data))
     .catch(err => console.log(err));
 };
+const [show, setShow] = useState(true);
+  const [cart, setCart] = useState([]);
+
+const handleClick = (product)=>{
+  if(cart.indexOf(product) != -1)return;
+  setCart([...cart, product])
+}
 
 
   return (
     <div>
-      <NavBar/>
-
+    
+    
      
       {product && (
         
@@ -97,9 +104,9 @@ const fetchData = (productId) => {
                         
                         <br></br>
                       
-                    <a href=" " className='read-more'>Add To Card</a>    
-                
-
+                    <button className='read-more' >Add To Card</button>    
+           
+                        
                 </div>
             </section>
 
@@ -109,7 +116,7 @@ const fetchData = (productId) => {
     )}
 
 
-      <FooTer/>
+      
     </div>
   )
 }

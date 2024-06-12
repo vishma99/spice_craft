@@ -8,7 +8,13 @@ import '../Page/shop.css';
 
 
 export default function Shop() {
- 
+
+
+
+
+
+
+
   const [data, setData] = useState([])
   // useEffect(()=>{
   //   axios.get('http://localhost:8088/')
@@ -36,7 +42,7 @@ export default function Shop() {
   
   return (
     <div>
-      <NavBar/>
+     
 
       <div className="heading">
         <h1>Our Product</h1>
@@ -57,7 +63,7 @@ export default function Shop() {
 
 
 
-        <SpicesCard imageCard={`http://localhost:8088/image/${d.photo}`}  name={d.product_name} price={d.price} productId={d.productId}/>
+        <SpicesCard imageCard={`http://localhost:8088/image/${d.photo}`}  name={d.product_name} price={d.price} productId={d.productId} />
         {/* <SpicesCard imageCard="/src/Image/Shop/Sookha Dhaniya (Dried Coriander).jpg" name="Sookha Dhaniya" price="Rs 250-100"/>
         <SpicesCard imageCard="/src/Image/Shop/Darchini (Cinnamon).jpg" name="Darchini (Cinnamon)" price="Rs 250-100"/>
         <SpicesCard imageCard="/src/Image/Shop/Garam Masala (Powder).jpg" name="Garam Masala " price="Rs 250-100"/>
@@ -70,7 +76,7 @@ export default function Shop() {
 </span>
 ))} 
       </div>
-      <FooTer/>
+     
     </div>
   )
 }

@@ -7,6 +7,7 @@ import About from "../Page/About";
 import Contact from "../Page/Contact";
 
 import Sign from "../Page/Sign";
+import Cart from "../Page/Cart";
 
 
 export default function Spicecraft() {
@@ -22,7 +23,8 @@ export default function Spicecraft() {
           <Route path="/contact" element={<Contact/>}></Route>
           
           <Route path="/sign" element={<Sign/>}></Route>
-          
+          {/* <Route path="/cart" element={<Cart/>}></Route> */}
+          <Route path="/cart/:productId" element={<Cart/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>
