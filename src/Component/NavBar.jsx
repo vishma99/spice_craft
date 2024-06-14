@@ -21,7 +21,7 @@ export default function NavBar({setShow,size}) {
         <Navbar.Link className='homePage' href="/contact">Contact Us</Navbar.Link>
         
         
-        <Navbar.Link className='homePage' href="#deets" ><i class="fa-solid fa-cart-shopping"></i> <span>{size}</span></Navbar.Link>
+        <Navbar.Link className='homePage' href="/cart" ><i class="fa-solid fa-cart-shopping"></i> <span>{size}</span></Navbar.Link>
         
         
       </Navbar.Collapse>
