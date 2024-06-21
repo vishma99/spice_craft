@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import './shop.css';
-import NavBar from '../Component/NavBar';
-import FooTer from '../Component/FooTer';
-import SpicesCard from '../Component/SpicesCard';
-import '../Page/shop.css';
+import './shop.css'
+import NavBar from '../Component/NavBar'
+import Footer from '../Component/Footer'
+import SpicesCard from '../Component/SpicesCard'
+import '../Page/shop.css'
+
 // import axios from 'axios';
 
 

@@ -1,6 +1,6 @@
 import React from "react";
 import NavBar from "../Component/NavBar";
-import FooTer from "../Component/FooTer";
+import Footer from "../Component/Footer";
 
 import "./contact.css";
 
