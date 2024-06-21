@@ -11,7 +11,7 @@ import './App.css'
 // import { Route, Routes, Router } from 'react-router-dom'
 import Spicecraft from './Routing/Spicecraft';
 import NavBar from './Component/NavBar';
-import Footer from './Component/ Footer';
+import Footer from './Component/Footer';
 
 function App() {
   // const [count, setCount] = useState(0)
