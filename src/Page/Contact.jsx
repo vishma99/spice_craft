@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React,{useState} from "react";
 // import NavBar from "../Component/NavBar";
 // import FooTer from "../Component/FooTer";
+import axios from "axios";
 
 import "./contact.css";
 

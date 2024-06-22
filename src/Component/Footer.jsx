@@ -1,37 +1,33 @@
-import React from 'react'
-import { Footer } from "flowbite-react";
+import React from 'react';
+import { Footer as FlowbiteFooter } from 'flowbite-react';
 
-
-export default function FooTer() {
+export default function Footer() {
   return (
     <>
-<Footer container >
-      <div className="w-full text-center" >
-        <div className="w-full justify-between sm:flex sm:items-center sm:justify-between">
-          <Footer.Brand
+      <FlowbiteFooter container>
+        <div className="w-full text-center">
+          <div className="w-full justify-between sm:flex sm:items-center sm:justify-between">
+            <FlowbiteFooter.Brand
+              href="#"
+              src="/src/image/Logo/logo-no-background.png"
+              style={{ width: '150px', height: '100px', paddingLeft: '5px', paddingTop: '5px' }}
+            />
+            <FlowbiteFooter.LinkGroup style={{ fontSize: '16px' }}>
+              <FlowbiteFooter.Link href="/home">Home</FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/about">About Us</FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/shop">Our Product</FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/contact">Contact Us</FlowbiteFooter.Link>
+            </FlowbiteFooter.LinkGroup>
+          </div>
+          <hr />
+          <FlowbiteFooter.Copyright
             href="#"
-            src="/src/image/Logo/logo-no-background.png"  style={{width: '150px',height:'100px', paddingLeft:'5px', paddingTop:'5px'}}
-           
-            
+            by="SpiceCraft"
+            year={2024}
+            style={{ paddingTop: '20px', fontSize: '16px' }}
           />
-          <Footer.LinkGroup style={{fontSize: '16px'}}>
-          <Footer.Link href="/home">Home</Footer.Link>
-            <Footer.Link href="/about">About Us</Footer.Link>
-            <Footer.Link href="/shop">Our Product</Footer.Link>
-            <Footer.Link href="/contact">Contact Us</Footer.Link>
-            
-          </Footer.LinkGroup>
-          
         </div>
-        
-        <hr></hr>
-        
-        <Footer.Copyright href="#" by="SpiceCraft" year={2024}  style={{paddingTop:'20px' ,fontSize: '16px'}}/>
-        
-      </div>
-    </Footer>
-
-    
+      </FlowbiteFooter>
     </>
-  )
+  );
 }

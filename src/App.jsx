@@ -9,9 +9,9 @@ import './App.css'
 
 // import AddToCart from './Page/AddToCart'
 // import { Route, Routes, Router } from 'react-router-dom'
-import Spicecraft from './Routing/Spicecraft'
-import NavBar from './Component/NavBar'
-import FooTer from './Component/FooTer'
+import Spicecraft from './Routing/Spicecraft';
+import NavBar from './Component/NavBar';
+import Footer from './Component/Footer';
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -32,7 +32,7 @@ function App() {
      {/* <Home/> */}
      {/* <AddToCart/> */}
      <Spicecraft />
-     <FooTer/>
+     <Footer/>
      {/* <Router>
       <Routes>
         <Route>

@@ -1,10 +1,10 @@
 import React from 'react'
-// import FooTer from '../Component/FooTer'
+// import Footer from '../Component/Footer'
 
 export default function Home() {
   return (
     <div>
-      {/* <FooTer/> */}
+      {/* <Footer/> */}
     </div>
   )
 }
