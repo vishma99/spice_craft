@@ -146,6 +146,12 @@ const handleSubmit = (event) => {
                     <FaLock  className='icon'/>
 
                 </div>
+                <div className="input-box">
+                    <input type="password" placeholder='Confirm Password' required name='password' onChange={handleInput}/>
+                    {/* {errors.password && <span className='text-danger'>{errors.password}</span>} */}
+                    <FaLock  className='icon'/>
+
+                </div>
                 <div className="remember-forgot">
                     <label><input type="checkbox" />I agree to the terms & conditions</label>
                     

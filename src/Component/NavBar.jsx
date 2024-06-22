@@ -17,7 +17,7 @@ export default function NavBar({setShow,size}) {
         </Navbar.Link> */}
         <Navbar.Link className='homePage' href="/home">Home</Navbar.Link> 
         <Navbar.Link className='homePage' href="/about">About Us</Navbar.Link>
-        <Navbar.Link className='homePage' href="/shop" onClick={()=>setShow(true)}>Our Product</Navbar.Link>
+        <Navbar.Link className='homePage' href="/shop" >Our Product</Navbar.Link>
         <Navbar.Link className='homePage' href="/contact">Contact Us</Navbar.Link>
         
         
@@ -27,6 +27,8 @@ export default function NavBar({setShow,size}) {
       </Navbar.Collapse>
       <div className="flex md:order-2">
       <Button className='button1'><a href="/login" >Login</a></Button>
+      <Button className='button2'><a href="/user" >user</a></Button>
+      
         
       </div>
 

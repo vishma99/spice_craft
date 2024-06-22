@@ -18,3 +18,14 @@
     border: none !important;
     
 }
+.button2{
+    border-radius: 50% !important;
+    margin-left: 20px;
+    background-color: #A91D3A;
+}
+.button2 :hover {
+    background-color: #C73659 !important;
+    border: none !important;
+    border-radius: 50% !important;
+    
+}

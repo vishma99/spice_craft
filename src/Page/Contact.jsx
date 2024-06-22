@@ -1,10 +1,31 @@
-import React from "react";
-import NavBar from "../Component/NavBar";
-import FooTer from "../Component/FooTer";
+import React, { useState } from 'react';
+import axios from 'axios';
+// import NavBar from "../Component/NavBar";
+// import FooTer from "../Component/FooTer";
 
 import "./contact.css";
 
 export default function contact() {
+  const  [values, setValues] = useState({
+    name: '',
+    
+    contractNumber: '',
+    message: '',
+    email: ''
+})
+const handleInput =  (event) =>{
+  setValues({...values,[event.target.name]: [event.target.value]})
+};
+const handleInquiry = (event) => {
+  event.preventDefault();
+  axios.post('http://localhost:8088/inquiry', values)
+  .then(res => 
+      //  console.log("inquiry successfuly"))
+      //  navigate('/shop'))
+      
+      console.log("inquiry successfuly"))
+       .catch(err => console.log(err));
+      };
   return (
     <>
     
@@ -44,18 +65,18 @@ export default function contact() {
           </td>
           <td className="form-container2">
           <div >
-            <form action="">
+            <form action="" onSubmit={handleInquiry}>
               <div className="inputBox">
-                <input type="text" placeholder="Full name" />
-                <input type="text" placeholder="Telephone Number" />
+                <input type="text" placeholder="Full name" required name="name" onChange={handleInput}/>
+                <input type="text" placeholder="Telephone Number" required name="contractNumber" onChange={handleInput}/>
               </div>
-              <input type="email" placeholder="email" />
+              <input type="email" placeholder="email" required name="email" onChange={handleInput}/>
               <textarea
-                name=""
+                
                 id=""
                 cols={"30"}
                 rows={"10"}
-                placeholder="Enter Your Message Here"
+                placeholder="Enter Your Message Here" required name="message" onChange={handleInput} 
               ></textarea>
               <input type="submit" value={"send"} />
             </form>

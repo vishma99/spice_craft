@@ -86,6 +86,27 @@ app.post("/upload", upload.single("file"), (req, res) => {
   });
 });
 
+//  inquiry
+app.post("/inquiry", upload.single("file"), (req, res) => {
+  const sql =
+    "INSERT INTO inquiry(`name`,`contractNumber`,`email`,`message`) VALUES(?)";
+  const values = [
+    req.body.name,
+    req.body.contractNumber,
+
+    req.body.email,
+    req.body.message,
+  ];
+  db.query(sql, [values], (err, data) => {
+    if (err) return res.json({ error: "error signup query" });
+
+    return res.json({ Status: "Success" });
+  });
+});
+
+
+
+
 // app.post('/upload',upload.single('image'), (req, res) => {
 // const image = req.file.filename;
 // const sql = "UPDATE product SET photo = ?";
@@ -208,17 +229,35 @@ app.get("/cart/:customerId", (req, res) => {
 
 // display
 
-// app.get('/registercustomer', (req, res)=>{
-//     const sql = "SELECT * FROM registercustomer";
-//     db.query(sql, (err, data)=> {
-//         if(err) return res.json(err);
-//         return res.json(data);
-//         })
-//     })
+app.get('/registercustomerAdmin', (req, res)=>{
+    const sql = "SELECT * FROM registercustomer";
+    db.query(sql, (err, data)=> {
+        if(err) return res.json(err);
+        return res.json(data);
+        })
+    })
 
-// app.get('/',(re,res)=> {
-//     return res.json("from back end");
-// })
+    app.get('/productAdmin', (req, res)=>{
+      const sql = "SELECT * FROM product";
+      db.query(sql, (err, data)=> {
+          if(err) return res.json(err);
+          return res.json(data);
+          })
+      })
+      app.get('/orderAdmin', (req, res)=>{
+        const sql = "SELECT * FROM cart";
+        db.query(sql, (err, data)=> {
+            if(err) return res.json(err);
+            return res.json(data);
+            })
+        })
+        app.get('/inquiryAdmin', (req, res)=>{
+          const sql = "SELECT * FROM inquiry";
+          db.query(sql, (err, data)=> {
+              if(err) return res.json(err);
+              return res.json(data);
+              })
+          })
 
 app.listen(8088, () => {
   console.log("listening");
