@@ -35,7 +35,7 @@
     transition: height 2s ease;
 }
 .wrapper.active {
-    height: 700px;
+    height: 740px;
 }
 .wrapper .form-box {
     width: 100%;
@@ -60,7 +60,7 @@
     translate: 0;
 }
 form h1{
-    font-size: 30px;
+    font-size: 28px;
     text-align: center;
 
 }
@@ -79,7 +79,7 @@ form .input-box{
     outline: none;
     border: 2px solid rgba(255, 255, 255, .1);
     border-radius: 40px;
-    font-size: 16px;
+    font-size: 14px;
     color: #fff;
     padding: 20px 45px 20px 20px;
 
@@ -99,7 +99,7 @@ form .input-box{
 form .remember-forgot{
     display: flex;
     justify-content: space-between;
-    font-size: 14.5px;
+    font-size: 13px;
     margin: -15px 0 15px;
 
 }
@@ -126,7 +126,7 @@ form button{
     border-radius: 40px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     color: #333;
     font-weight: 700;
 }

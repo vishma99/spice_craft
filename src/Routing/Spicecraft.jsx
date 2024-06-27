@@ -8,6 +8,9 @@ import Contact from "../Page/Contact";
 
 import Sign from "../Page/Sign";
 import Cart from "../Page/Cart";
+import Dashboard from "../Page/Dashboard";
+import UserProflie from "../Page/UserProflie";
+
 
 export default function Spicecraft() {
   return (
@@ -26,6 +29,9 @@ export default function Spicecraft() {
           {/* <Route path="/cart/:productId" element={<Cart />}></Route> */}
 
           <Route path="/cart" element={<Cart />}></Route>
+          <Route path="/dash" element={<Dashboard />}> </Route>
+          <Route path="/user" element={<UserProflie />}></Route>
+         
         </Routes>
       </BrowserRouter>
     </div>
