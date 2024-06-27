@@ -14,7 +14,7 @@ export default function About() {
     <div className="container">
         <div className="hero-content">
             <h2>Crafting Tradition, Elevating Taste: Experience SpiceCraft</h2>
-            <p>At SpiceCraft, we blend tradition and quality to bring you the finest spices and handpicked almonds. 
+            <p>At SpiceCraft, we blend tradition and quality to bring you the finest spices. 
                 Our commitment to ethical sourcing and superior standards ensures an authentic 
                 sensory experience from farm to table.</p>
 
