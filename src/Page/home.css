@@ -82,9 +82,10 @@ body {
 }
 
 .home-feature-section h2 {
-  font-size: 40px;
+  font-size: 50px;
   margin-bottom: 40px;
   font-weight: bolder;
+  font-family:'Times New Roman', Times, serif ;
 }
 
 .home-features {
@@ -141,9 +142,10 @@ body {
 }
 
 .home-about-content h2 {
-  font-size: 40px;
+  font-size: 50px;
   margin-bottom: 20px;
-  font-weight: 900;
+  font-weight: bolder;
+  font-family:'Times New Roman', Times, serif ;
 }
 
 .home-about-content p {

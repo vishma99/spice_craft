@@ -16,7 +16,7 @@ const db = mysql.createConnection({
   port: 3306,
   user: "root",
   password: "",
-  database: "spicecraft",
+  database: "spicecraft (2)",
 });
 
 db.connect(function (err) {
