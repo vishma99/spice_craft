@@ -27,6 +27,7 @@ const  [values, setValues] = useState({
     name: '',
     username: '',
     password: '',
+    confirmPassword: '',
     contactNumber: '',
     address: '',
     email: ''
@@ -147,7 +148,7 @@ const handleSubmit = (event) => {
 
                 </div>
                 <div className="input-box">
-                    <input type="password" placeholder='Confirm Password' required name='password' onChange={handleInput}/>
+                    <input type="confirmPassword" placeholder='Confirm Password' required name='paconfirmPassword' onChange={handleInput}/>
                     {/* {errors.password && <span className='text-danger'>{errors.password}</span>} */}
                     <FaLock  className='icon'/>
 
