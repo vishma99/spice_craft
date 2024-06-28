@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './userprofile.css'; // Import the CSS file for styling
+import NavBar from "../Component/NavBar";
+import Footer from '../Component/Footer';
 
 function UserProfile() {
   const [selectedGender, setSelectedGender] = useState();
@@ -9,7 +11,9 @@ function UserProfile() {
   };
 
   return (
+    
     <div>
+      <NavBar/>
     <div className="user-profile-container">
       {/* <h1>User Profile</h1>
       <h2>Welcome to your profile! Customize it to reflect your unique style and preference.</h2>
@@ -101,7 +105,7 @@ function UserProfile() {
     </div>
 
     
-
+<Footer/>
     </div>
     
   );

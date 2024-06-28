@@ -1,6 +1,6 @@
 import React,{useState} from "react";
-// import NavBar from "../Component/NavBar";
-// import FooTer from "../Component/FooTer";
+import NavBar from "../Component/NavBar";
+import Footer from '../Component/Footer';
 import axios from "axios";
 
 import "./contact.css";
@@ -28,7 +28,7 @@ const handleInquiry = (event) => {
       };
   return (
     <>
-    
+    <NavBar />
       <div className="heading">
         <h1>Contact Us</h1>
       </div>
@@ -87,7 +87,7 @@ const handleInquiry = (event) => {
         
       </section>
 
-     
+      <Footer/>
     </>
   );
 }

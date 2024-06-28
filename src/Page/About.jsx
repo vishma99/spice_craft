@@ -1,12 +1,12 @@
 import React from 'react'
 import '../Page/about.css'
-import NavBar from '../Component/NavBar'
-import Footer from '../Component/Footer'
+import NavBar from "../Component/NavBar";
+import Footer from '../Component/Footer';
 
 export default function About() {
   return (
   <>
- 
+ <NavBar/>
   <section className='hero'>
     <div className="heading">
         <h1>About Us</h1>
@@ -87,7 +87,7 @@ export default function About() {
         </div>
     </div>
   </section>
-
+<Footer/>
   </>
   )
 }
