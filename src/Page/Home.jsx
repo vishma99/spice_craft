@@ -5,9 +5,10 @@ import '../Page/home.css'
 
 
 export default function Home() {
+
   return (
     <>
-      
+      <NavBar />
       <section className="home-hero-section">
         <div className="home-hero-overlay">
           <div className="home-hero-content">
@@ -70,7 +71,7 @@ export default function Home() {
       </section>
 
 
-     
+      <Footer/>
     </>
   );
 }

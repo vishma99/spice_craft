@@ -11,7 +11,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url('/C:\xampp\htdocs\spice_craft\src\Image\backgroundImage.jpg') center center/cover no-repeat;
+  background: url("/src/Image/backgroundImage.jpg") center center/cover no-repeat;
   color: white;
 }
 
@@ -121,7 +121,7 @@ body {
     height: 60vh;
     margin-bottom: 10px;
     color: white;
-    background: url('/C:\xampp\htdocs\spice_craft\src\Image\about4.jpg') center center/cover no-repeat;
+    background: url('/src/Image/about4.jpg') center center/cover no-repeat;
   }
 
 .home-about-overlay {

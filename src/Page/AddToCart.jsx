@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./addtocart.css";
 import { useParams } from "react-router-dom";
-
+import NavBar from "../Component/NavBar";
+import Footer from '../Component/Footer';
 export default function AddToCart() {
   const [count, setCount] = useState(0);
   const { productId } = useParams(); // Get the productId from the URL params
@@ -60,6 +61,7 @@ export default function AddToCart() {
 
   return (
     <div>
+      <NavBar/>
       {product && (
         <div className="container">
           <section className="about">
@@ -92,6 +94,7 @@ export default function AddToCart() {
         </div>
         
       )}
+      <Footer/>
     </div>
   );
 }

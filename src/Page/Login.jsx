@@ -65,7 +65,7 @@ const handleSubmit = (event) => {
     axios.post('http://localhost:8088/login', values)
     .then(res => {
         if(res.data === "success"){
-            navigate('/shop');
+            navigate('/home');
 
         }
         else{
