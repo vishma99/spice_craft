@@ -5,37 +5,21 @@ import '../Page/home.css'
 
 
 export default function Home() {
-  useEffect(() => {
-    let slideIndex = 0;
-    const slides = document.querySelectorAll('.home-hero-slider .slide');
-    const showSlides = () => {
-      slides.forEach((slide, index) => {
-        slide.style.display = index === slideIndex ? 'block' : 'none';
-      });
-      slideIndex = (slideIndex + 1) % slides.length;
-    };
-    showSlides();
-    const interval = setInterval(showSlides, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <>
       
-      <header className="home-hero-section">
+      <section className="home-hero-section">
         <div className="home-hero-overlay">
           <div className="home-hero-content">
             <h1 className="hero-title">Find the right spice, right away</h1>
             <div className="search-bar">
               <input type="text" placeholder="Search for any spice..." />
-              <button type="button">Search</button>
+              <button>Search</button>
             </div>
-            <div className="hero-description">
-              <p>Discover a world of flavors with our premium, ethically sourced spices. Perfect for every dish and every occasion.</p>
-            </div>
+            <p className="hero-description">Discover the finest spices sourced from around the world, perfect for enhancing your culinary creations.</p>
           </div>
         </div>
-      </header>
+      </section>
 
       <section className="home-feature-section">
         <h2>Our Features</h2>
@@ -53,24 +37,29 @@ export default function Home() {
           <div className="home-feature">
             <img src="/src/image/backgroundImage.jpg" alt="Custom Spice Blends" />
             <h3>Custom Spice Blends</h3>
-            <p>Create your own unique spice blends with our high-quality ingredients. Perfect for chefs and home cooks alike.</p>
+            <p>Create your own unique spice blends with our high-quality ingredients.</p>
           </div>
           <div className="home-feature">
             <img src="/src/image/backgroundImage.jpg" alt="Custom Spice Blends" />
-            <h3>Custom Spice Blends</h3>
-            <p>Create your own unique spice blends with our high-quality ingredients. Perfect for chefs and home cooks alike.</p>
+            <h3>Global Delivery</h3>
+            <p>Fast shipping to bring our spices to your doorstep, no matter where you are in the world.</p>
           </div>
         </div>
       </section>
 
       <section className="home-about-section">
+      <div className="home-about-overlay">
         <div className="home-about-content">
           <h2>About SpiceCraft</h2>
-          <p>At SpiceCraft, we blend tradition and quality to bring you the finest spices. Our commitment to ethical sourcing and superior standards ensures an authentic sensory experience from farm to table.</p>
+          <p>At SpiceCraft, Our mission is to bring the rich and diverse flavors of global cuisine to your kitchen, while supporting sustainable and ethical practices in the spice industry.</p>
+            <ul>
+              <li>High-quality, ethically sourced spices</li>
+              <li>Custom spice blends tailored to your needs</li>
+              <li>Commitment to sustainability and fair trade</li>
+              <li>Expertise in spice selection and blending</li>
+            </ul>
           <a href="/about" className="btn">Learn More</a>
         </div>
-        <div className="home-about-img">
-          <img src="/src/image/about4.jpg" alt="About SpiceCraft" />
         </div>
       </section>
 
