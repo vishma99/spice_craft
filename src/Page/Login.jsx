@@ -30,22 +30,30 @@ const  [values, setValues] = useState({
     confirmPassword: '',
     contactNumber: '',
     address: '',
-    email: ''
+    email: '',
+    
 })
 const navigate = useNavigate();
 // const [errors, setErrors] = useState({
 
 // });
 
-const handleInput =  (event) =>{
-    setValues({...values,[event.target.name]: [event.target.value]})
+const handleInput = (event) => {
+    const { name, value } = event.target;
+    setValues({ ...values, [name]: value });
 };
+
 const handleSubmitSignup = (event) => {
     event.preventDefault();
+
+    if (values.password !== values.confirmPassword) {
+        alert("Passwords do not match");
+        return;
+    }
     axios.post('http://localhost:8088/register', values)
     .then(res => 
         //  console.log("register successfuly")
-         navigate('/shop'))
+         navigate('/home'))
          .catch(err => console.log(err));
 
     // setErrors(ValidationSignup(values));
@@ -148,7 +156,7 @@ const handleSubmit = (event) => {
 
                 </div>
                 <div className="input-box">
-                    <input type="confirmPassword" placeholder='Confirm Password' required name='paconfirmPassword' onChange={handleInput}/>
+                    <input type="password" placeholder='Confirm Password' required name='confirmPassword' onChange={handleInput}/>
                     {/* {errors.password && <span className='text-danger'>{errors.password}</span>} */}
                     <FaLock  className='icon'/>
 
