@@ -5,6 +5,9 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
 // const app = express();
 app.use(cors());
 app.use(express.json());
@@ -29,54 +32,111 @@ db.connect(function (err) {
 });
 // login
 
-app.post("/register", (req, res) => {
-  const sql =
-    "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
-  const values = [
-    req.body.name,
-    req.body.email,
-    req.body.contactNumber,
-    req.body.address,
-    req.body.username,
-    req.body.password,
-  ];
-  db.query(sql, [values], (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
-  });
+// app.post("/register", (req, res) => {
+//   const sql =
+//     "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
+//   const values = [
+//     req.body.name,
+//     req.body.email,
+//     req.body.contactNumber,
+//     req.body.address,
+//     req.body.username,
+//     req.body.password,
+//   ];
+//   db.query(sql, [values], (err, data) => {
+//     if (err) return res.json(err);
+//     return res.json(data);
+//   });
+// });
+
+app.post("/register", async (req, res) => {
+  const { name, email, contactNumber, address, username, password } = req.body;
+
+  try {
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const sql =
+      "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
+    const values = [
+      name,
+      email,
+      contactNumber,
+      address,
+      username,
+      hashedPassword,
+    ];
+
+    db.query(sql, [values], (err, data) => {
+      if (err) return res.json({ error: err.message });
+      return res.json({ status: "success", data });
+    });
+  } catch (err) {
+    return res.json({ error: err.message });
+  }
 });
 
 // signup
-app.post("/login", (req, res) => {
-  const sql =
-    "SELECT * FROM registercustomer WHERE `username` = ? AND `password` = ?";
+const SECRET_KEY = "your_secret_key"; // Change this to your actual secret key
 
-  db.query(sql, [req.body.username, req.body.password], (err, data) => {
-    if (err) return res.json(err);
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  const sql = "SELECT * FROM registercustomer WHERE `email` = ?";
+
+  db.query(sql, [email], async (err, data) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({ error: err.message });
+    }
     if (data.length > 0) {
-      return res.json("success");
+      const user = data[0];
+
+      console.log("User found:", user);
+
+      try {
+        // Compare provided password with hashed password in database
+        const match = await bcrypt.compare(password, user.password);
+        if (match) {
+          console.log("Passwords match");
+          // Passwords match, generate a JWT token
+          const token = jwt.sign(
+            { id: user.id, username: user.username, email: user.email },
+            SECRET_KEY,
+            { expiresIn: "24h" }
+          );
+          return res.json({ status: "success", token });
+        } else {
+          console.log("Passwords do not match");
+          return res.json({ status: "fail", message: "Invalid credentials" });
+        }
+      } catch (compareError) {
+        console.error("bcrypt compare error:", compareError);
+        return res.json({
+          status: "fail",
+          message: "Error comparing passwords",
+        });
+      }
     } else {
-      return res.json("fail");
+      console.log("User not found");
+      return res.json({ status: "fail", message: "User not found" });
     }
   });
 });
 
-<<<<<<< HEAD
-// update use profile
-app.get("/user", (req, res) => {
-  const sql = "SELECT * FROM registercustomer";
-  db.query(sql, (err, result) => {
-    if (err) return res.json("Error");
-    return res.json(result);
+// Middleware to verify token
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+  if (!token) return res.status(403).json({ error: "No token provided" });
+
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err)
+      return res.status(500).json({ error: "Failed to authenticate token" });
+    req.userId = decoded.id;
+    next();
   });
-});
+};
 
-
-
-
-
-=======
->>>>>>> 43e20ddbab1b672b52ea38ddb36a4608e7a71895
 // file upload
 
 const storage = multer.diskStorage({
@@ -123,9 +183,6 @@ app.post("/inquiry", upload.single("file"), (req, res) => {
     return res.json({ Status: "Success" });
   });
 });
-
-
-
 
 // app.post('/upload',upload.single('image'), (req, res) => {
 // const image = req.file.filename;
@@ -250,58 +307,58 @@ app.get("/cart/:customerId", (req, res) => {
 
 // display
 
-app.get('/registercustomerAdmin', (req, res)=>{
-    const sql = "SELECT * FROM registercustomer";
-    db.query(sql, (err, data)=> {
-        if(err) return res.json(err);
-        return res.json(data);
-        })
-    })
+app.get("/registercustomerAdmin", (req, res) => {
+  const sql = "SELECT * FROM registercustomer";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
 
-    app.get('/productAdmin', (req, res)=>{
-      const sql = "SELECT * FROM product";
-      db.query(sql, (err, data)=> {
-          if(err) return res.json(err);
-          return res.json(data);
-          })
-      })
-      app.get('/orderAdmin', (req, res)=>{
-        const sql = "SELECT * FROM cart";
-        db.query(sql, (err, data)=> {
-            if(err) return res.json(err);
-            return res.json(data);
-            })
-        })
-        app.get('/inquiryAdmin', (req, res)=>{
-          const sql = "SELECT * FROM inquiry";
-          db.query(sql, (err, data)=> {
-              if(err) return res.json(err);
-              return res.json(data);
-              })
-          })
+app.get("/productAdmin", (req, res) => {
+  const sql = "SELECT * FROM product";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.get("/orderAdmin", (req, res) => {
+  const sql = "SELECT * FROM cart";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.get("/inquiryAdmin", (req, res) => {
+  const sql = "SELECT * FROM inquiry";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
 
 app.listen(8088, () => {
   console.log("listening");
 });
 
-
 //admin
 // Add Route to Delete a User Account
-app.delete('/registercustomerAdmin/:customerId', (req, res) => {
+app.delete("/registercustomerAdmin/:customerId", (req, res) => {
   const customerId = req.params.customerId;
-  const sql = 'DELETE FROM registercustomer WHERE customerId = ?';
+  const sql = "DELETE FROM registercustomer WHERE customerId = ?";
   db.query(sql, [customerId], (err, result) => {
     if (err) {
-      console.error('Error deleting user:', err);
-      return res.status(500).json({ error: 'Error deleting user' });
+      console.error("Error deleting user:", err);
+      return res.status(500).json({ error: "Error deleting user" });
     }
-    return res.json({ success: true, message: 'User deleted successfully' });
+    return res.json({ success: true, message: "User deleted successfully" });
   });
 });
 
 // Modify Route to Add a Product
-app.post('/addproduct', upload.single('file'), (req, res) => {
-  const sql = 'INSERT INTO product(`product_name`,`price`,`description`,`photo`) VALUES(?)';
+app.post("/addproduct", upload.single("file"), (req, res) => {
+  const sql =
+    "INSERT INTO product(`product_name`,`price`,`description`,`photo`) VALUES(?)";
   const values = [
     req.body.name,
     req.body.price,
@@ -310,9 +367,9 @@ app.post('/addproduct', upload.single('file'), (req, res) => {
   ];
   db.query(sql, [values], (err, data) => {
     if (err) {
-      console.error('Error adding product:', err);
-      return res.status(500).json({ error: 'Error adding product' });
+      console.error("Error adding product:", err);
+      return res.status(500).json({ error: "Error adding product" });
     }
-    return res.json({ success: true, message: 'Product added successfully' });
+    return res.json({ success: true, message: "Product added successfully" });
   });
 });

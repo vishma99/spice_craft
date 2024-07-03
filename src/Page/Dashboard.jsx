@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
-// import NavBar from "../Component/NavBar";
-import Footer from '../Component/Footer';
-=======
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
->>>>>>> 43e20ddbab1b672b52ea38ddb36a4608e7a71895
 
 export default function Dashboard() {
   const [data1, setData1] = useState([]);
@@ -100,16 +95,11 @@ export default function Dashboard() {
 
   return (
     <div>
-<<<<<<< HEAD
-      {/* <NavBar/> */}
+      <NavBar />
       <div
         className="contact-box-container mx-auto"
         style={{ fontWeight: "bold", fontSize: "16px" }}
       >
-=======
-      <NavBar />
-      <div className="contact-box-container mx-auto" style={{ fontWeight: "bold", fontSize: "16px" }}>
->>>>>>> 43e20ddbab1b672b52ea38ddb36a4608e7a71895
         <div className="contact-box">
           <h2>No. of customers</h2>
           <h2>1</h2>
@@ -127,7 +117,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Customer</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Customer
+        </h2>
         <hr style={{ paddingBottom: "30px" }} />
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
@@ -149,7 +147,9 @@ export default function Dashboard() {
                 <td>{d.contactNumber}</td>
                 <td>{d.address}</td>
                 <td>
-                  <button onClick={() => handleDeleteUser(d.customerId)}>Delete</button>
+                  <button onClick={() => handleDeleteUser(d.customerId)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -158,7 +158,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Product</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Product
+        </h2>
         <button
           style={{
             backgroundColor: "#A91D3A",
@@ -196,7 +204,12 @@ export default function Dashboard() {
               placeholder="Description"
               required
             />
-            <input type="file" name="photo" onChange={handleFileChange} required />
+            <input
+              type="file"
+              name="photo"
+              onChange={handleFileChange}
+              required
+            />
             <button type="submit">Add Product</button>
           </form>
         )}
@@ -222,7 +235,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Orders</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Orders
+        </h2>
         <hr style={{ paddingBottom: "30px" }} />
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
@@ -247,7 +268,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Inquiry</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Inquiry
+        </h2>
         <hr style={{ paddingBottom: "30px" }} />
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
