@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './shop.css'
-import NavBar from "../Component/NavBar";
+// import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
 import SpicesCard from '../Component/SpicesCard'
 import '../Page/shop.css'
@@ -29,11 +29,7 @@ export default function Shop() {
   }, []);
  
   const fetchData = () => {
-    // axios.get('http://localhost:8088/')
-    //   .then(res => {
-    //     setData(res.data[0]);
-    //   })
-    //   .catch(err => console.log(err));
+   
 
     fetch('http://localhost:8088/card')
       .then(res => res.json())
@@ -43,7 +39,7 @@ export default function Shop() {
   
   return (
     <div>
-     <NavBar/>
+     {/* <NavBar/> */}
 
       <div className="heading">
         <h1>Our Product</h1>

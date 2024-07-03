@@ -16,7 +16,7 @@ const db = mysql.createConnection({
   port: 3306,
   user: "root",
   password: "",
-  database: "spicecraft (2)",
+  database: "spicecraft",
 });
 
 db.connect(function (err) {
@@ -57,6 +57,20 @@ app.post("/login", (req, res) => {
     }
   });
 });
+
+// update use profile
+app.get("/user", (req, res) => {
+  const sql = "SELECT * FROM registercustomer";
+  db.query(sql, (err, result) => {
+    if (err) return res.json("Error");
+    return res.json(result);
+  });
+});
+
+
+
+
+
 // file upload
 
 const storage = multer.diskStorage({

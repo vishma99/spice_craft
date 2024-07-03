@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import NavBar from "../Component/NavBar";
+// import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
 
 export default function Dashboard() {
@@ -38,7 +38,7 @@ export default function Dashboard() {
    }, []);
   return (
     <div>
-      <NavBar/>
+      {/* <NavBar/> */}
       <div
         className="contact-box-container mx-auto"
         style={{ fontWeight: "bold", fontSize: "16px" }}

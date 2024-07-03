@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./addtocart.css";
 import { useParams } from "react-router-dom";
-import NavBar from "../Component/NavBar";
+// import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
 export default function AddToCart() {
   const [count, setCount] = useState(0);
@@ -61,7 +61,7 @@ export default function AddToCart() {
 
   return (
     <div>
-      <NavBar/>
+      {/* <NavBar/> */}
       {product && (
         <div className="container">
           <section className="about">
