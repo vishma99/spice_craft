@@ -11,6 +11,7 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
+// Set up the connection to database
 const db = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -19,6 +20,7 @@ const db = mysql.createConnection({
   database: "spicecraft",
 });
 
+// Connect to the database
 db.connect(function (err) {
   if (err) {
     console.log(err);
@@ -43,6 +45,7 @@ app.post("/register", (req, res) => {
     return res.json(data);
   });
 });
+
 // signup
 app.post("/login", (req, res) => {
   const sql =
@@ -58,6 +61,7 @@ app.post("/login", (req, res) => {
   });
 });
 
+<<<<<<< HEAD
 // update use profile
 app.get("/user", (req, res) => {
   const sql = "SELECT * FROM registercustomer";
@@ -71,6 +75,8 @@ app.get("/user", (req, res) => {
 
 
 
+=======
+>>>>>>> 43e20ddbab1b672b52ea38ddb36a4608e7a71895
 // file upload
 
 const storage = multer.diskStorage({
@@ -220,6 +226,7 @@ app.post("/addtocart", (req, res) => {
     }
   });
 });
+
 //get from cart
 
 app.get("/cart/:customerId", (req, res) => {
@@ -275,4 +282,37 @@ app.get('/registercustomerAdmin', (req, res)=>{
 
 app.listen(8088, () => {
   console.log("listening");
+});
+
+
+//admin
+// Add Route to Delete a User Account
+app.delete('/registercustomerAdmin/:customerId', (req, res) => {
+  const customerId = req.params.customerId;
+  const sql = 'DELETE FROM registercustomer WHERE customerId = ?';
+  db.query(sql, [customerId], (err, result) => {
+    if (err) {
+      console.error('Error deleting user:', err);
+      return res.status(500).json({ error: 'Error deleting user' });
+    }
+    return res.json({ success: true, message: 'User deleted successfully' });
+  });
+});
+
+// Modify Route to Add a Product
+app.post('/addproduct', upload.single('file'), (req, res) => {
+  const sql = 'INSERT INTO product(`product_name`,`price`,`description`,`photo`) VALUES(?)';
+  const values = [
+    req.body.name,
+    req.body.price,
+    req.body.description,
+    req.file.filename,
+  ];
+  db.query(sql, [values], (err, data) => {
+    if (err) {
+      console.error('Error adding product:', err);
+      return res.status(500).json({ error: 'Error adding product' });
+    }
+    return res.json({ success: true, message: 'Product added successfully' });
+  });
 });
