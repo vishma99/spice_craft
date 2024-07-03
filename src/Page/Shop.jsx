@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './shop.css'
 // import NavBar from "../Component/NavBar";
+import NavBar from '../Component/NavBar';
 import Footer from '../Component/Footer';
 import SpicesCard from '../Component/SpicesCard'
 import '../Page/shop.css'
@@ -39,7 +40,8 @@ export default function Shop() {
   
   return (
     <div>
-     {/* <NavBar/> */}
+
+     <NavBar/>
 
       <div className="heading">
         <h1>Our Product</h1>

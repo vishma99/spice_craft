@@ -55,7 +55,7 @@ export default function Login() {
 
     axios
       .post("http://localhost:8088/register", values)
-      .then((res) => navigate("/home"))
+      .then((res) => setAction(""))
       .catch((err) => console.log(err));
   };
 
@@ -74,7 +74,7 @@ export default function Login() {
             Cookies.set("token", token); // Session cookie
           }
 
-          navigate("/home");
+          navigate("/");
         } else {
           alert("Incorrect username or password!");
         }
@@ -90,8 +90,8 @@ export default function Login() {
             <h1>Login</h1>
             <div className="input-box">
               <input
-                type="text"
-                placeholder="Username"
+                type="email"
+                placeholder="email"
                 required
                 onChange={handleLoginInput}
                 name="email"

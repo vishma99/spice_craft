@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import NavBar from '../Component/NavBar';
+import Footer from '../Component/Footer';
 //import { Link } from "react-router-dom";
 
 const Cart = () => {
@@ -26,6 +28,8 @@ const Cart = () => {
   };  
 
   return (
+    <>
+    <NavBar/>
     <div className="container mx-auto mt-10">
       <div className="bg-white shadow-md rounded-lg p-6">
         {cartItems.length > 0 ? (
@@ -65,7 +69,8 @@ const Cart = () => {
       </div>
       
     </div>
-    
+    <Footer/>
+    </> 
   );
 };
 

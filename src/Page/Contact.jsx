@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-// import NavBar from "../Component/NavBar";
+import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
 import axios from "axios";
 
@@ -28,7 +28,7 @@ const handleInquiry = (event) => {
       };
   return (
     <>
-    {/* <NavBar /> */}
+    <NavBar />
       <div className="heading">
         <h1>Contact Us</h1>
       </div>

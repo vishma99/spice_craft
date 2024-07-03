@@ -17,7 +17,7 @@ export default function Spicecraft() {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path="/home" element={<Home />}></Route>
+          <Route path="/" element={<Home />}></Route>
           <Route path="/shop" element={<Shop />}></Route>
           <Route path="/addtocart/:productId" element={<AddtoCard />}></Route>
           <Route path="/login" element={<Login />}></Route>

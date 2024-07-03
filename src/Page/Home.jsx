@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-// import NavBar from '../Component/NavBar'
+import NavBar from '../Component/NavBar'
 import Footer from '../Component/Footer'
 
 import '../Page/home.css'
@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <>
-      {/* <NavBar /> */}
+      <NavBar />
       <section className="home-hero-section">
         <div className="home-hero-overlay">
           <div className="home-hero-content">
