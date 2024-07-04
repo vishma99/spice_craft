@@ -13,7 +13,10 @@ const Cart = () => {
   const fetchCartItems = () => {
     fetch("http://localhost:8088/cart/1") // Replace 1 with the dynamic customerId
       .then((res) => res.json())
+      
       .then((data) => setCartItems(data))
+      
+      
       .catch((err) => console.log(err));
   };
 
@@ -22,8 +25,16 @@ const Cart = () => {
       // Replace 1 with the dynamic customerId
       method: "DELETE",
     })
-      .then((res) => res.json())
-      .then(() => fetchCartItems())
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`Failed to delete item: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    })
+      .then(() => {
+        console.log("Item removed successfully");
+        fetchCartItems(); // Update cartItems state after successful delete
+      })
       .catch((err) => console.log(err));
   };  
 

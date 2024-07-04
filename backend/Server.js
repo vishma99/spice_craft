@@ -101,7 +101,7 @@ app.post("/login", (req, res) => {
           console.log("Passwords match");
           // Passwords match, generate a JWT token
           const token = jwt.sign(
-            { id: user.id, username: user.username, email: user.email },
+            { id: user.id, username: user.username, email: user.email, address: user.address, contactNumber: user.contactNumber },
             SECRET_KEY,
             { expiresIn: "24h" }
           );
@@ -217,6 +217,27 @@ app.get("/card/:productId", (req, res) => {
     return res.json(result[0]); // Assuming productId is unique, return the first row
   });
 });
+
+
+// delete item
+app.delete("/cart/1/:productId", (req, res) => {
+  const customerId = 1; // Assuming static for now
+  const productId = req.params.productId;
+  const sql = "DELETE FROM cart WHERE customerId = ? AND productId = ?";
+  db.query(sql, [customerId, productId], (err, result) => {
+    if (err) {
+      console.error("Error deleting cart item:", err);
+      return res.status(500).json({ error: "Error deleting cart item" });
+    }
+    return res.json({ success: true, message: "Cart item deleted successfully" });
+  });
+});
+
+
+
+
+
+
 
 //add to cart
 app.post("/addtocart", (req, res) => {
