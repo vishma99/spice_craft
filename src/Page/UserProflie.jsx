@@ -3,6 +3,7 @@ import './userprofile.css';
 import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
 import { jwtDecode } from "jwt-decode";
+
 import Cookies from "js-cookie";
 
 function UserProfile() {

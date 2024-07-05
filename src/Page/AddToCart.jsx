@@ -3,15 +3,33 @@ import "./addtocart.css";
 import { useParams } from "react-router-dom";
 import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+
+
+
 export default function AddToCart() {
   const [count, setCount] = useState(0);
   const { productId } = useParams(); // Get the productId from the URL params
   const [product, setProduct] = useState(null);
   const [cart, setCart] = useState([]);
+  const [customerId, setCustomerId] = useState("");
 
   useEffect(() => {
     fetchData(productId);
   }, [productId]);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setCustomerId(decodedToken.customerId);
+      } catch (err) {
+        console.error("Token decoding failed:", err);
+      }
+    }
+  }, []);
 
   const fetchData = (productId) => {
     // Fetch product details based on productId
@@ -40,7 +58,7 @@ export default function AddToCart() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        customerId: 1, // Replace with dynamic customer ID as needed
+        customerId:customerId, // Replace with dynamic customer ID as needed
         productId: product.productId,
         quantity: count,
         name: product.product_name,

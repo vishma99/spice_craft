@@ -101,7 +101,7 @@ app.post("/login", (req, res) => {
           console.log("Passwords match");
           // Passwords match, generate a JWT token
           const token = jwt.sign(
-            { id: user.id, username: user.username, email: user.email, address: user.address, contactNumber: user.contactNumber },
+            { id: user.id, username: user.username, email: user.email, address: user.address, contactNumber: user.contactNumber, customerId:user.customerId },
             SECRET_KEY,
             { expiresIn: "24h" }
           );
@@ -136,6 +136,22 @@ const verifyToken = (req, res, next) => {
     next();
   });
 };
+
+
+// Get cart items for a customer
+// app.get("/cart/:customerId", verifyToken, (req, res) => {
+//   const customerId = req.params.customerId;
+//   const sql = "SELECT * FROM cart WHERE customerId = ?";
+//   db.query(sql, [customerId], (err, result) => {
+//     if (err) {
+//       console.error("Error fetching cart items:", err);
+//       return res.status(500).json({ error: "Error fetching cart items" });
+//     }
+//     return res.json(result);
+//   });
+// });
+
+
 
 // file upload
 
@@ -220,9 +236,8 @@ app.get("/card/:productId", (req, res) => {
 
 
 // delete item
-app.delete("/cart/1/:productId", (req, res) => {
-  const customerId = 1; // Assuming static for now
-  const productId = req.params.productId;
+app.delete("/cart/:customerId/:productId", (req, res) => {
+  const { customerId, productId } = req.params;
   const sql = "DELETE FROM cart WHERE customerId = ? AND productId = ?";
   db.query(sql, [customerId, productId], (err, result) => {
     if (err) {
@@ -238,8 +253,81 @@ app.delete("/cart/1/:productId", (req, res) => {
 
 
 
-
 //add to cart
+
+// app.post("/addtocart", verifyToken, (req, res) => {
+//   const {
+//     userId,
+//     productId,
+//     quantity,
+//     name,
+//     price,
+//     size,
+//     photo,
+//     description,
+//   } = req.body;
+//   const sqlCheck = "SELECT * FROM cart WHERE customerId = ? AND productId = ?";
+//   const sqlInsert =
+//     "INSERT INTO cart (customerId, productId, quantity, name, price, size, photo, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+//   const sqlUpdate =
+//     "UPDATE cart SET quantity = quantity + ? WHERE customerId = ? AND productId = ?";
+
+//   db.query(sqlCheck, [userId, productId], (err, result) => {
+//     if (err) {
+//       console.error("Error checking cart:", err);
+//       return res.status(500).json({ error: "Error checking cart" });
+//     }
+//     if (result.length > 0) {
+//       db.query(
+//         sqlUpdate,
+//         [quantity, userId, productId],
+//         (err, updateResult) => {
+//           if (err) {
+//             console.error("Error updating cart:", err);
+//             return res.status(500).json({ error: "Error updating cart" });
+//           }
+//           return res.json({
+//             success: true,
+//             message: "Cart updated successfully",
+//           });
+//         }
+//       );
+//     } else {
+//       db.query(
+//         sqlInsert,
+//         [
+//           userId,
+//           productId,
+//           quantity,
+//           name,
+//           price,
+//           size,
+//           photo,
+//           description,
+//         ],
+//         (err, insertResult) => {
+//           if (err) {
+//             console.error("Error adding to cart:", err);
+//             return res.status(500).json({ error: "Error adding to cart" });
+//           }
+//           return res.json({
+//             success: true,
+//             message: "Item added to cart successfully",
+//           });
+//         }
+//       );
+//     }
+//   });
+// });
+
+
+
+
+
+
+
+
+
 app.post("/addtocart", (req, res) => {
   const {
     customerId,
@@ -306,8 +394,7 @@ app.post("/addtocart", (req, res) => {
 });
 
 //get from cart
-
-app.get("/cart/:customerId", (req, res) => {
+app.get("/cart/:customerId", verifyToken, (req, res) => {
   const customerId = req.params.customerId;
   const sql = "SELECT * FROM cart WHERE customerId = ?";
   db.query(sql, [customerId], (err, result) => {
@@ -315,9 +402,24 @@ app.get("/cart/:customerId", (req, res) => {
       console.error("Error fetching cart items:", err);
       return res.status(500).json({ error: "Error fetching cart items" });
     }
-    return res.json(result);
+    return res.json(result); // Assuming `result` is an array of cart items
   });
 });
+
+// app.get("/cart", verifyToken, (req, res) => {
+//   const userId = req.userId; // Get userId from token via verifyToken middleware
+//   const sql = "SELECT * FROM cart WHERE customerId = ?";
+//   db.query(sql, [userId], (err, result) => {
+//     if (err) {
+//       console.error("Error fetching cart items:", err);
+//       return res.status(500).json({ error: "Error fetching cart items" });
+//     }
+//     return res.json(result);
+//   });
+// });
+
+
+
 
 //add to cart
 
