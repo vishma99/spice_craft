@@ -502,34 +502,34 @@ app.get("/reviewVisit", (req, res) => {
 
 
 //admin
-// Add Route to Delete a User Account
-// app.delete("/registercustomerAdmin/:customerId", (req, res) => {
-//   const customerId = req.params.customerId;
-//   const sql = "DELETE FROM registercustomer WHERE customerId = ?";
-//   db.query(sql, [customerId], (err, result) => {
-//     if (err) {
-//       console.error("Error deleting user:", err);
-//       return res.status(500).json({ error: "Error deleting user" });
-//     }
-//     return res.json({ success: true, message: "User deleted successfully" });
-//   });
-// });
+//Add Route to Delete a User Account
+app.delete("/registercustomerAdmin/:customerId", (req, res) => {
+  const customerId = req.params.customerId;
+  const sql = "DELETE FROM registercustomer WHERE customerId = ?";
+  db.query(sql, [customerId], (err, result) => {
+    if (err) {
+      console.error("Error deleting user:", err);
+      return res.status(500).json({ error: "Error deleting user" });
+    }
+    return res.json({ success: true, message: "User deleted successfully" });
+  });
+});
 
 // Modify Route to Add a Product
 //<<<<<<< HEAD
-// app.post('/addproduct', upload.single('file'), (req, res) => {
-//   const sql = 'INSERT INTO product( `productID`,`product_name`,`price`,`photo`) VALUES(?)';
-//   const values = [
-//     req.body.name,
-//     req.body.price,
-//     req.body.description,
-//     req.file.filename,
-//   ];
-//   db.query(sql, [values], (err, data) => {
-//     if (err) {
-//       console.error("Error adding product:", err);
-//       return res.status(500).json({ error: "Error adding product" });
-//     }
-//     return res.json({ success: true, message: "Product added successfully" });
-//   });
-// });
+app.post('/addproduct', upload.single('file'), (req, res) => {
+  const sql = 'INSERT INTO product( `productID`,`product_name`,`price`,`photo`) VALUES(?)';
+  const values = [
+    req.body.name,
+    req.body.price,
+    req.body.description,
+    req.file.filename,
+  ];
+  db.query(sql, [values], (err, data) => {
+    if (err) {
+      console.error("Error adding product:", err);
+      return res.status(500).json({ error: "Error adding product" });
+    }
+    return res.json({ success: true, message: "Product added successfully" });
+  });
+});

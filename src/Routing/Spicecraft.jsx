@@ -8,7 +8,7 @@ import Contact from "../Page/Contact";
 
 import Sign from "../Page/Sign";
 import Cart from "../Page/Cart";
-// import Dashboard from "../Page/Dashboard";
+import Dashboard from "../Page/Dashboard";
 import UserProflie from "../Page/UserProflie";
 import Review from "../Page/Review";
 
@@ -30,7 +30,7 @@ export default function Spicecraft() {
           {/* <Route path="/cart/:productId" element={<Cart />}></Route> */}
 
           <Route path="/cart" element={<Cart />}></Route>
-          {/* <Route path="/dash" element={<Dashboard />}> </Route> */}
+          <Route path="/dash" element={<Dashboard />}> </Route>
           <Route path="/user" element={<UserProflie />}></Route>
           <Route path="/review" element={<Review />}></Route>
          
