@@ -482,15 +482,10 @@ app.delete("/registercustomerAdmin/:customerId", (req, res) => {
 <<<<<<< HEAD
 app.post('/addproduct', upload.single('file'), (req, res) => {
   const sql = 'INSERT INTO product( `productID`,`product_name`,`price`,`photo`) VALUES(?)';
-=======
-app.post("/addproduct", upload.single("file"), (req, res) => {
-  const sql =
-    "INSERT INTO product(`product_name`,`price`,`description`,`photo`) VALUES(?)";
->>>>>>> c2c5c3b102f8df630c34e1dee0a2a2b10ffa8933
   const values = [
-    req.body. productID,
     req.body.name,
     req.body.price,
+    req.body.description,
     req.file.filename,
   ];
   db.query(sql, [values], (err, data) => {
