@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import NavBar from '../Component/NavBar'
 import Footer from '../Component/Footer'
 import '../Page/home.css'
+import Chatbot from '../Component/Chatbot';
+import ChatBot from 'react-chatbotify';
 
 
 export default function Home() {
@@ -9,6 +11,7 @@ export default function Home() {
   return (
     <>
       <NavBar />
+      <ChatBot/>
       <section className="home-hero-section">
         <div className="home-hero-overlay">
           <div className="home-hero-content">
