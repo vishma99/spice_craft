@@ -17,6 +17,7 @@ export default function Footer() {
               <FlowbiteFooter.Link href="/about">About Us</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/shop">Our Product</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/contact">Contact Us</FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/review">Review</FlowbiteFooter.Link>
             </FlowbiteFooter.LinkGroup>
           </div>
           <hr />
