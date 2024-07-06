@@ -5,6 +5,9 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
 // const app = express();
 app.use(cors());
 app.use(express.json());
@@ -17,7 +20,7 @@ const db = mysql.createConnection({
   port: 3306,
   user: "root",
   password: "",
-  database: "spicecraft (2)",
+  database: "spicecraft",
 });
 
 // Connect to the database
@@ -29,37 +32,126 @@ db.connect(function (err) {
 });
 // login
 
-app.post("/register", (req, res) => {
-  const sql =
-    "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
-  const values = [
-    req.body.name,
-    req.body.email,
-    req.body.contactNumber,
-    req.body.address,
-    req.body.username,
-    req.body.password,
-  ];
-  db.query(sql, [values], (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
-  });
+// app.post("/register", (req, res) => {
+//   const sql =
+//     "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
+//   const values = [
+//     req.body.name,
+//     req.body.email,
+//     req.body.contactNumber,
+//     req.body.address,
+//     req.body.username,
+//     req.body.password,
+//   ];
+//   db.query(sql, [values], (err, data) => {
+//     if (err) return res.json(err);
+//     return res.json(data);
+//   });
+// });
+
+app.post("/register", async (req, res) => {
+  const { name, email, contactNumber, address, username, password } = req.body;
+
+  try {
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const sql =
+      "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
+    const values = [
+      name,
+      email,
+      contactNumber,
+      address,
+      username,
+      hashedPassword,
+    ];
+
+    db.query(sql, [values], (err, data) => {
+      if (err) return res.json({ error: err.message });
+      return res.json({ status: "success", data });
+    });
+  } catch (err) {
+    return res.json({ error: err.message });
+  }
 });
 
 // signup
-app.post("/login", (req, res) => {
-  const sql =
-    "SELECT * FROM registercustomer WHERE `username` = ? AND `password` = ?";
+const SECRET_KEY = "your_secret_key"; // Change this to your actual secret key
 
-  db.query(sql, [req.body.username, req.body.password], (err, data) => {
-    if (err) return res.json(err);
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  const sql = "SELECT * FROM registercustomer WHERE `email` = ?";
+
+  db.query(sql, [email], async (err, data) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({ error: err.message });
+    }
     if (data.length > 0) {
-      return res.json("success");
+      const user = data[0];
+
+      console.log("User found:", user);
+
+      try {
+        // Compare provided password with hashed password in database
+        const match = await bcrypt.compare(password, user.password);
+        if (match) {
+          console.log("Passwords match");
+          // Passwords match, generate a JWT token
+          const token = jwt.sign(
+            { id: user.id, username: user.username, email: user.email, address: user.address, contactNumber: user.contactNumber, customerId:user.customerId },
+            SECRET_KEY,
+            { expiresIn: "24h" }
+          );
+          return res.json({ status: "success", token });
+        } else {
+          console.log("Passwords do not match");
+          return res.json({ status: "fail", message: "Invalid credentials" });
+        }
+      } catch (compareError) {
+        console.error("bcrypt compare error:", compareError);
+        return res.json({
+          status: "fail",
+          message: "Error comparing passwords",
+        });
+      }
     } else {
-      return res.json("fail");
+      console.log("User not found");
+      return res.json({ status: "fail", message: "User not found" });
     }
   });
 });
+
+// Middleware to verify token
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+  if (!token) return res.status(403).json({ error: "No token provided" });
+
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err)
+      return res.status(500).json({ error: "Failed to authenticate token" });
+    req.userId = decoded.id;
+    next();
+  });
+};
+
+
+// Get cart items for a customer
+// app.get("/cart/:customerId", verifyToken, (req, res) => {
+//   const customerId = req.params.customerId;
+//   const sql = "SELECT * FROM cart WHERE customerId = ?";
+//   db.query(sql, [customerId], (err, result) => {
+//     if (err) {
+//       console.error("Error fetching cart items:", err);
+//       return res.status(500).json({ error: "Error fetching cart items" });
+//     }
+//     return res.json(result);
+//   });
+// });
+
+
 
 // file upload
 
@@ -108,9 +200,6 @@ app.post("/inquiry", upload.single("file"), (req, res) => {
   });
 });
 
-
-
-
 // app.post('/upload',upload.single('image'), (req, res) => {
 // const image = req.file.filename;
 // const sql = "UPDATE product SET photo = ?";
@@ -145,7 +234,100 @@ app.get("/card/:productId", (req, res) => {
   });
 });
 
+
+// delete item
+app.delete("/cart/:customerId/:productId", (req, res) => {
+  const { customerId, productId } = req.params;
+  const sql = "DELETE FROM cart WHERE customerId = ? AND productId = ?";
+  db.query(sql, [customerId, productId], (err, result) => {
+    if (err) {
+      console.error("Error deleting cart item:", err);
+      return res.status(500).json({ error: "Error deleting cart item" });
+    }
+    return res.json({ success: true, message: "Cart item deleted successfully" });
+  });
+});
+
+
+
+
+
+
 //add to cart
+
+// app.post("/addtocart", verifyToken, (req, res) => {
+//   const {
+//     userId,
+//     productId,
+//     quantity,
+//     name,
+//     price,
+//     size,
+//     photo,
+//     description,
+//   } = req.body;
+//   const sqlCheck = "SELECT * FROM cart WHERE customerId = ? AND productId = ?";
+//   const sqlInsert =
+//     "INSERT INTO cart (customerId, productId, quantity, name, price, size, photo, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+//   const sqlUpdate =
+//     "UPDATE cart SET quantity = quantity + ? WHERE customerId = ? AND productId = ?";
+
+//   db.query(sqlCheck, [userId, productId], (err, result) => {
+//     if (err) {
+//       console.error("Error checking cart:", err);
+//       return res.status(500).json({ error: "Error checking cart" });
+//     }
+//     if (result.length > 0) {
+//       db.query(
+//         sqlUpdate,
+//         [quantity, userId, productId],
+//         (err, updateResult) => {
+//           if (err) {
+//             console.error("Error updating cart:", err);
+//             return res.status(500).json({ error: "Error updating cart" });
+//           }
+//           return res.json({
+//             success: true,
+//             message: "Cart updated successfully",
+//           });
+//         }
+//       );
+//     } else {
+//       db.query(
+//         sqlInsert,
+//         [
+//           userId,
+//           productId,
+//           quantity,
+//           name,
+//           price,
+//           size,
+//           photo,
+//           description,
+//         ],
+//         (err, insertResult) => {
+//           if (err) {
+//             console.error("Error adding to cart:", err);
+//             return res.status(500).json({ error: "Error adding to cart" });
+//           }
+//           return res.json({
+//             success: true,
+//             message: "Item added to cart successfully",
+//           });
+//         }
+//       );
+//     }
+//   });
+// });
+
+
+
+
+
+
+
+
+
 app.post("/addtocart", (req, res) => {
   const {
     customerId,
@@ -212,8 +394,7 @@ app.post("/addtocart", (req, res) => {
 });
 
 //get from cart
-
-app.get("/cart/:customerId", (req, res) => {
+app.get("/cart/:customerId", verifyToken, (req, res) => {
   const customerId = req.params.customerId;
   const sql = "SELECT * FROM cart WHERE customerId = ?";
   db.query(sql, [customerId], (err, result) => {
@@ -221,9 +402,24 @@ app.get("/cart/:customerId", (req, res) => {
       console.error("Error fetching cart items:", err);
       return res.status(500).json({ error: "Error fetching cart items" });
     }
-    return res.json(result);
+    return res.json(result); // Assuming `result` is an array of cart items
   });
 });
+
+// app.get("/cart", verifyToken, (req, res) => {
+//   const userId = req.userId; // Get userId from token via verifyToken middleware
+//   const sql = "SELECT * FROM cart WHERE customerId = ?";
+//   db.query(sql, [userId], (err, result) => {
+//     if (err) {
+//       console.error("Error fetching cart items:", err);
+//       return res.status(500).json({ error: "Error fetching cart items" });
+//     }
+//     return res.json(result);
+//   });
+// });
+
+
+
 
 //add to cart
 
@@ -234,58 +430,63 @@ app.get("/cart/:customerId", (req, res) => {
 
 // display
 
-app.get('/registercustomerAdmin', (req, res)=>{
-    const sql = "SELECT * FROM registercustomer";
-    db.query(sql, (err, data)=> {
-        if(err) return res.json(err);
-        return res.json(data);
-        })
-    })
+app.get("/registercustomerAdmin", (req, res) => {
+  const sql = "SELECT * FROM registercustomer";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
 
-    app.get('/productAdmin', (req, res)=>{
-      const sql = "SELECT * FROM product";
-      db.query(sql, (err, data)=> {
-          if(err) return res.json(err);
-          return res.json(data);
-          })
-      })
-      app.get('/orderAdmin', (req, res)=>{
-        const sql = "SELECT * FROM cart";
-        db.query(sql, (err, data)=> {
-            if(err) return res.json(err);
-            return res.json(data);
-            })
-        })
-        app.get('/inquiryAdmin', (req, res)=>{
-          const sql = "SELECT * FROM inquiry";
-          db.query(sql, (err, data)=> {
-              if(err) return res.json(err);
-              return res.json(data);
-              })
-          })
+app.get("/productAdmin", (req, res) => {
+  const sql = "SELECT * FROM product";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.get("/orderAdmin", (req, res) => {
+  const sql = "SELECT * FROM cart";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.get("/inquiryAdmin", (req, res) => {
+  const sql = "SELECT * FROM inquiry";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
 
 app.listen(8088, () => {
   console.log("listening");
 });
 
-
 //admin
 // Add Route to Delete a User Account
-app.delete('/registercustomerAdmin/:customerId', (req, res) => {
+app.delete("/registercustomerAdmin/:customerId", (req, res) => {
   const customerId = req.params.customerId;
-  const sql = 'DELETE FROM registercustomer WHERE customerId = ?';
+  const sql = "DELETE FROM registercustomer WHERE customerId = ?";
   db.query(sql, [customerId], (err, result) => {
     if (err) {
-      console.error('Error deleting user:', err);
-      return res.status(500).json({ error: 'Error deleting user' });
+      console.error("Error deleting user:", err);
+      return res.status(500).json({ error: "Error deleting user" });
     }
-    return res.json({ success: true, message: 'User deleted successfully' });
+    return res.json({ success: true, message: "User deleted successfully" });
   });
 });
 
 // Modify Route to Add a Product
+<<<<<<< HEAD
 app.post('/addproduct', upload.single('file'), (req, res) => {
   const sql = 'INSERT INTO product( `productID`,`product_name`,`price`,`photo`) VALUES(?)';
+=======
+app.post("/addproduct", upload.single("file"), (req, res) => {
+  const sql =
+    "INSERT INTO product(`product_name`,`price`,`description`,`photo`) VALUES(?)";
+>>>>>>> c2c5c3b102f8df630c34e1dee0a2a2b10ffa8933
   const values = [
     req.body. productID,
     req.body.name,
@@ -294,9 +495,9 @@ app.post('/addproduct', upload.single('file'), (req, res) => {
   ];
   db.query(sql, [values], (err, data) => {
     if (err) {
-      console.error('Error adding product:', err);
-      return res.status(500).json({ error: 'Error adding product' });
+      console.error("Error adding product:", err);
+      return res.status(500).json({ error: "Error adding product" });
     }
-    return res.json({ success: true, message: 'Product added successfully' });
+    return res.json({ success: true, message: "Product added successfully" });
   });
 });

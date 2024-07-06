@@ -96,7 +96,10 @@ export default function Dashboard() {
   return (
     <div>
       <NavBar />
-      <div className="contact-box-container mx-auto" style={{ fontWeight: "bold", fontSize: "16px" }}>
+      <div
+        className="contact-box-container mx-auto"
+        style={{ fontWeight: "bold", fontSize: "16px" }}
+      >
         <div className="contact-box">
           <h2>No. of customers</h2>
           <h2>{data1.length}</h2>
@@ -114,7 +117,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Customer</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Customer
+        </h2>
         <hr style={{ paddingBottom: "30px" }} />
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
@@ -136,7 +147,9 @@ export default function Dashboard() {
                 <td>{d.contactNumber}</td>
                 <td>{d.address}</td>
                 <td>
-                  <button onClick={() => handleDeleteUser(d.customerId)}>Delete</button>
+                  <button onClick={() => handleDeleteUser(d.customerId)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -145,7 +158,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Product</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Product
+        </h2>
         <button
           style={{
             backgroundColor: "#A91D3A",
@@ -183,7 +204,24 @@ export default function Dashboard() {
               placeholder="Price"
               required
             />
+<<<<<<< HEAD
             <input type="file" name="photo" onChange={handleFileChange} required />
+=======
+            <input
+              type="text"
+              name="description"
+              value={newProduct.description}
+              onChange={handleInputChange}
+              placeholder="Description"
+              required
+            />
+            <input
+              type="file"
+              name="photo"
+              onChange={handleFileChange}
+              required
+            />
+>>>>>>> c2c5c3b102f8df630c34e1dee0a2a2b10ffa8933
             <button type="submit">Add Product</button>
           </form>
         )}
@@ -209,7 +247,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Orders</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Orders
+        </h2>
         <hr style={{ paddingBottom: "30px" }} />
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
@@ -234,7 +280,15 @@ export default function Dashboard() {
       </div>
 
       <div style={{ padding: "50px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", paddingBottom: "30px" }}>Inquiry</h2>
+        <h2
+          style={{
+            fontWeight: "bold",
+            fontSize: "18px",
+            paddingBottom: "30px",
+          }}
+        >
+          Inquiry
+        </h2>
         <hr style={{ paddingBottom: "30px" }} />
         <table style={{ width: "100%", height: "100px" }}>
           <thead>

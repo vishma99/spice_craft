@@ -1,9 +1,37 @@
-import React, { useState } from 'react';
-import './userprofile.css'; // Import the CSS file for styling
+import React, { useState,useEffect } from 'react';
+import './userprofile.css';
 import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
+import { jwtDecode } from "jwt-decode";
+
+import Cookies from "js-cookie";
 
 function UserProfile() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+
+
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setUsername(decodedToken.username);
+        setEmail(decodedToken.email);
+        setAddress(decodedToken.address);
+        setContactNumber(decodedToken.contactNumber);
+
+      } catch (err) {
+        console.error("Token decoding failed:", err);
+      }
+    }
+  }, []);
+
+
+
   const [selectedGender, setSelectedGender] = useState();
 
   const handleGenderChange = (event) => {
@@ -37,19 +65,19 @@ function UserProfile() {
             </tr>
             <tr>
               <td>Full Name</td>
-              <td><input type="text" required /></td>
+              <td>{username}</td>
             </tr>
             <tr>
               <td>Email</td>
-              <td><input type="email" required /></td>
+              <td>{email}</td>
             </tr>
             <tr>
               <td>Address</td>
-              <td><input type="text" required /></td>
+              <td>{address}</td>
             </tr>
             <tr>
               <td>Phone</td>
-              <td><input type="tel" required /></td>
+              <td>{contactNumber}</td>
             </tr>
             <tr>
               <td>Gender</td>

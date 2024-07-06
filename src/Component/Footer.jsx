@@ -13,7 +13,7 @@ export default function Footer() {
               style={{ width: '150px', height: '100px', paddingLeft: '5px', paddingTop: '5px' }}
             />
             <FlowbiteFooter.LinkGroup style={{ fontSize: '16px' }}>
-              <FlowbiteFooter.Link href="/home">Home</FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/">Home</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/about">About Us</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/shop">Our Product</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/contact">Contact Us</FlowbiteFooter.Link>
