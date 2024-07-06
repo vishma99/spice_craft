@@ -285,11 +285,11 @@ app.delete('/registercustomerAdmin/:customerId', (req, res) => {
 
 // Modify Route to Add a Product
 app.post('/addproduct', upload.single('file'), (req, res) => {
-  const sql = 'INSERT INTO product(`product_name`,`price`,`description`,`photo`) VALUES(?)';
+  const sql = 'INSERT INTO product( `productID`,`product_name`,`price`,`photo`) VALUES(?)';
   const values = [
+    req.body. productID,
     req.body.name,
     req.body.price,
-    req.body.description,
     req.file.filename,
   ];
   db.query(sql, [values], (err, data) => {

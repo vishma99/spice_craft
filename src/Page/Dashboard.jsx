@@ -8,9 +8,9 @@ export default function Dashboard() {
   const [data3, setData3] = useState([]);
   const [data4, setData4] = useState([]);
   const [newProduct, setNewProduct] = useState({
+    productID: "",
     product_name: "",
     price: "",
-    description: "",
     photo: null,
   });
   const [showAddProductForm, setShowAddProductForm] = useState(false);
@@ -59,9 +59,9 @@ export default function Dashboard() {
   const handleAddProduct = (e) => {
     e.preventDefault();
     const formData = new FormData();
+    formData.append("productID", newProduct.productID);
     formData.append("product_name", newProduct.product_name);
     formData.append("price", newProduct.price);
-    formData.append("description", newProduct.description);
     formData.append("photo", newProduct.photo);
 
     fetch("http://localhost:8088/productAdmin", {
@@ -73,9 +73,9 @@ export default function Dashboard() {
         if (response.success) {
           setData2([...data2, response.product]);
           setNewProduct({
+            productID: "",
             product_name: "",
             price: "",
-            description: "",
             photo: null,
           });
           setShowAddProductForm(false);
@@ -99,17 +99,17 @@ export default function Dashboard() {
       <div className="contact-box-container mx-auto" style={{ fontWeight: "bold", fontSize: "16px" }}>
         <div className="contact-box">
           <h2>No. of customers</h2>
-          <h2>1</h2>
+          <h2>{data1.length}</h2>
         </div>
 
         <div className="contact-box">
           <h2>No. of products</h2>
-          <h2>8</h2>
+          <h2>{data2.length}</h2>
         </div>
 
         <div className="contact-box">
           <h2>No. of orders</h2>
-          <h2>3</h2>
+          <h2>{data3.length}</h2>
         </div>
       </div>
 
@@ -161,6 +161,14 @@ export default function Dashboard() {
           <form onSubmit={handleAddProduct}>
             <input
               type="text"
+              name="productID"
+              value={newProduct.productID}
+              onChange={handleInputChange}
+              placeholder="Product ID"
+              required
+            />
+            <input
+              type="text"
               name="product_name"
               value={newProduct.product_name}
               onChange={handleInputChange}
@@ -173,14 +181,6 @@ export default function Dashboard() {
               value={newProduct.price}
               onChange={handleInputChange}
               placeholder="Price"
-              required
-            />
-            <input
-              type="text"
-              name="description"
-              value={newProduct.description}
-              onChange={handleInputChange}
-              placeholder="Description"
               required
             />
             <input type="file" name="photo" onChange={handleFileChange} required />
