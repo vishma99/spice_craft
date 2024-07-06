@@ -10,6 +10,7 @@ import './App.css'
 // import AddToCart from './Page/AddToCart'
 // import { Route, Routes, Router } from 'react-router-dom'
 import Spicecraft from './Routing/Spicecraft';
+import Chatbot from './Component/Chatbot';
 // import NavBar from './Component/NavBar';
 // import Footer from './Component/Footer';
 
@@ -30,6 +31,7 @@ function App() {
      {/* <Home/> */}
      {/* <AddToCart/> */}
      <Spicecraft />
+     <Chatbot/>
      
      {/* <Router>
       <Routes>

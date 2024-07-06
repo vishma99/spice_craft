@@ -4,6 +4,9 @@ const mysql = require("mysql");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const bodyParser = require('body-parser');
+const axios = require('axios');
+require('dotenv').config();
 
 // const app = express();
 app.use(cors());
@@ -300,3 +303,41 @@ app.post('/addproduct', upload.single('file'), (req, res) => {
     return res.json({ success: true, message: 'Product added successfully' });
   });
 });
+
+
+//Chatbot
+
+const port = 3001;
+
+app.use(bodyParser.json());
+
+app.post('/api/chat', async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const response = await axios.post(
+      'https://api.openai.com/v1/engines/davinci-codex/completions',
+      {
+        prompt: message,
+        max_tokens: 150,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+      }
+    );
+
+    const reply = response.data.choices[0].text.trim();
+    res.json({ reply });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error communicating with AI service.');
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+
