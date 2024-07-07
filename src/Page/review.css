@@ -1,16 +1,16 @@
-.user-profile-container {
+.review-profile-container {
     display: flex;
     justify-content: space-around;
     margin: 20px;
   }
   
-  .profile-options {
+  .review-profile-options {
     flex: 1;
   }
   
-  .profile-form {
+  .review-profile-form {
     flex: 1;
-    max-width: 700px;
+    max-width: 900px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -18,24 +18,24 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .profile-form h2 {
+  .review-profile-form h2 {
     font-size: 1.5rem;
     margin-bottom: 10px;
   }
   
-  .profile-form p {
+  .review-profile-form p {
     margin-bottom: 20px;
   }
   
-  .profile-form table {
+  .review-profile-form table {
     width: 100%;
   }
   
-  .profile-form table td {
+  .review-profile-form table td {
     padding: 8px 0;
   }
   
-  .profile-form label {
+  .review-profile-form label {
     margin-right: 10px;
   }
   

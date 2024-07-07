@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import NavBar from "../Component/NavBar";
+
 import Footer from "../Component/Footer";
+import AdminNavbar from "../Component/AdminNavbar";
 
 export default function Dashboard() {
   const [data1, setData1] = useState([]);
@@ -95,7 +96,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <NavBar />
+      <AdminNavbar />
       <div
         className="contact-box-container mx-auto"
         style={{ fontWeight: "bold", fontSize: "16px" }}

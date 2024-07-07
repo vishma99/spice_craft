@@ -61,8 +61,8 @@ export default function Review() {
         <h1>Review</h1>
       </div>
 
-      <div className="user-profile-container">
-        <div className="profile-form">
+      <div className="review-profile-container">
+        <div className="review-profile-form">
           <h2>Share Your Thoughts: Submit Your Review And Ratings</h2>
           <p>Your review will help us to improve our web hosting quality products, and customer services.</p>
 
@@ -154,8 +154,8 @@ export default function Review() {
 
 
 
-      <div className="user-profile-container">
-      <div className="profile-form">
+      <div className="review-profile-container">
+      <div className="review-profile-form">
       <h2>Customer Reviews</h2>
       
         {data.length > 0 ? (

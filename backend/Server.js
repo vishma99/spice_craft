@@ -124,6 +124,56 @@ app.post("/login", (req, res) => {
   });
 });
 
+
+
+//admin log
+
+app.post("/admin", (req, res) => {
+  const { email, password } = req.body;
+  const sql = "SELECT * FROM admin WHERE `email` = ?";
+
+  db.query(sql, [email], async (err, data) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({ error: err.message });
+    }
+    if (data.length > 0) {
+      const user = data[0];
+
+      console.log("User found:", user);
+
+      try {
+        // Compare provided password with hashed password in database
+        const match = await bcrypt.compare(password, user.password);
+        if (match) {
+          console.log("Passwords match");
+          // Passwords match, generate a JWT token
+          const token = jwt.sign(
+            { id: user.id, username: user.username, email: user.email },
+            SECRET_KEY,
+            { expiresIn: "24h" }
+          );
+          return res.json({ status: "success", token });
+        } else {
+          console.log("Passwords do not match");
+          return res.json({ status: "fail", message: "Invalid credentials" });
+        }
+      } catch (compareError) {
+        console.error("bcrypt compare error:", compareError);
+        return res.json({
+          status: "fail",
+          message: "Error comparing passwords",
+        });
+      }
+    } else {
+      console.log("User not found");
+      return res.json({ status: "fail", message: "User not found" });
+    }
+  });
+});
+
+
+
 // Middleware to verify token
 const verifyToken = (req, res, next) => {
   const token = req.headers["authorization"];

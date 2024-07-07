@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 
 
 
+
 export default function AddToCart() {
   const [count, setCount] = useState(0);
   const { productId } = useParams(); // Get the productId from the URL params
@@ -105,6 +106,7 @@ export default function AddToCart() {
               >
                 Add To Cart
               </button>
+              
             </div>
             
           </section>
@@ -112,6 +114,7 @@ export default function AddToCart() {
         </div>
         
       )}
+      
       <Footer/>
     </div>
   );
