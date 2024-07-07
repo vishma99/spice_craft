@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-
+import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
-import AdminNavbar from "../Component/AdminNavbar";
 
 export default function Dashboard() {
   const [data1, setData1] = useState([]);
@@ -12,6 +11,7 @@ export default function Dashboard() {
     productID: "",
     product_name: "",
     price: "",
+    description: "",
     photo: null,
   });
   const [showAddProductForm, setShowAddProductForm] = useState(false);
@@ -45,7 +45,7 @@ export default function Dashboard() {
   }, []);
 
   const handleDeleteUser = (customerId) => {
-    fetch(`http://localhost:8088/deleteUser/${customerId}`, {
+    fetch("http://localhost:8088/deleteUser/${customerId}", {
       method: "DELETE",
     })
       .then((res) => res.json())
@@ -63,23 +63,25 @@ export default function Dashboard() {
     formData.append("productID", newProduct.productID);
     formData.append("product_name", newProduct.product_name);
     formData.append("price", newProduct.price);
+    formData.append("description", newProduct.description);
     formData.append("photo", newProduct.photo);
 
     fetch("http://localhost:8088/productAdmin", {
       method: "POST",
       body: formData,
     })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.success) {
-          setData2([...data2, response.product]);
-          setNewProduct({
-            productID: "",
-            product_name: "",
-            price: "",
-            photo: null,
-          });
-          setShowAddProductForm(false);
+    .then((res) => res.json())
+    .then((response) => {
+      if (response.success) {
+        setData2([...data2, response.product]);
+        setNewProduct({
+          productID: "",
+          product_name: "",
+          price: "",
+          description: "",
+          photo: null,
+        });
+        setShowAddProductForm(false);
         }
       })
       .catch((err) => console.log(err));
@@ -96,7 +98,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <AdminNavbar />
+      <NavBar />
       <div
         className="contact-box-container mx-auto"
         style={{ fontWeight: "bold", fontSize: "16px" }}
@@ -205,9 +207,6 @@ export default function Dashboard() {
               placeholder="Price"
               required
             />
-{/* //<<<<<<< HEAD */}
-            <input type="file" name="photo" onChange={handleFileChange} required />
-=======
             <input
               type="text"
               name="description"
@@ -222,7 +221,6 @@ export default function Dashboard() {
               onChange={handleFileChange}
               required
             />
-{/* //>>>>>>> c2c5c3b102f8df630c34e1dee0a2a2b10ffa8933 */}
             <button type="submit">Add Product</button>
           </form>
         )}

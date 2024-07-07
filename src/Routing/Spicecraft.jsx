@@ -12,6 +12,7 @@ import Dashboard from "../Page/Dashboard";
 import UserProflie from "../Page/UserProflie";
 import Review from "../Page/Review";
 import AdminLogin from "../Page/AdminLogin";
+import Spice from "../Page/Spice";
 
 
 export default function Spicecraft() {
@@ -35,6 +36,7 @@ export default function Spicecraft() {
           <Route path="/user" element={<UserProflie />}></Route>
           <Route path="/review" element={<Review />}></Route>
           <Route path="/admin" element={<AdminLogin />}></Route>
+          <Route path="/spice" element={<Spice />}></Route>
          
         </Routes>
       </BrowserRouter>

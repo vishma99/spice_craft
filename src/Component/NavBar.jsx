@@ -55,6 +55,9 @@ export default function NavBar() {
           <Navbar.Link className="homePage" href="/shop">
             Our Product
           </Navbar.Link>
+          <Navbar.Link className="homePage" href="/spice">
+          Spice Blending
+          </Navbar.Link>
           <Navbar.Link className="homePage" href="/contact">
             Contact Us
           </Navbar.Link>
