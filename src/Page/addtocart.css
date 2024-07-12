@@ -88,6 +88,12 @@ button{
     padding: 5px 10px;
     border:1px #666 solid;
 }
+.swal2-confirm {
+    background-color: #C73659 !important;
+    color: white !important;
+  }
+
+
 @media screen and (max-width: 768px){
 .container{
     padding: 0;

@@ -1,34 +1,53 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
 import axios from "axios";
+import Swal from "sweetalert2";
 
 import "./contact.css";
 
-export default function contact() {
-  const  [values, setValues] = useState({
+export default function Contact() {
+  const [values, setValues] = useState({
     name: '',
-    
     contractNumber: '',
     message: '',
     email: ''
-})
-const handleInput =  (event) =>{
-  setValues({...values,[event.target.name]: [event.target.value]})
-};
-const handleInquiry = (event) => {
-  event.preventDefault();
-  axios.post('http://localhost:8088/inquiry', values)
-  .then(res => 
-      //  console.log("inquiry successfuly"))
-      //  navigate('/shop'))
-      
-      console.log("inquiry successfuly"))
-       .catch(err => console.log(err));
-      };
+  });
+
+  const [error, setError] = useState('');
+
+  const handleInput = (event) => {
+    setValues({ ...values, [event.target.name]: event.target.value });
+  };
+
+  const handleInquiry = (event) => {
+    event.preventDefault();
+
+    const contactNumberPattern = /^[0-9]{10}$/;
+    if (!contactNumberPattern.test(values.contractNumber)) {
+      setError("Please enter a valid contact number.");
+      return;
+    }
+
+    axios.post('http://localhost:8088/inquiry', values)
+      .then((res) => {
+        setError("");
+        Swal.fire({
+          title: 'Success!',
+          text: 'Send inquiry successfully.',
+          icon: 'success',
+          customClass: {
+            confirmButton: 'swal2-confirm',
+          },
+        });
+        console.log("Inquiry successfully");
+      })
+      .catch(err => console.log(err));
+  };
+
   return (
     <>
-    <NavBar />
+      <NavBar />
       <div className="heading">
         <h1>Contact Us</h1>
       </div>
@@ -37,7 +56,7 @@ const handleInquiry = (event) => {
         <div className="contact-box-container mx-auto">
           <div className="contact-box">
             <i className="fas fa-map-marker-alt"></i>
-            <h3>address ffffff</h3>
+            <h3>Ginimellagaha west, Gonapinuwala</h3>
           </div>
 
           <div className="contact-box">
@@ -52,42 +71,30 @@ const handleInquiry = (event) => {
         </div>
 
         <div className="form-container mx-auto">
-          <tr>
-            <br></br><br></br><br></br><br></br><br></br>
-            <td className="form-container1">
-          <div >
-            <h2 style={{ fontSize: "24px" , paddingBottom: '10px'}}>Send your Inquiries to us</h2>
-            <p style={{ fontSize: "16px" , paddingTop: '10px', letterSpacing: '1px'}}>
-              If you want to know more about our products or simply get in touch
-              with us, fill in the form here and we'd be happy to buzz you.
-            </p>
+          <div className="form-content">
+            <div className="form-container1">
+              <h2>Send your Inquiries to us</h2>
+              <p>If you want to know more about our products or simply get in touch with us, fill in the form here and we'd be happy to buzz you.</p>
+            </div>
+            <div className="form-container2">
+              <form onSubmit={handleInquiry}>
+                <div className="inputBox">
+                  <input type="text" placeholder="Full name" required name="name" onChange={handleInput} />
+                  <div >
+                    <input type="text" placeholder="Telephone Number" required name="contractNumber" onChange={handleInput} />
+                    {error && <span style={{ color: 'red', fontSize: '12px' }}>{error}</span>}
+                  </div>
+                </div>
+                <input type="email" placeholder="Email" required name="email" onChange={handleInput} />
+                <textarea placeholder="Enter Your Message Here" required name="message" onChange={handleInput}></textarea>
+                <input type="submit" value="Send" />
+              </form>
+            </div>
           </div>
-          </td>
-          <td className="form-container2">
-          <div >
-            <form action="" onSubmit={handleInquiry}>
-              <div className="inputBox">
-                <input type="text" placeholder="Full name" required name="name" onChange={handleInput}/>
-                <input type="text" placeholder="Telephone Number" required name="contractNumber" onChange={handleInput}/>
-              </div>
-              <input type="email" placeholder="email" required name="email" onChange={handleInput}/>
-              <textarea
-                
-                id=""
-                cols={"30"}
-                rows={"10"}
-                placeholder="Enter Your Message Here" required name="message" onChange={handleInput} 
-              ></textarea>
-              <input type="submit" value={"send"} />
-            </form>
-          </div>
-          </td>
-          </tr>
         </div>
-        
       </section>
 
-      <Footer/>
+      <Footer />
     </>
   );
 }

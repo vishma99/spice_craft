@@ -5,6 +5,7 @@ import NavBar from "../Component/NavBar";
 import Footer from '../Component/Footer';
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 
 
 
@@ -30,7 +31,16 @@ export default function AddToCart() {
         console.error("Token decoding failed:", err);
       }
     }
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+
+
   }, []);
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   const fetchData = (productId) => {
     // Fetch product details based on productId
@@ -51,6 +61,44 @@ export default function AddToCart() {
   };
 
   const handleClick = (product) => {
+
+    if (!customerId) {
+      Swal.fire({
+        title: 'Error!',
+        text: "You can't add items to the cart without logging in.",
+        icon: 'error',
+        customClass: {
+          confirmButton: 'swal2-confirm',
+        },
+      });
+      return;
+    }
+
+    if (count === 0) {
+      Swal.fire({
+        title: 'Error!',
+        text: "Quantity must be greater than zero.",
+        icon: 'error',
+        customClass: {
+          confirmButton: 'swal2-confirm',
+        },
+      });
+      return;
+    }
+
+    if (cart.some((item) => item.productId === product.productId)) {
+      Swal.fire({
+        title: 'Info!',
+        text: 'Item is already in the cart.',
+        icon: 'info',
+        customClass: {
+          confirmButton: 'swal2-confirm',
+        },
+      });
+      return;
+    }
+
+
     if (cart.some((item) => item.productId === product.productId)) return;
 
     fetch("http://localhost:8088/addtocart", {
@@ -73,6 +121,14 @@ export default function AddToCart() {
       .then((data) => {
         if (data.success) {
           setCart([...cart, { ...product, quantity: count }]);
+          Swal.fire({
+            title: 'Success!',
+            text: 'Item is added to cart.',
+            icon: 'success',
+            customClass: {
+              confirmButton: 'swal2-confirm',
+            },
+          });
         }
       })
       .catch((err) => console.log(err));
@@ -92,7 +148,7 @@ export default function AddToCart() {
             </div>
             <div className="about-content">
               <h2>{product.product_name}</h2>
-              <h2>{product.price}</h2>
+              <h2>${product.price}</h2>
               <p>{product.discription}</p>
               <h6 style={{ padding: "20px 0" }}>Weight : 100g</h6>
               <hr />

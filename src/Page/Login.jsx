@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./login.css";
-import { FaUser } from "react-icons/fa";
-import { FaLock } from "react-icons/fa";
+import { FaUser, FaLock,FaAddressCard } from "react-icons/fa";
+import { MdContactPhone } from "react-icons/md";
 import { MdEmail } from "react-icons/md";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import Cookies from "js-cookie"; // Import js-cookie
 export default function Login() {
   const [action, setAction] = useState("");
   const [rememberMe, setRememberMe] = useState(false); // State for remember me
+  const [error, setError] = useState('');
   const [values, setValues] = useState({
     name: "",
     username: "",
@@ -19,26 +20,29 @@ export default function Login() {
     address: "",
     email: "",
   });
-  const [loginvalues, setLoginValues] = useState({
+  const [loginValues, setLoginValues] = useState({
     email: "",
-    address: "",
+    password: "",
   });
 
   const registerLink = () => {
     setAction(" active");
   };
+
   const loginLink = () => {
     setAction("");
   };
+
   const navigate = useNavigate();
 
   const handleInput = (event) => {
     const { name, value } = event.target;
     setValues({ ...values, [name]: value });
   };
+
   const handleLoginInput = (event) => {
     const { name, value } = event.target;
-    setLoginValues({ ...loginvalues, [name]: value });
+    setLoginValues({ ...loginValues, [name]: value });
   };
 
   const handleRememberMe = (event) => {
@@ -48,6 +52,12 @@ export default function Login() {
   const handleSubmitSignup = (event) => {
     event.preventDefault();
 
+    const contactNumberPattern = /^[0-9]{10}$/;
+    if (!contactNumberPattern.test(values.contactNumber)) {
+      setError("Please enter a valid contact number.");
+      return;
+    }
+
     if (values.password !== values.confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -55,16 +65,18 @@ export default function Login() {
 
     axios
       .post("http://localhost:8088/register", values)
-      .then((res) => setAction(""))
+      .then((res) => {
+        setAction("");
+        setError(""); // Clear error on successful registration
+      })
       .catch((err) => console.log(err));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:8088/login", loginvalues)
+      .post("http://localhost:8088/login", loginValues)
       .then((res) => {
-        console.log(loginvalues);
         if (res.data.status === "success") {
           const token = res.data.token;
 
@@ -82,11 +94,6 @@ export default function Login() {
       .catch((err) => console.log(err));
   };
 
- 
-
-
-
-
   return (
     <div className="form-box-body">
       <div className={`wrapper${action}`}>
@@ -96,7 +103,7 @@ export default function Login() {
             <div className="input-box">
               <input
                 type="email"
-                placeholder="email"
+                placeholder="Email"
                 required
                 onChange={handleLoginInput}
                 name="email"
@@ -164,7 +171,9 @@ export default function Login() {
                 name="contactNumber"
                 onChange={handleInput}
               />
-              <MdEmail className="icon" />
+             
+              <MdContactPhone className="icon" />
+              {error && <span className="error-message">{error}</span>}
             </div>
             <div className="input-box">
               <input
@@ -174,7 +183,7 @@ export default function Login() {
                 name="address"
                 onChange={handleInput}
               />
-              <MdEmail className="icon" />
+              <FaAddressCard className="icon" />
             </div>
             <div className="input-box">
               <input
@@ -184,7 +193,7 @@ export default function Login() {
                 name="username"
                 onChange={handleInput}
               />
-              <FaLock className="icon" />
+              <FaUser className="icon" />
             </div>
             <div className="input-box">
               <input
@@ -208,7 +217,7 @@ export default function Login() {
             </div>
             <div className="remember-forgot">
               <label>
-                <input type="checkbox" />I agree to the terms & conditions
+                <input type="checkbox" required/>I agree to the terms & conditions
               </label>
             </div>
             <button type="submit" name="submit">
