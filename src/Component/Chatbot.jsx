@@ -1,4 +1,3 @@
-// src/Chatbot.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Paper } from '@mui/material';

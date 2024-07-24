@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import NavBar from '../Component/NavBar'
 import Footer from '../Component/Footer'
 import '../Page/home.css'
-import Chatbot from '../Component/Chatbot';
 import ChatBot from 'react-chatbotify';
 
 
