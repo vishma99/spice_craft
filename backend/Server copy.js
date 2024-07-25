@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const express = require("express");
 const app = express();
 const mysql = require("mysql");
@@ -247,8 +246,7 @@ app.post("/addProduct", upload.single("photo"), (req, res) => {
   //   return res.status(400).json({ error: 'Photo is required' });
   // }
 
-  const photo = req.file.filename;
-  console.log("photo", photo);
+  const photo = req.file.buffer;
 
   const sql =
     "INSERT INTO product(product_name, price, discription, photo) VALUES (?, ?, ?, ?)";
@@ -303,11 +301,10 @@ app.get("/card", (req, res) => {
 });
 
 // add to card
-app.get("/card/:productId/:userId?", (req, res) => {
-  const { productId, userId } = req.params;
-  const sql =
-    "SELECT product.*, cart.quantity FROM product LEFT JOIN cart ON cart.productId = product.productId AND cart.customerId = ? WHERE product.productId = ?";
-  db.query(sql, [userId, productId], (err, result) => {
+app.get("/card/:productId", (req, res) => {
+  const productId = req.params.productId;
+  const sql = "SELECT * FROM product WHERE productId = ?";
+  db.query(sql, [productId], (err, result) => {
     if (err) {
       console.error("Error fetching product:", err);
       return res.status(500).json({ error: "Error fetching product" });
@@ -403,10 +400,19 @@ app.delete("/cart/:customerId/:productId", (req, res) => {
 // });
 
 app.post("/addtocart", (req, res) => {
-  const { customerId, productId, quantity, size } = req.body;
+  const {
+    customerId,
+    productId,
+    quantity,
+    name,
+    price,
+    size,
+    photo,
+    description,
+  } = req.body;
   const sqlCheck = "SELECT * FROM cart WHERE customerId = ? AND productId = ?";
   const sqlInsert =
-    "INSERT INTO cart (customerId, productId, quantity, size) VALUES (?, ?, ?, ?)";
+    "INSERT INTO cart (customerId, productId, quantity, name, price, size, photo, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   const sqlUpdate =
     "UPDATE cart SET quantity = quantity + ? WHERE customerId = ? AND productId = ?";
 
@@ -433,7 +439,16 @@ app.post("/addtocart", (req, res) => {
     } else {
       db.query(
         sqlInsert,
-        [customerId, productId, quantity, size],
+        [
+          customerId,
+          productId,
+          quantity,
+          name,
+          price,
+          size,
+          photo,
+          description,
+        ],
         (err, insertResult) => {
           if (err) {
             console.error("Error adding to cart:", err);
@@ -452,8 +467,7 @@ app.post("/addtocart", (req, res) => {
 //get from cart
 app.get("/cart/:customerId", verifyToken, (req, res) => {
   const customerId = req.params.customerId;
-  const sql =
-    "SELECT * FROM cart JOIN product ON cart.productId = product.productId WHERE cart.customerId = ?";
+  const sql = "SELECT * FROM cart WHERE customerId = ?";
   db.query(sql, [customerId], (err, result) => {
     if (err) {
       console.error("Error fetching cart items:", err);
@@ -462,26 +476,6 @@ app.get("/cart/:customerId", verifyToken, (req, res) => {
     return res.json(result); // Assuming `result` is an array of cart items
   });
 });
-
-// app.get("/cart/:customerId", verifyToken, (req, res) => {
-//   const customerId = req.params.customerId;
-//   const sql =
-//     "SELECT * FROM cart JOIN product ON cart.productId = product.productId WHERE cart.customerId = ?";
-//   db.query(sql, [customerId], (err, result) => {
-//     if (err) {
-//       console.error("Error fetching cart items sever:", err); // Detailed error log
-//       return res
-//         .status(500)
-//         .json({ error: "Error fetching cart items", details: err.message });
-//     }
-//     if (!result || result.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ error: "No items found in cart for this customer." });
-//     }
-//     return res.json(result);
-//   });
-// });
 
 // app.get("/cart", verifyToken, (req, res) => {
 //   const userId = req.userId; // Get userId from token via verifyToken middleware
@@ -532,6 +526,10 @@ app.get("/inquiryAdmin", (req, res) => {
     if (err) return res.json(err);
     return res.json(data);
   });
+});
+
+app.listen(8088, () => {
+  console.log("listening");
 });
 
 // review
@@ -588,7 +586,3 @@ app.delete("/registercustomerAdmin/:customerId", (req, res) => {
 //     return res.json({ success: true, message: "Product added successfully" });
 //   });
 // });
-
-app.listen(8088, () => {
-  console.log("listening");
-});

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Footer as FlowbiteFooter } from 'flowbite-react';
+import { Footer as FlowbiteFooter } from "flowbite-react";
 
 export default function Footer() {
   return (
@@ -10,14 +9,24 @@ export default function Footer() {
             <FlowbiteFooter.Brand
               href="#"
               src="/src/image/Logo/logo-no-background.png"
-              style={{ width: '150px', height: '100px', paddingLeft: '5px', paddingTop: '5px' }}
+              style={{
+                width: "150px",
+                height: "100px",
+                paddingLeft: "5px",
+                paddingTop: "5px",
+              }}
             />
-            <FlowbiteFooter.LinkGroup style={{ fontSize: '16px' }}>
+            <FlowbiteFooter.LinkGroup style={{ fontSize: "16px" }}>
               <FlowbiteFooter.Link href="/">Home</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/about">About Us</FlowbiteFooter.Link>
-              <FlowbiteFooter.Link href="/shop">Our Product</FlowbiteFooter.Link>
-              <FlowbiteFooter.Link href="/contact">Contact Us</FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/shop">
+                Our Product
+              </FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/contact">
+                Contact Us
+              </FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/review">Review</FlowbiteFooter.Link>
+              <FlowbiteFooter.Link href="/chat">Chat</FlowbiteFooter.Link>
             </FlowbiteFooter.LinkGroup>
           </div>
           <hr />
@@ -25,7 +34,7 @@ export default function Footer() {
             href="#"
             by="SpiceCraft"
             year={2024}
-            style={{ paddingTop: '20px', fontSize: '16px' }}
+            style={{ paddingTop: "20px", fontSize: "16px" }}
           />
         </div>
       </FlowbiteFooter>

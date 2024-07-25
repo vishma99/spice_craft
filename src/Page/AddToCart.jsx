@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./addtocart.css";
 import { useParams } from "react-router-dom";
 import NavBar from "../Component/NavBar";
-import Footer from '../Component/Footer';
+import Footer from "../Component/Footer";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
-
-
-
 
 export default function AddToCart() {
   const [count, setCount] = useState(0);
@@ -17,9 +14,16 @@ export default function AddToCart() {
   const [cart, setCart] = useState([]);
   const [customerId, setCustomerId] = useState("");
 
-  useEffect(() => {
-    fetchData(productId);
-  }, [productId]);
+  const fetchData = useCallback(async (productId, customerId) => {
+    // Fetch product details based on productId
+    await fetch(`http://localhost:8088/card/${productId}${customerId ? "/"+customerId : ""}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProduct(data);
+        setCount(data?.quantity || 0);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -27,28 +31,23 @@ export default function AddToCart() {
       try {
         const decodedToken = jwtDecode(token);
         setCustomerId(decodedToken.customerId);
+        fetchData(productId, decodedToken?.customerId);
       } catch (err) {
         console.error("Token decoding failed:", err);
       }
+    } else {
+      fetchData(productId, null);
     }
+
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
+  }, [fetchData, productId]);
 
-
-  }, []);
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
-
-  const fetchData = (productId) => {
-    // Fetch product details based on productId
-    fetch(`http://localhost:8088/card/${productId}`)
-      .then((res) => res.json())
-      .then((data) => setProduct(data))
-      .catch((err) => console.log(err));
-  };
 
   const increment = () => {
     setCount(count + 1);
@@ -61,14 +60,13 @@ export default function AddToCart() {
   };
 
   const handleClick = (product) => {
-
     if (!customerId) {
       Swal.fire({
-        title: 'Error!',
+        title: "Error!",
         text: "You can't add items to the cart without logging in.",
-        icon: 'error',
+        icon: "error",
         customClass: {
-          confirmButton: 'swal2-confirm',
+          confirmButton: "swal2-confirm",
         },
       });
       return;
@@ -76,11 +74,11 @@ export default function AddToCart() {
 
     if (count === 0) {
       Swal.fire({
-        title: 'Error!',
+        title: "Error!",
         text: "Quantity must be greater than zero.",
-        icon: 'error',
+        icon: "error",
         customClass: {
-          confirmButton: 'swal2-confirm',
+          confirmButton: "swal2-confirm",
         },
       });
       return;
@@ -88,16 +86,15 @@ export default function AddToCart() {
 
     if (cart.some((item) => item.productId === product.productId)) {
       Swal.fire({
-        title: 'Info!',
-        text: 'Item is already in the cart.',
-        icon: 'info',
+        title: "Info!",
+        text: "Item is already in the cart.",
+        icon: "info",
         customClass: {
-          confirmButton: 'swal2-confirm',
+          confirmButton: "swal2-confirm",
         },
       });
       return;
     }
-
 
     if (cart.some((item) => item.productId === product.productId)) return;
 
@@ -107,11 +104,11 @@ export default function AddToCart() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        customerId:customerId, // Replace with dynamic customer ID as needed
+        customerId: customerId, // Replace with dynamic customer ID as needed
         productId: product.productId,
         quantity: count,
         name: product.product_name,
-        price: product.price*count,
+        price: product.price * count,
         size: "100g", // Replace with dynamic size as needed
         photo: product.photo,
         description: product.discription,
@@ -122,11 +119,11 @@ export default function AddToCart() {
         if (data.success) {
           setCart([...cart, { ...product, quantity: count }]);
           Swal.fire({
-            title: 'Success!',
-            text: 'Item is added to cart.',
-            icon: 'success',
+            title: "Success!",
+            text: "Item is added to cart.",
+            icon: "success",
             customClass: {
-              confirmButton: 'swal2-confirm',
+              confirmButton: "swal2-confirm",
             },
           });
         }
@@ -136,7 +133,7 @@ export default function AddToCart() {
 
   return (
     <div>
-      <NavBar/>
+      <NavBar />
       {product && (
         <div className="container">
           <section className="about">
@@ -152,26 +149,35 @@ export default function AddToCart() {
               <p>{product.discription}</p>
               <h6 style={{ padding: "20px 0" }}>Weight : 100g</h6>
               <hr />
-              <button onClick={increment}>+</button>
-              <button>{count}</button>
-              <button onClick={decrement}>-</button>
+              <button
+                onClick={increment}
+                disabled={product?.quantity}
+                className=" disabled:cursor-not-allowed"
+              >
+                +
+              </button>
+              <button disabled>{count}</button>
+              <button
+                onClick={decrement}
+                disabled={product?.quantity}
+                className=" disabled:cursor-not-allowed"
+              >
+                -
+              </button>
               <br />
               <button
-                className="read-more"
+                className="read-more disabled:cursor-not-allowed"
                 onClick={() => handleClick(product)}
+                disabled={product?.quantity}
               >
                 Add To Cart
               </button>
-              
             </div>
-            
           </section>
-          
         </div>
-        
       )}
-      
-      <Footer/>
+
+      <Footer />
     </div>
   );
 }

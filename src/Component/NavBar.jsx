@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Navbar } from "flowbite-react";
 // import jwt_decode from "jwt-decode";
 import { jwtDecode } from "jwt-decode";

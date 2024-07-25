@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-
+import { useState, useEffect} from "react";
 import Footer from "../Component/Footer";
 import AdminNavbar from "../Component/AdminNavbar";
 
@@ -9,10 +8,9 @@ export default function Dashboard() {
   const [data3, setData3] = useState([]);
   const [data4, setData4] = useState([]);
   const [newProduct, setNewProduct] = useState({
-    productID: "",
     product_name: "",
     price: "",
-    description: "",
+    discription: "",
     photo: null,
   });
   const [showAddProductForm, setShowAddProductForm] = useState(false);
@@ -46,7 +44,7 @@ export default function Dashboard() {
   }, []);
 
   const handleDeleteUser = (customerId) => {
-    fetch("http://localhost:8088/deleteUser/${customerId}", {
+    fetch(`http://localhost:8088/registercustomerAdmin/${customerId}`, {
       method: "DELETE",
     })
       .then((res) => res.json())
@@ -58,43 +56,79 @@ export default function Dashboard() {
       .catch((err) => console.log(err));
   };
 
-  const handleAddProduct = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("productID", newProduct.productID);
-    formData.append("product_name", newProduct.product_name);
-    formData.append("price", newProduct.price);
-    formData.append("description", newProduct.description);
-    formData.append("photo", newProduct.photo);
-
-    fetch("http://localhost:8088/productAdmin", {
-      method: "POST",
-      body: formData,
-    })
-    .then((res) => res.json())
-    .then((response) => {
-      if (response.success) {
-        setData2([...data2, response.product]);
-        setNewProduct({
-          productID: "",
-          product_name: "",
-          price: "",
-          description: "",
-          photo: null,
-        });
-        setShowAddProductForm(false);
-        }
-      })
-      .catch((err) => console.log(err));
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewProduct({ ...newProduct, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setNewProduct({ ...newProduct, photo: e.target.files[0] });
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setNewProduct({ ...newProduct, photo: file });
+};
+
+
+const handleAddProduct = async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("product_name", newProduct.product_name);
+  formData.append("price", newProduct.price);
+  formData.append("discription", newProduct.discription); // Ensure correct spelling
+
+  // Check if newProduct.photo is a valid File object
+  if (newProduct.photo && newProduct.photo instanceof File) {
+      formData.append("photo", newProduct.photo); // Ensure photo is correctly appended
+  } else {
+      console.error("Photo is not a valid file");
+      return;
+  }
+
+  // Log FormData contents
+  for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+  }
+
+  try {
+    const response = await fetch("http://localhost:8088/addProduct", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(errorMessage);
+    }
+
+    const result = await response.json();
+    console.log(result);
+
+    if (result.success) {
+      // Handle success, e.g., update state or UI
+    }
+  } catch (error) {
+    console.error("Error adding product:", error);
+  }
+};
+
+  
+  
+  
+
+  const handleDeleteProduct = (productId) => {
+    fetch(`http://localhost:8088/productAdmin/${productId}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.success) {
+          setData2(data2.filter((product) => product.productID !== productId));
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleChangeProduct = () => {
+    // Implement your product update logic here
   };
 
   return (
@@ -134,7 +168,6 @@ export default function Dashboard() {
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
             <tr>
-              <th>CustomerId</th>
               <th>Name</th>
               <th>Email</th>
               <th>Contact No</th>
@@ -145,7 +178,6 @@ export default function Dashboard() {
           <tbody>
             {data1.map((d, i) => (
               <tr key={i}>
-                <td>{d.customerId}</td>
                 <td>{d.name}</td>
                 <td>{d.email}</td>
                 <td>{d.contactNumber}</td>
@@ -186,16 +218,7 @@ export default function Dashboard() {
           <form onSubmit={handleAddProduct}>
             <input
               type="text"
-              name="productID"
-              value={newProduct.productID}
-              onChange={handleInputChange}
-              placeholder="Product ID"
-              required
-            />
-            <input
-              type="text"
               name="product_name"
-              value={newProduct.product_name}
               onChange={handleInputChange}
               placeholder="Product Name"
               required
@@ -203,43 +226,46 @@ export default function Dashboard() {
             <input
               type="text"
               name="price"
-              value={newProduct.price}
               onChange={handleInputChange}
               placeholder="Price"
               required
             />
             <input
               type="text"
-              name="description"
-              value={newProduct.description}
+              name="discription"
               onChange={handleInputChange}
-              placeholder="Description"
+              placeholder="discription"
               required
             />
-            <input
-              type="file"
-              name="photo"
-              onChange={handleFileChange}
-              required
-            />
-            <button type="submit">Add Product</button>
+        <input type="file" onChange={handleFileChange} />
+
+            <button type="submit" name="submit">Add Product</button>
           </form>
         )}
         <hr style={{ paddingBottom: "30px" }} />
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
             <tr>
-              <th>ProductId</th>
               <th>Name</th>
-              <th>Price</th>
+              <th>Price($)</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {data2.map((d, i) => (
               <tr key={i}>
-                <td>{d.productId}</td>
                 <td>{d.product_name}</td>
                 <td>{d.price}</td>
+                <td>
+                  <button onClick={() => handleDeleteProduct(d.productID)}>
+                    Delete
+                  </button>
+                </td>
+                <td>
+                  <button onClick={() => handleChangeProduct(d.productID)}>
+                    Change
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -293,18 +319,20 @@ export default function Dashboard() {
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
             <tr>
-              <th>CustomerId</th>
+              <th>InquiryId</th>
               <th>Name</th>
               <th>Email</th>
+              <th>Contact Number</th>
               <th>Message</th>
             </tr>
           </thead>
           <tbody>
             {data4.map((d, i) => (
               <tr key={i}>
-                <td>{d.customerId}</td>
+                <td>{d.inquiryId}</td>
                 <td>{d.name}</td>
                 <td>{d.email}</td>
+                <td>{d.contactNumber}</td>
                 <td>{d.message}</td>
               </tr>
             ))}
