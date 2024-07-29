@@ -3,15 +3,18 @@ import "./spice.css";
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const CustomBlendForm = () => {
   const [spiceCount, setSpiceCount] = useState(2);
   const [ingredients, setIngredients] = useState(["", ""]);
-  const [weightUnit, setWeightUnit] = useState("mg");
+  const [weightUnit, setWeightUnit] = useState("");
+  const [weight, setWeight] = useState("");
   const [rate, setRate] = useState(["", ""]);
   const [blendName, setBlendName] = useState("");
   const [submittedData, setSubmittedData] = useState(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [rateError, setRateError] = useState(false);
   const navigate = useNavigate();
 
   const ingredientOptions = [
@@ -41,27 +44,65 @@ const CustomBlendForm = () => {
     const newRate = [...rate];
     newRate[index] = value;
     setRate(newRate);
+    validateRates(newRate);
+  };
+
+  const validateRates = (rates) => {
+    const totalRate = rates.reduce(
+      (sum, rate) => sum + parseFloat(rate || 0),
+      0
+    );
+    setRateError(totalRate !== 100);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmittedData({ spiceCount, ingredients, weightUnit, rate, blendName });
-    setShowSuccessMessage(true);
+    if (!rateError) {
+      setSubmittedData({
+        spiceCount,
+        ingredients,
+        weightUnit,
+        weight,
+        rate,
+        blendName,
+      });
+      setShowSuccessMessage(true);
+    }
   };
 
   const handleClearForm = () => {
     setSpiceCount(2);
     setIngredients(["", ""]);
-    setWeightUnit("mg");
+    setWeightUnit("");
+    setWeight("");
     setRate(["", ""]);
     setBlendName("");
+    setRateError(false);
   };
+
   const handleBack = () => {
     setSubmittedData(null); // Clear submitted data to go back to the form
     setShowSuccessMessage(false); // Hide success message if any
   };
-  const handleSave = () => {
-    alert("Spice blend saved successfully!");
+
+  const handleSave = async (event) => {
+    event.preventDefault();
+    if (submittedData) {
+      try {
+        const response = await axios.post(
+          "http://localhost:8088/spice",
+          submittedData
+        );
+        console.log(response.data);
+        setShowSuccessMessage(true);
+        setTimeout(() => {
+          setShowSuccessMessage(false);
+          navigate("/somewhere"); // navigate to a different page if needed
+        }, 2000);
+      } catch (error) {
+        console.error("Error saving the blend:", error);
+      }
+    }
   };
 
   return (
@@ -70,7 +111,9 @@ const CustomBlendForm = () => {
       <div className="countain">
         {submittedData ? (
           <div className="submitted-details">
-            <h2>Submitted Blend Details</h2>
+            <h2>
+              <strong>Submitted Blend Details</strong>
+            </h2>
             <p>
               <strong>Blend Name:</strong> {submittedData.blendName}
             </p>
@@ -78,15 +121,32 @@ const CustomBlendForm = () => {
               <strong>Spice Count:</strong> {submittedData.spiceCount}
             </p>
             <p>
-              <strong>Ingredients:</strong>{" "}
-              {submittedData.ingredients.join(", ")}
+              <strong>Weight:</strong>
+              {submittedData.weight} {submittedData.weightUnit}
             </p>
-            <p>
-              <strong>Weight Unit:</strong> {submittedData.weightUnit}
-            </p>
-            <p>
-              <strong>Rate:</strong> {submittedData.rate.join(", ")}
-            </p>
+
+            {/* Ingredients and Rate Table */}
+            <table>
+              <thead>
+                <tr>
+                  <th>Ingredient</th>
+                  <th>Rate (%)</th>
+                  <th>RateWeight({submittedData.weightUnit})</th>
+                </tr>
+              </thead>
+              <tbody>
+                {submittedData.ingredients.map((ingredient, index) => (
+                  <tr key={index}>
+                    <td>{ingredient}</td>
+                    <td>{submittedData.rate[index]}</td>
+                    <td>
+                      {(submittedData.rate[index] / 100) * submittedData.weight}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
             {showSuccessMessage && <p>Spice blend saved successfully!</p>}
             <div className="buttons">
               <button className="back" onClick={handleBack}>
@@ -117,10 +177,19 @@ const CustomBlendForm = () => {
               <select
                 value={weightUnit}
                 onChange={(e) => setWeightUnit(e.target.value)}
+                required
               >
+                <option value="">Select Unit</option>
                 <option value="g">g</option>
                 <option value="kg">kg</option>
               </select>
+              <input
+                type="number"
+                required
+                name="weight"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+              />
             </label>
 
             <label>
@@ -152,13 +221,17 @@ const CustomBlendForm = () => {
                       type="number"
                       required
                       min="0"
-                      placeholder="Rate"
+                      max="100"
+                      placeholder="Rate(%)"
                       value={rate[index]}
                       onChange={(e) => handleRateChange(index, e.target.value)}
                     />
                   </div>
                 ))}
               </div>
+              {rateError && (
+                <p style={{ color: "red" }}>Total rate must be exactly 100%.</p>
+              )}
             </label>
 
             <label>
@@ -174,7 +247,7 @@ const CustomBlendForm = () => {
               <button type="button" className="clear" onClick={handleClearForm}>
                 Clear Form
               </button>
-              <button type="submit" className="submit">
+              <button type="submit" className="submit" disabled={rateError}>
                 Submit
               </button>
             </div>

@@ -109,7 +109,7 @@ const Cart = () => {
   return (
     <>
       <NavBar />
-      <div className="container mx-auto mt-10">
+      <div className="container mx-auto mt-10" style={{ minHeight: "39vh" }}>
         <div className="bg-white shadow-md rounded-lg p-6">
           {cartItems.length > 0 ? (
             cartItems.map((item) => (

@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import Footer from "../Component/Footer";
 import AdminNavbar from "../Component/AdminNavbar";
 
@@ -7,6 +7,7 @@ export default function Dashboard() {
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [data4, setData4] = useState([]);
+
   const [newProduct, setNewProduct] = useState({
     product_name: "",
     price: "",
@@ -14,7 +15,7 @@ export default function Dashboard() {
     photo: null,
   });
   const [showAddProductForm, setShowAddProductForm] = useState(false);
-
+  const [editingProduct, setEditingProduct] = useState(null);
   useEffect(() => {
     fetch("http://localhost:8088/registercustomerAdmin")
       .then((res) => res.json())
@@ -64,71 +65,92 @@ export default function Dashboard() {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setNewProduct({ ...newProduct, photo: file });
-};
+  };
 
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
 
-const handleAddProduct = async (e) => {
-  e.preventDefault();
+    const formData = new FormData();
+    formData.append("product_name", newProduct.product_name);
+    formData.append("price", newProduct.price);
+    formData.append("discription", newProduct.discription); // Ensure correct spelling
 
-  const formData = new FormData();
-  formData.append("product_name", newProduct.product_name);
-  formData.append("price", newProduct.price);
-  formData.append("discription", newProduct.discription); // Ensure correct spelling
-
-  // Check if newProduct.photo is a valid File object
-  if (newProduct.photo && newProduct.photo instanceof File) {
+    // Check if newProduct.photo is a valid File object
+    if (newProduct.photo && newProduct.photo instanceof File) {
       formData.append("photo", newProduct.photo); // Ensure photo is correctly appended
-  } else {
+    } else {
       console.error("Photo is not a valid file");
       return;
-  }
+    }
 
-  // Log FormData contents
-  for (let [key, value] of formData.entries()) {
+    // Log FormData contents
+    for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
-  }
-
-  try {
-    const response = await fetch("http://localhost:8088/addProduct", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(errorMessage);
     }
 
-    const result = await response.json();
-    console.log(result);
+    try {
+      const response = await fetch("http://localhost:8088/addProduct", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (result.success) {
-      // Handle success, e.g., update state or UI
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      console.log(result);
+
+      if (result.success) {
+        // Handle success, e.g., update state or UI
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
     }
-  } catch (error) {
-    console.error("Error adding product:", error);
-  }
-};
-
-  
-  
-  
+  };
 
   const handleDeleteProduct = (productId) => {
-    fetch(`http://localhost:8088/productAdmin/${productId}`, {
+    fetch(`http://localhost:8088/registerProductAdmin/${productId}`, {
       method: "DELETE",
     })
       .then((res) => res.json())
       .then((response) => {
         if (response.success) {
-          setData2(data2.filter((product) => product.productID !== productId));
+          setData2(data2.filter((product) => product.productId !== productId));
         }
       })
       .catch((err) => console.log(err));
   };
+  const handleChangeProduct = (productId) => {
+    const product = data2.find((p) => p.productId === productId);
+    setEditingProduct(product);
+  };
 
-  const handleChangeProduct = () => {
-    // Implement your product update logic here
+  const handleUpdateProduct = (e) => {
+    e.preventDefault();
+    const { productId, productName, price, description } = editingProduct;
+
+    fetch(`http://localhost:8088/updateProduct/${productId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productName, price, description }),
+    })
+      .then((res) => res.json())
+      .then((updatedProduct) => {
+        setData2(
+          data2.map((p) => (p.productId === productId ? updatedProduct : p))
+        );
+        setEditingProduct(null);
+      })
+      .catch(console.error);
+  };
+
+  const handleInputChanges = (e) => {
+    const { name, value } = e.target;
+    setEditingProduct({ ...editingProduct, [name]: value });
   };
 
   return (
@@ -237,9 +259,11 @@ const handleAddProduct = async (e) => {
               placeholder="discription"
               required
             />
-        <input type="file" onChange={handleFileChange} />
+            <input type="file" onChange={handleFileChange} />
 
-            <button type="submit" name="submit">Add Product</button>
+            <button type="submit" name="submit">
+              Add Product
+            </button>
           </form>
         )}
         <hr style={{ paddingBottom: "30px" }} />
@@ -257,12 +281,12 @@ const handleAddProduct = async (e) => {
                 <td>{d.product_name}</td>
                 <td>{d.price}</td>
                 <td>
-                  <button onClick={() => handleDeleteProduct(d.productID)}>
+                  <button onClick={() => handleDeleteProduct(d.productId)}>
                     Delete
                   </button>
                 </td>
                 <td>
-                  <button onClick={() => handleChangeProduct(d.productID)}>
+                  <button onClick={() => handleChangeProduct(d.productId)}>
                     Change
                   </button>
                 </td>
@@ -271,6 +295,36 @@ const handleAddProduct = async (e) => {
           </tbody>
         </table>
       </div>
+
+      {/* Update Form */}
+      {editingProduct && (
+        <form onSubmit={handleUpdateProduct}>
+          <input
+            type="text"
+            name="product_name"
+            value={editingProduct.product_name}
+            onChange={handleInputChanges}
+          />
+          <input
+            type="text"
+            name="price"
+            value={editingProduct.price}
+            onChange={handleInputChanges}
+          />
+          <textarea
+            name="discription"
+            value={editingProduct.discription}
+            onChange={handleInputChanges}
+          />
+          <img
+            src={`http://localhost:8088/image/${editingProduct.photo}`}
+            alt={editingProduct.name}
+            className="w-20 h-20 object-cover"
+          />
+          <button type="submit">Update</button>
+          <button onClick={() => setEditingProduct(null)}>Cancel</button>
+        </form>
+      )}
 
       <div style={{ padding: "50px" }}>
         <h2

@@ -556,6 +556,29 @@ app.get("/reviewVisit", (req, res) => {
   });
 });
 
+// spice
+
+app.post("/spice", (req, res) => {
+  const { blendName, weight, weightUnit, ingredients, rate } = req.body;
+
+  // Convert ingredients and rates to a combined string (combination)
+  const combination = ingredients
+    .map((ingredient, index) => `${ingredient}:${rate[index]}`)
+    .join(",");
+
+  const fullWeight = `${weight} ${weightUnit}`;
+
+  const sql =
+    "INSERT INTO spice(`name`, `fullWeight`, `combination`) VALUES (?)";
+  const values = [blendName, fullWeight, combination];
+
+  db.query(sql, [values], (err, data) => {
+    if (err) return res.json({ error: "error saving blend" });
+
+    return res.json({ Status: "Success" });
+  });
+});
+
 //admin
 //Add Route to Delete a User Account
 app.delete("/registercustomerAdmin/:customerId", (req, res) => {
@@ -567,6 +590,40 @@ app.delete("/registercustomerAdmin/:customerId", (req, res) => {
       return res.status(500).json({ error: "Error deleting user" });
     }
     return res.json({ success: true, message: "User deleted successfully" });
+  });
+});
+
+//Delete product
+app.delete("/registerProductAdmin/:productId", (req, res) => {
+  const productId = req.params.productId;
+  console.log("Received DELETE request for productId:", productId);
+
+  const sql = "DELETE FROM product WHERE productId = ?";
+  db.query(sql, [productId], (err, result) => {
+    if (err) {
+      console.error("Error deleting product:", err);
+      return res.status(500).json({ error: "Error deleting product" });
+    }
+    console.log("Delete result:", result);
+    if (result.affectedRows > 0) {
+      return res.json({ success: true });
+    } else {
+      return res.status(404).json({ error: "Product not found" });
+    }
+  });
+});
+
+// update product
+
+// Update Product
+app.put("/updateProduct/:productId", (req, res) => {
+  const { productId } = req.params;
+  const { productName, price, description } = req.body;
+  const sql =
+    "UPDATE product SET product_name = ?, price = ?, description = ? WHERE product_id = ?";
+  db.query(sql, [productName, price, description, productId], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ productId, productName, price, description });
   });
 });
 

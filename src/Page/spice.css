@@ -1,138 +1,146 @@
 /* CustomBlendForm.css */
 .countain {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-image: url('https://images.pexels.com/photos/2802527/pexels-photo-2802527.jpeg?cs=srgb&dl=pexels-shantanu-pal-938952-2802527.jpg&fm=jpg'); /* Replace with your background image path */
-    background-size: cover;
-    background-position: center;
-  }
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url("https://images.pexels.com/photos/2802527/pexels-photo-2802527.jpeg?cs=srgb&dl=pexels-shantanu-pal-938952-2802527.jpg&fm=jpg"); /* Replace with your background image path */
+  background-size: cover;
+  background-position: center;
+
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+}
 .custom-blend-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center; /* Center align the form elements */
-    max-width: 500px; /* Reduce the width of the form */
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent white */
-    color: #fff;
-    backdrop-filter: blur(5px); /* Add blur effect to the background */
-  }
-  
-  .custom-blend-form h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .custom-blend-form label {
-    display: block;
-    
-    margin-bottom: 10px;
-    text-align: center; /* Center align the labels */
-  }
-  
-  .custom-blend-form select,
-  .custom-blend-form input[type="text"],
-  .custom-blend-form input[type="number"] {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.9); /* Ensure inputs have a solid background for readability */
-    color: black; /* Change input text color to black for readability */
-  }
-  
-  .custom-blend-form .ingredient-dropdowns {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .custom-blend-form .rate-inputs {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .custom-blend-form .rate-inputs input {
-    width: calc(25% - 10px);
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .custom-blend-form .buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px; /* Increase the space between buttons */
-    width: 100%;
-    margin-top: 20px;
-  }
-  
-  .custom-blend-form .buttons button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .custom-blend-form .buttons .delete {
-    background-color: red; /* Red color for Delete button */
-  }
-  
-  .custom-blend-form .buttons .clear {
-    background-color: #6c757d; /* Default gray color for Clear Form button */
-  }
-  
-  .custom-blend-form .buttons .submit {
-    background-color: #28a745; /* Green color for Submit button */
-  }
-  
-  .submitted-details {
-    max-width: 500px; /* Reduce the width of the submitted details box */
-    margin: 20px auto; /* Add margin */
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.7); /* Slightly transparent white */
-    color: black;
-    backdrop-filter: blur(5px); /* Add blur effect to the background */
-  }
-  
-  .submitted-details h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .submitted-details p {
-    margin-bottom: 10px;
-  }
-  
-  .submitted-details .buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Increase the space between buttons */
-    margin-top: 20px;
-  }
-  
-  .submitted-details .buttons button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .submitted-details .buttons .back {
-    background-color: blue; /* Blue color for Back button */
-  }
-  
-  .submitted-details .buttons .save {
-    background-color: green; /* Green color for Save button */
-  }
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* Center align the form elements */
+  max-width: 500px; /* Reduce the width of the form */
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent white */
+  color: #fff;
+  backdrop-filter: blur(5px); /* Add blur effect to the background */
+}
+
+.custom-blend-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.custom-blend-form label {
+  display: block;
+
+  margin-bottom: 10px;
+  text-align: center; /* Center align the labels */
+}
+
+.custom-blend-form select,
+.custom-blend-form input[type="text"],
+.custom-blend-form input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* Ensure inputs have a solid background for readability */
+  color: black; /* Change input text color to black for readability */
+}
+
+.custom-blend-form .ingredient-dropdowns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.custom-blend-form .rate-inputs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.custom-blend-form .rate-inputs input {
+  width: calc(25% - 10px);
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.custom-blend-form .buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Increase the space between buttons */
+  width: 100%;
+  margin-top: 20px;
+}
+
+.custom-blend-form .buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.custom-blend-form .buttons .delete {
+  background-color: red; /* Red color for Delete button */
+}
+
+.custom-blend-form .buttons .clear {
+  background-color: #6c757d; /* Default gray color for Clear Form button */
+}
+
+.custom-blend-form .buttons .submit {
+  background-color: #28a745; /* Green color for Submit button */
+}
+
+.submitted-details {
+  max-width: 500px; /* Reduce the width of the submitted details box */
+  margin: 20px auto; /* Add margin */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.7); /* Slightly transparent white */
+  color: black;
+  backdrop-filter: blur(5px); /* Add blur effect to the background */
+}
+
+.submitted-details h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.submitted-details p {
+  margin-bottom: 10px;
+}
+
+.submitted-details .buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Increase the space between buttons */
+  margin-top: 20px;
+}
+
+.submitted-details .buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.submitted-details .buttons .back {
+  background-color: blue; /* Blue color for Back button */
+}
+
+.submitted-details .buttons .save {
+  background-color: green; /* Green color for Save button */
+}
