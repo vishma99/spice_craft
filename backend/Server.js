@@ -11,6 +11,43 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+const bodyParser = require('body-parser');
+const { SessionsClient } = require('@google-cloud/dialogflow');
+const port = 5000;
+
+app.use(bodyParser.json());
+
+const projectId = 'your-project-id'; // Replace with your Dialogflow project ID
+const sessionClient = new SessionsClient({ projectId });
+
+app.post('/api/dialogflow', async (req, res) => {
+  const { text } = req.body;
+  const sessionPath = sessionClient.projectAgentSessionPath(projectId, 'unique-session-id');
+
+  const request = {
+    session: sessionPath,
+    queryInput: {
+      text: {
+        text: text,
+        languageCode: 'en-US',
+      },
+    },
+  };
+
+  try {
+    const responses = await sessionClient.detectIntent(request);
+    const result = responses[0].queryResult;
+    res.json(result);
+  } catch (error) {
+    console.error('Error sending message to Dialogflow:', error);
+    res.status(500).json({ error: 'Failed to process message' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
 // const app = express();
 app.use(cors());
 app.use(express.json());
@@ -401,6 +438,21 @@ app.delete("/cart/:customerId/:productId", (req, res) => {
 //     }
 //   });
 // });
+
+// Search endpoint
+app.get("/search", (req, res) => {
+  const { keyword } = req.query;
+  const sql = "SELECT * FROM product WHERE product_name LIKE ? OR discription LIKE ?";
+  const searchValue = `%${keyword}%`;
+
+  db.query(sql, [searchValue, searchValue], (err, result) => {
+    if (err) {
+      console.error("Error fetching search results:", err);
+      return res.status(500).json({ error: "Error fetching search results" });
+    }
+    return res.json(result);
+  });
+});
 
 app.post("/addtocart", (req, res) => {
   const { customerId, productId, quantity, size } = req.body;
