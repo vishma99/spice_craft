@@ -1,11 +1,20 @@
-import React, { useEffect } from 'react'
-import NavBar from '../Component/NavBar'
-import Footer from '../Component/Footer'
-
-import '../Page/home.css'
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Updated to use useNavigate
+import NavBar from "../Component/NavBar";
+import Footer from "../Component/Footer";
+import "../Page/home.css";
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate(); // Updated to use useNavigate
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchClick = () => {
+    navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+  };
 
   return (
     <>
@@ -15,10 +24,18 @@ export default function Home() {
           <div className="home-hero-content">
             <h1 className="hero-title">Find the right spice, right away</h1>
             <div className="search-bar">
-              <input type="text" placeholder="Search for any spice..." />
-              <button>Search</button>
+              <input
+                type="text"
+                placeholder="Search for any spice..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+              <button onClick={handleSearchClick}>Search</button>
             </div>
-            <p className="hero-description">Discover the finest spices sourced from around the world, perfect for enhancing your culinary creations.</p>
+            <p className="hero-description">
+              Discover the finest spices sourced from around the world, perfect
+              for enhancing your culinary creations.
+            </p>
           </div>
         </div>
       </section>
@@ -37,42 +54,61 @@ export default function Home() {
             <p>Supporting farmers and ensuring fair trade practices.</p>
           </div>
           <div className="home-feature">
-            <img src="/src/image/backgroundImage.jpg" alt="Custom Spice Blends" />
+            <img
+              src="/src/image/backgroundImage.jpg"
+              alt="Custom Spice Blends"
+            />
             <h3>Custom Spice Blends</h3>
-            <p>Create your own unique spice blends with our high-quality ingredients.</p>
+            <p>
+              Create your own unique spice blends with our high-quality
+              ingredients.
+            </p>
           </div>
           <div className="home-feature">
-            <img src="/src/image/backgroundImage.jpg" alt="Custom Spice Blends" />
+            <img
+              src="/src/image/backgroundImage.jpg"
+              alt="Custom Spice Blends"
+            />
             <h3>Global Delivery</h3>
-            <p>Fast shipping to bring our spices to your doorstep, no matter where you are in the world.</p>
+            <p>
+              Fast shipping to bring our spices to your doorstep, no matter
+              where you are in the world.
+            </p>
           </div>
         </div>
       </section>
 
       <section className="home-about-section">
-      <div className="home-about-overlay">
-        <div className="home-about-content">
-          <h2>About SpiceCraft</h2>
-          <p>At SpiceCraft, Our mission is to bring the rich and diverse flavors of global cuisine to your kitchen, while supporting sustainable and ethical practices in the spice industry.</p>
+        <div className="home-about-overlay">
+          <div className="home-about-content">
+            <h2>About SpiceCraft</h2>
+            <p>
+              At SpiceCraft, Our mission is to bring the rich and diverse
+              flavors of global cuisine to your kitchen, while supporting
+              sustainable and ethical practices in the spice industry.
+            </p>
             <ul>
               <li>High-quality, ethically sourced spices</li>
               <li>Custom spice blends tailored to your needs</li>
               <li>Commitment to sustainability and fair trade</li>
               <li>Expertise in spice selection and blending</li>
             </ul>
-          <a href="/about" className="btn">Learn More</a>
-        </div>
+            <a href="/about" className="btn">
+              Learn More
+            </a>
+          </div>
         </div>
       </section>
 
       <section className="home-contact-section">
         <h2>Get in Touch!!!</h2>
         <p>Have any questions or feedback? We'd love to hear from you!</p>
-        <a href="/contact" className="btn">Contact Us</a>
+        <a href="/contact" className="btn">
+          Contact Us
+        </a>
       </section>
 
-
-      <Footer/>
+      <Footer />
     </>
   );
 }

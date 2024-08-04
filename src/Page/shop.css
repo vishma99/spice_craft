@@ -1,50 +1,90 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
 
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.card-container{
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 100px;
+.card-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 100px;
 }
-.card{
-    width: 325px;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-    margin: 20px; 
+.card {
+  width: 325px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 20px;
+}
+.card img {
+  width: 100%;
+  height: 270px;
+}
+.card-content {
+  padding: 16px;
+}
+.card-content h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.card-content p {
+  color: #666;
+  font-size: 15px;
+}
+.card-content .btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #a91d3a;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 16px;
+  color: #fff;
+}
+.card-content .btn:hover {
+  background-color: #c73659;
+}
+.priceranges {
+  margin-top: 30px;
+  width: 25%;
+}
 
+.priceranges input[type="range"] {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 100%; /* Full-width */
+  background: #ddd; /* Grey background */
+  outline: none; /* Remove outline */
+  height: 8px; /* Custom height */
+  border-radius: 5px; /* Rounded corners */
 }
-.card img{
-    width: 100%;
-    height: 270px;
-}
-.card-content{
-    padding: 16px;
-}
-.card-content h1{
-    font-size: 28px;
-    margin-bottom: 8px;
-}
-.card-content p{
-    color: #666;
-    font-size: 15px;
 
+.priceranges input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 20px; /* Custom width */
+  height: 20px; /* Custom height */
+  background: #c73659; /* Green background */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 50%; /* Rounded thumb */
+  transition: background 0.3s ease; /* Smooth transition */
 }
-.card-content .btn{
-    display: inline-block;
-    padding: 8px 16px;
-    background-color: #A91D3A;
-    text-decoration: none;
-    border-radius: 4px;
-    margin-top: 16px;
-    color: #fff;
+
+.priceranges input[type="range"]:hover::-webkit-slider-thumb {
+  background: #a91d3a; /* Red background on hover */
 }
-.card-content .btn:hover{
-    background-color: #C73659;
+
+.priceranges input[type="range"]::-moz-range-thumb {
+  width: 20px; /* Custom width */
+  height: 20px; /* Custom height */
+  background: #c73659; /* Green background */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 50%; /* Rounded thumb */
+  transition: background 0.3s ease; /* Smooth transition */
+}
+
+.priceranges input[type="range"]:hover::-moz-range-thumb {
+  background: #a91d3a; /* Red background on hover */
 }

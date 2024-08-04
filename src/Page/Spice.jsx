@@ -2,8 +2,11 @@ import { useState } from "react";
 import "./spice.css";
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import { useNavigate } from "react-router-dom";
+//import axios from "axios";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
 
 const CustomBlendForm = () => {
   const [spiceCount, setSpiceCount] = useState(2);
@@ -15,7 +18,7 @@ const CustomBlendForm = () => {
   const [submittedData, setSubmittedData] = useState(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [rateError, setRateError] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const ingredientOptions = [
     "Black Pepper",
@@ -85,23 +88,102 @@ const CustomBlendForm = () => {
     setShowSuccessMessage(false); // Hide success message if any
   };
 
-  const handleSave = async (event) => {
-    event.preventDefault();
-    if (submittedData) {
-      try {
-        const response = await axios.post(
-          "http://localhost:8088/spice",
-          submittedData
-        );
-        console.log(response.data);
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          setShowSuccessMessage(false);
-          navigate("/somewhere"); // navigate to a different page if needed
-        }, 2000);
-      } catch (error) {
-        console.error("Error saving the blend:", error);
+  // const handleSave = async (event) => {
+  //   event.preventDefault();
+  //   if (submittedData) {
+  //     try {
+  //       const response = await axios.post(
+  //         `http://localhost:8088/spice/${customerId}`,
+  //         submittedData
+  //       );
+  //       console.log(response.data);
+  //       setShowSuccessMessage(true);
+  //       setTimeout(() => {
+  //         setShowSuccessMessage(false);
+  //         navigate("/somewhere"); // navigate to a different page if needed
+  //       }, 2000);
+  //     } catch (error) {
+  //       console.error("Error saving the blend:", error);
+  //     }
+  //   }
+  // };
+
+  const handleSubmiteForm = (e) => {
+    const token = Cookies.get("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const customerId = decodedToken.customerId;
+
+      if (!customerId) {
+        Swal.fire({
+          title: "Error!",
+          text: "You can't add items to the cart without logging in.",
+          icon: "error",
+          customClass: {
+            confirmButton: "swal2-confirm",
+          },
+        });
+        return;
       }
+      handleSubmit(e);
+      handleSave(); // Call handleSave if customerId is present
+    } else {
+      Swal.fire({
+        title: "Error!",
+        text: "You need to log in to submit the form.",
+        icon: "error",
+        customClass: {
+          confirmButton: "swal2-confirm",
+        },
+      });
+    }
+  };
+  const handleSave = () => {
+    const token = Cookies.get("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const customerId = decodedToken.customerId;
+
+      fetch(`http://localhost:8088/spice/${customerId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          spiceCount,
+          ingredients,
+          weightUnit,
+          weight,
+          rate,
+          blendName,
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(
+              `Failed to fetch cart items: ${res.status} ${res.statusText}`
+            );
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data); // Log response data
+          // setShowSuccessMessage(true);
+
+          Swal.fire({
+            title: "Success!",
+            text: "Spice blend saved successfully!",
+            icon: "success",
+            customClass: {
+              confirmButton: "swal2-confirm",
+            },
+          });
+        })
+        .catch((err) => {
+          console.error(err); // Log any errors
+          setShowSuccessMessage(false);
+        });
     }
   };
 
@@ -147,7 +229,9 @@ const CustomBlendForm = () => {
               </tbody>
             </table>
 
-            {showSuccessMessage && <p>Spice blend saved successfully!</p>}
+            {/* {showSuccessMessage && 
+          // <p>Spice blend saved successfully!</p>
+          } */}
             <div className="buttons">
               <button className="back" onClick={handleBack}>
                 Back
@@ -158,7 +242,7 @@ const CustomBlendForm = () => {
             </div>
           </div>
         ) : (
-          <form className="custom-blend-form" onSubmit={handleSubmit}>
+          <form className="custom-blend-form">
             <h2>Custom Blend</h2>
             <label>
               How many types of spices do you need?
@@ -247,7 +331,12 @@ const CustomBlendForm = () => {
               <button type="button" className="clear" onClick={handleClearForm}>
                 Clear Form
               </button>
-              <button type="submit" className="submit" disabled={rateError}>
+              <button
+                type="submit"
+                className="submit"
+                disabled={rateError}
+                onClick={handleSubmiteForm}
+              >
                 Submit
               </button>
             </div>

@@ -557,8 +557,8 @@ app.get("/reviewVisit", (req, res) => {
 });
 
 // spice
-
-app.post("/spice", (req, res) => {
+app.post("/spice/:customerId", (req, res) => {
+  const customerId = req.params.customerId;
   const { blendName, weight, weightUnit, ingredients, rate } = req.body;
 
   // Convert ingredients and rates to a combined string (combination)
@@ -568,12 +568,18 @@ app.post("/spice", (req, res) => {
 
   const fullWeight = `${weight} ${weightUnit}`;
 
-  const sql =
-    "INSERT INTO spice(`name`, `fullWeight`, `combination`) VALUES (?)";
-  const values = [blendName, fullWeight, combination];
+  // SQL query to insert data including customerId
+  const sql = `
+    INSERT INTO spice (\`name\`, \`fullWeight\`, \`combination\`, \`customerId\`) 
+    VALUES (?, ?, ?, ?)
+  `;
+  const values = [blendName, fullWeight, combination, customerId];
 
-  db.query(sql, [values], (err, data) => {
-    if (err) return res.json({ error: "error saving blend" });
+  db.query(sql, values, (err, data) => {
+    if (err) {
+      console.error("Error saving blend:", err); // Log the error
+      return res.status(500).json({ error: "Error saving blend" });
+    }
 
     return res.json({ Status: "Success" });
   });

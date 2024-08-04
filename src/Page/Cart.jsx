@@ -150,6 +150,23 @@ const Cart = () => {
             <p className="text-gray-500">Your cart is empty</p>
           )}
         </div>
+        {/* {cartItems.length > 0 && (
+          <button
+            // onClick={handleAddAllToCart}
+            style={{
+              backgroundColor: "#28a745",
+              color: "#fff",
+              borderRadius: "10px",
+              marginTop: "20px",
+              padding: "10px 20px",
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            Add All to Cart
+          </button>
+        )} */}
       </div>
       <Footer />
     </>

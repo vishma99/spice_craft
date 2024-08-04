@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import "./shop.css";
-// import NavBar from "../Component/NavBar";
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
 import SpicesCard from "../Component/SpicesCard";
 import "../Page/shop.css";
 
-// import axios from 'axios';
-
 export default function Shop() {
   const [data, setData] = useState([]);
-  // useEffect(()=>{
-  //   axios.get('http://localhost:8088/')
-  //   .then(res=> {
-  //   setData(res.data[0])
-  //   })
-  //   .catch(err => console.log(err));
-  //   },[])
+  const [searchQuery, setSearchQuery] = useState("");
+  const [maxPrice, setMaxPrice] = useState(1000); // Default max price
+  const location = useLocation();
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get("search") || "";
+    setSearchQuery(query);
+  }, [location.search]);
 
   const fetchData = () => {
     fetch("http://localhost:8088/card")
@@ -27,6 +28,20 @@ export default function Shop() {
       .then((data) => setData(data))
       .catch((err) => console.log(err));
   };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handlePriceChange = (event) => {
+    setMaxPrice(event.target.value);
+  };
+
+  const filteredData = data.filter(
+    (d) =>
+      d.product_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      d.price <= maxPrice
+  );
 
   return (
     <div>
@@ -36,27 +51,44 @@ export default function Shop() {
         <h1>Our Product</h1>
       </div>
 
-      <div className="card-container">
-        {/* <SpicesCard imageCard={`http://localhost:8088/image/`+data.photo}  name={data.map((d, i) => (
-    <span key={i}>{d.product_name}</span>
-  ))}    price="Rs 250-100"/> */}
+      <div className="filter-container" style={{ paddingLeft: "50px" }}>
+        <input
+          type="text"
+          placeholder="Search for spices..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+        <div className="priceranges">
+          <label htmlFor="priceRange">Max Price: $ {maxPrice}</label>
+          <input
+            type="range"
+            id="priceRange"
+            min="0"
+            max="1000"
+            step="10"
+            value={maxPrice}
+            onChange={handlePriceChange}
+          />
+        </div>
+      </div>
 
-        {data.map((d, i) => (
-          <span key={i}>
-            <SpicesCard
-              imageCard={`http://localhost:8088/image/${d.photo}`}
-              name={d.product_name}
-              price={d.price}
-              productId={d.productId}
-            />
-            {/* <SpicesCard imageCard="/src/Image/Shop/Sookha Dhaniya (Dried Coriander).jpg" name="Sookha Dhaniya" price="Rs 250-100"/>
-        <SpicesCard imageCard="/src/Image/Shop/Darchini (Cinnamon).jpg" name="Darchini (Cinnamon)" price="Rs 250-100"/>
-        <SpicesCard imageCard="/src/Image/Shop/Garam Masala (Powder).jpg" name="Garam Masala " price="Rs 250-100"/>
-        <SpicesCard imageCard="/src/Image/Shop/True Cardamom (Choti Elaichi).jpg" name="True Cardamom" price="Rs 250-100"/>
-        <SpicesCard imageCard="/src/Image/Shop/Turmeric Powder.jpg" name="Turmeric Powder" price="Rs 250-100"/>
-        <SpicesCard imageCard="/src/Image/Shop/Garam Masala (Whole).jpg" name="Garam Masala (Whole)" price="Rs 250-100"/> */}
-          </span>
-        ))}
+      <div className="card-container">
+        {filteredData.length > 0 ? (
+          filteredData.map((d, i) => (
+            <span key={i}>
+              <SpicesCard
+                imageCard={`http://localhost:8088/image/${d.photo}`}
+                name={d.product_name}
+                price={d.price}
+                productId={d.productId}
+              />
+            </span>
+          ))
+        ) : (
+          <p style={{ fontSize: "30px", marginBottom: "120px" }}>
+            No products found.
+          </p>
+        )}
       </div>
       <Footer />
     </div>

@@ -16,7 +16,11 @@ export default function AddToCart() {
 
   const fetchData = useCallback(async (productId, customerId) => {
     // Fetch product details based on productId
-    await fetch(`http://localhost:8088/card/${productId}${customerId ? "/"+customerId : ""}`)
+    await fetch(
+      `http://localhost:8088/card/${productId}${
+        customerId ? "/" + customerId : ""
+      }`
+    )
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);
