@@ -1,0 +1,175 @@
+.Chatbot {
+    text-align: center;
+  }
+  
+  .Chatbot-logo {
+    height: 40vmin;
+    pointer-events: none;
+  }
+  
+  @media (prefers-reduced-motion: no-preference) {
+    .Chatbot-logo {
+      animation: App-logo-spin infinite 20s linear;
+    }
+  }
+  
+  .Chatbot-header {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+  }
+  
+  .Chatbot-link {
+    color: #61dafb;
+  }
+  
+  @keyframes App-logo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Styles for PopupChatbox and Chatbot */
+  .fixed {
+    position: fixed;
+  }
+  
+  .bottom-4 {
+    bottom: 1rem;
+  }
+  
+  .right-4 {
+    right: 1rem;
+  }
+  
+  .p-2 {
+    padding: 0.5rem;
+  }
+  
+  .w-12 {
+    width: 3rem;
+  }
+  
+  .h-12 {
+    height: 3rem;
+  }
+  
+  .rounded-full {
+    border-radius: 9999px;
+  }
+  
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  
+  .bg-blue-500 {
+    background-color: #3b82f6;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hover\:bg-blue-600:hover {
+    background-color: #2563eb;
+  }
+  
+  .w-80 {
+    width: 20rem;
+  }
+  
+  .h-96 {
+    height: 24rem;
+  }
+  
+  .bg-white {
+    background-color: #ffffff;
+  }
+  
+  .rounded-lg {
+    border-radius: 0.5rem;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .p-4 {
+    padding: 1rem;
+  }
+  
+  .absolute {
+    position: absolute;
+  }
+  
+  .top-2 {
+    top: 0.5rem;
+  }
+  
+  .right-2 {
+    right: 0.5rem;
+  }
+  
+  .bg-red-500 {
+    background-color: #ef4444;
+  }
+  
+  .text-white {
+    color: #ffffff;
+  }
+  
+  .hover\:bg-red-600:hover {
+    background-color: #dc2626;
+  }
+  
+  .p-1 {
+    padding: 0.25rem;
+  }
+  
+  /* Chat History styles */
+  .chat-container {
+    width: 100%;
+    max-height: 80%;
+    overflow-y: auto;
+    border-radius: 10px;
+    background-color: #f3f4f6; /* Light gray background */
+  }
+  
+  .message {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+  }
+  
+  .message.user {
+    background-color: #ffccd5; /* Light red background for user messages */
+    color: #d32f2f; /* Darker red text for user messages */
+  }
+  
+  .message.bot {
+    background-color: #ffffff; /* White background for bot messages */
+    color: #000000; /* Black text for bot messages */
+  }
+  
+  /* Avatar Icon */
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .avatar:hover {
+    opacity: 0.8;
+  }
+  

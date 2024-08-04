@@ -1,8 +1,18 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Updated to use useNavigate
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
 import "../Page/home.css";
+=======
+import React, { useEffect } from 'react'
+import NavBar from '../Component/NavBar'
+import Footer from '../Component/Footer'
+
+
+import '../Page/home.css'
+
+>>>>>>> 3fa178de67f8f6e2728d379177e6e33dae845174
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");

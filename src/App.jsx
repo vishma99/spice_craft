@@ -30,7 +30,8 @@ function App() {
      {/* <Home/> */}
      {/* <AddToCart/> */}
      <Spicecraft />
-     
+
+
      {/* <Router>
       <Routes>
         <Route>
