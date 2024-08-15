@@ -11,25 +11,28 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const bodyParser = require('body-parser');
-const { SessionsClient } = require('@google-cloud/dialogflow');
+const bodyParser = require("body-parser");
+const { SessionsClient } = require("@google-cloud/dialogflow");
 const port = 5000;
 
 app.use(bodyParser.json());
 
-const projectId = 'your-project-id'; // Replace with your Dialogflow project ID
+const projectId = "your-project-id"; // Replace with your Dialogflow project ID
 const sessionClient = new SessionsClient({ projectId });
 
-app.post('/api/dialogflow', async (req, res) => {
+app.post("/api/dialogflow", async (req, res) => {
   const { text } = req.body;
-  const sessionPath = sessionClient.projectAgentSessionPath(projectId, 'unique-session-id');
+  const sessionPath = sessionClient.projectAgentSessionPath(
+    projectId,
+    "unique-session-id"
+  );
 
   const request = {
     session: sessionPath,
     queryInput: {
       text: {
         text: text,
-        languageCode: 'en-US',
+        languageCode: "en-US",
       },
     },
   };
@@ -39,8 +42,8 @@ app.post('/api/dialogflow', async (req, res) => {
     const result = responses[0].queryResult;
     res.json(result);
   } catch (error) {
-    console.error('Error sending message to Dialogflow:', error);
-    res.status(500).json({ error: 'Failed to process message' });
+    console.error("Error sending message to Dialogflow:", error);
+    res.status(500).json({ error: "Failed to process message" });
   }
 });
 
@@ -442,7 +445,8 @@ app.delete("/cart/:customerId/:productId", (req, res) => {
 // Search endpoint
 app.get("/search", (req, res) => {
   const { keyword } = req.query;
-  const sql = "SELECT * FROM product WHERE product_name LIKE ? OR discription LIKE ?";
+  const sql =
+    "SELECT * FROM product WHERE product_name LIKE ? OR discription LIKE ?";
   const searchValue = `%${keyword}%`;
 
   db.query(sql, [searchValue, searchValue], (err, result) => {
@@ -608,6 +612,34 @@ app.get("/reviewVisit", (req, res) => {
   });
 });
 
+app.post("/productreview", (req, res) => {
+  const sql =
+    "INSERT INTO product_reviews(`comment`, `name`, `rating`, `email`, `productId`) VALUES(?)";
+  const values = [
+    req.body.comment,
+    req.body.name,
+    req.body.rating,
+    req.body.email, // Save the email in the database
+    req.body.productId, // Save the productId in the database
+  ];
+
+  console.log(values);
+
+  db.query(sql, [values], (err, data) => {
+    if (err) return res.json({ error: "error submitting review" });
+
+    return res.json({ Status: "Success" });
+  });
+});
+
+app.get("/productreviewVisit/:productId", (req, res) => {
+  const sql = "SELECT * FROM product_reviews WHERE productId = ?";
+  db.query(sql, [req.params.productId], (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+
 // spice
 app.post("/spice/:customerId", (req, res) => {
   const customerId = req.params.customerId;
@@ -634,6 +666,24 @@ app.post("/spice/:customerId", (req, res) => {
     }
 
     return res.json({ Status: "Success" });
+  });
+});
+
+app.get("/spiceProducts", (req, res) => {
+  const sql = "SELECT product_name, price FROM product";
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Error fetching products:", err);
+      return res.status(500).json({ error: "Error fetching products" });
+    }
+
+    const products = data.map((row) => ({
+      product_name: row.product_name,
+      price: row.price,
+    }));
+
+    return res.json(products);
   });
 });
 

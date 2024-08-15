@@ -1,57 +1,87 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import NavBar from "../Component/NavBar";
-import Footer from "../Component/Footer";
+
 import { Rating } from "flowbite-react";
 import "./review.css";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
-export default function Review() {
+// eslint-disable-next-line react/prop-types
+export default function ProductReview({ productId }) {
   const [data, setData] = useState([]);
+  console.log(productId);
 
   useEffect(() => {
-    fetch("http://localhost:8088/reviewVisit")
-      .then((res) => res.json())
-      .then((data) => setData(data))
-      .catch((err) => console.log(err));
-  }, []);
+    if (productId) {
+      fetch(`http://localhost:8088/productreviewVisit/${productId}`)
+        .then((res) => res.json())
+        .then((data) => setData(data))
+        .catch((err) => console.log(err));
+    }
+  }, [productId]);
+
+  const [selectedGender, setSelectedGender] = useState();
 
   const [values, setValues] = useState({
     name: "",
     comment: "",
-    rating: 0, // Initialize rating with 0 or any default value
+    rating: "", // New state to store rating
   });
 
   const handleInput = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
-  const handleRatingChange = (ratingValue) => {
-    setValues({ ...values, rating: ratingValue }); // Update rating in form values
+  const handleGenderChange = (event) => {
+    setSelectedGender(event.target.value);
+    setValues({ ...values, rating: event.target.value }); // Update rating in form values
   };
 
   const handleReview = (event) => {
     event.preventDefault();
+
+    // Get the JWT token from the cookie
+    const token = Cookies.get("token");
+    let email = "";
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        email = decodedToken.email;
+        console.log(email); // Extract the email from the decoded token
+      } catch (err) {
+        console.error("Token decoding failed:", err);
+        return;
+      }
+    }
+
+    // Add email to the review values
+    const reviewData = {
+      ...values,
+      email, // Include the extracted email
+      productId, // Include the productId
+    };
+
     axios
-      .post("http://localhost:8088/review", values)
-      .then((res) => {
+      .post("http://localhost:8088/productreview", reviewData)
+      .then(() => {
         console.log("Review successfully submitted");
-        // Optionally, you can reset the form values after submission
         setValues({
           name: "",
           comment: "",
-          rating: 0, // Reset rating to default value
+          rating: "",
         });
+        setSelectedGender(null);
       })
       .catch((err) => console.error("Error submitting review:", err));
   };
 
+  const handleRatingChange = (ratingValue) => {
+    setValues({ ...values, rating: ratingValue }); // Update rating in form values
+  };
+
   return (
     <div>
-      <NavBar />
-      <div className="heading">
-        <h1>Review</h1>
-      </div>
-
       <div className="review-profile-container">
         <div className="review-profile-form">
           <h2>Share Your Thoughts: Submit Your Review And Ratings</h2>
@@ -151,8 +181,6 @@ export default function Review() {
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

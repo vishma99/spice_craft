@@ -15,6 +15,7 @@ import AdminLogin from "../Page/AdminLogin";
 import Spice from "../Page/Spice";
 import Das from "../Page/Das";
 import PopupChatbox from "../Component/PopupChatbox";
+import ProductReview from "../Page/ProductReview";
 
 export default function Spicecraft() {
   return (
@@ -33,12 +34,17 @@ export default function Spicecraft() {
           {/* <Route path="/cart/:productId" element={<Cart />}></Route> */}
 
           <Route path="/cart" element={<Cart />}></Route>
-          <Route path="/dash" element={<Dashboard />}> </Route>
+          <Route path="/dash" element={<Dashboard />}>
+            {" "}
+          </Route>
           <Route path="/user" element={<UserProflie />}></Route>
           <Route path="/review" element={<Review />}></Route>
           <Route path="/admin" element={<AdminLogin />}></Route>
           <Route path="/spice" element={<Spice />}></Route>
-          <Route path="/das" element={<Das />}></Route>               
+          <Route path="/das" element={<Das />}></Route>
+          <Route path="productReview" element={<ProductReview />}>
+            {" "}
+          </Route>
         </Routes>
         <PopupChatbox />
       </BrowserRouter>

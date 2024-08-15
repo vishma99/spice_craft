@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Style components using Tailwind CSS

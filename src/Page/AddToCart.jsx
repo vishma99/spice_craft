@@ -6,6 +6,7 @@ import Footer from "../Component/Footer";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
+import ProductReview from "./ProductReview";
 
 export default function AddToCart() {
   const [count, setCount] = useState(0);
@@ -24,7 +25,7 @@ export default function AddToCart() {
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);
-        setCount(data?.quantity || 0);
+        setCount(data?.quantity || 1);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -58,7 +59,7 @@ export default function AddToCart() {
   };
 
   const decrement = () => {
-    if (count > 0) {
+    if (count > 1) {
       setCount(count - 1);
     }
   };
@@ -76,17 +77,17 @@ export default function AddToCart() {
       return;
     }
 
-    if (count === 0) {
-      Swal.fire({
-        title: "Error!",
-        text: "Quantity must be greater than zero.",
-        icon: "error",
-        customClass: {
-          confirmButton: "swal2-confirm",
-        },
-      });
-      return;
-    }
+    // if (count === 0) {
+    //   Swal.fire({
+    //     title: "Error!",
+    //     text: "Quantity must be greater than zero.",
+    //     icon: "error",
+    //     customClass: {
+    //       confirmButton: "swal2-confirm",
+    //     },
+    //   });
+    //   return;
+    // }
 
     if (cart.some((item) => item.productId === product.productId)) {
       Swal.fire({
@@ -154,20 +155,21 @@ export default function AddToCart() {
               <h6 style={{ padding: "20px 0" }}>Weight : 100g</h6>
               <hr />
               <button
-                onClick={increment}
-                disabled={product?.quantity}
-                className=" disabled:cursor-not-allowed"
-              >
-                +
-              </button>
-              <button disabled>{count}</button>
-              <button
                 onClick={decrement}
                 disabled={product?.quantity}
                 className=" disabled:cursor-not-allowed"
               >
                 -
               </button>
+              <button disabled>{count}</button>
+              <button
+                onClick={increment}
+                disabled={product?.quantity}
+                className=" disabled:cursor-not-allowed"
+              >
+                +
+              </button>
+
               <br />
               <button
                 className="read-more disabled:cursor-not-allowed"
@@ -180,6 +182,7 @@ export default function AddToCart() {
           </section>
         </div>
       )}
+      <ProductReview productId={productId} />
 
       <Footer />
     </div>

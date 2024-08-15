@@ -10,10 +10,23 @@ function SpicesCard(props) {
         <div className="card-content">
           <h1>{props.name}</h1>
           <p>${props.price}</p>
-
-          <Link to={`/addtocart/${props.productId}`} className="btn">
-            SELECT OPTIONS
-          </Link>
+          <p>100g</p>
+          <tr>
+            <td>
+              <Link
+                to={`/addtocart/${props.productId}`}
+                className="btn"
+                style={{ fontSize: "15px" }}
+              >
+                SELECT OPTIONS
+              </Link>
+            </td>
+            <td>
+              <Link className="btn" style={{ fontSize: "15px" }}>
+                Add to card
+              </Link>
+            </td>
+          </tr>
         </div>
       </div>
     </div>

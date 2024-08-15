@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./spice.css";
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
@@ -18,17 +18,25 @@ const CustomBlendForm = () => {
   const [submittedData, setSubmittedData] = useState(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [rateError, setRateError] = useState(false);
+  const [ingredientOptions, setIngredientOptions] = useState([]);
+  const [ingredientPrices, setIngredientPrices] = useState({});
   // const navigate = useNavigate();
 
-  const ingredientOptions = [
-    "Black Pepper",
-    "Darchini (Cinnamon)",
-    "Garam Masala",
-    "Red Chilli Flakes",
-    "Sookha Dhaniya",
-    "Turmeric Powder",
-    "True Cardamom",
-  ];
+  useEffect(() => {
+    fetch("http://localhost:8088/spiceProducts")
+      .then((response) => response.json())
+      .then((data) => {
+        const options = data.map((product) => product.product_name);
+        const prices = data.reduce((acc, product) => {
+          acc[product.product_name] = product.price;
+          return acc;
+        }, {});
+
+        setIngredientOptions(options);
+        setIngredientPrices(prices);
+      })
+      .catch((error) => console.error("Error fetching products:", error));
+  }, []);
 
   const handleSpiceCountChange = (e) => {
     const count = parseInt(e.target.value, 10);
@@ -87,26 +95,6 @@ const CustomBlendForm = () => {
     setSubmittedData(null); // Clear submitted data to go back to the form
     setShowSuccessMessage(false); // Hide success message if any
   };
-
-  // const handleSave = async (event) => {
-  //   event.preventDefault();
-  //   if (submittedData) {
-  //     try {
-  //       const response = await axios.post(
-  //         `http://localhost:8088/spice/${customerId}`,
-  //         submittedData
-  //       );
-  //       console.log(response.data);
-  //       setShowSuccessMessage(true);
-  //       setTimeout(() => {
-  //         setShowSuccessMessage(false);
-  //         navigate("/somewhere"); // navigate to a different page if needed
-  //       }, 2000);
-  //     } catch (error) {
-  //       console.error("Error saving the blend:", error);
-  //     }
-  //   }
-  // };
 
   const handleSubmiteForm = (e) => {
     const token = Cookies.get("token");
@@ -187,6 +175,20 @@ const CustomBlendForm = () => {
     }
   };
 
+  const calculatePrice = (ingredient, rate) => {
+    const unitPrice = ingredientPrices[ingredient] || 0;
+    const ingredientWeight = (rate / 100) * weight;
+    return (ingredientWeight * unitPrice) / 100;
+  };
+
+  const getTotalPrice = () => {
+    return submittedData.ingredients
+      .reduce((total, ingredient, index) => {
+        return total + calculatePrice(ingredient, submittedData.rate[index]);
+      }, 0)
+      .toFixed(2);
+  };
+
   return (
     <div>
       <NavBar />
@@ -207,13 +209,13 @@ const CustomBlendForm = () => {
               {submittedData.weight} {submittedData.weightUnit}
             </p>
 
-            {/* Ingredients and Rate Table */}
             <table>
               <thead>
                 <tr>
                   <th>Ingredient</th>
                   <th>Rate (%)</th>
                   <th>RateWeight({submittedData.weightUnit})</th>
+                  <th>Price ($)</th>
                 </tr>
               </thead>
               <tbody>
@@ -224,20 +226,25 @@ const CustomBlendForm = () => {
                     <td>
                       {(submittedData.rate[index] / 100) * submittedData.weight}
                     </td>
+                    <td>
+                      {calculatePrice(
+                        ingredient,
+                        submittedData.rate[index]
+                      ).toFixed(2)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-
-            {/* {showSuccessMessage && 
-          // <p>Spice blend saved successfully!</p>
-          } */}
+            <p>
+              <strong>Total Price: ${getTotalPrice()}</strong>
+            </p>
             <div className="buttons">
               <button className="back" onClick={handleBack}>
                 Back
               </button>
               <button className="save" onClick={handleSave}>
-                Save
+                Add To Cart
               </button>
             </div>
           </div>
