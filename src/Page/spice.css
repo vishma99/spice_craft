@@ -3,7 +3,7 @@
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background-image: url("https://images.pexels.com/photos/2802527/pexels-photo-2802527.jpeg?cs=srgb&dl=pexels-shantanu-pal-938952-2802527.jpg&fm=jpg"); /* Replace with your background image path */
+  background-image: url("/src/Image/spice.jpg"); /* Replace with your background image path */
   background-size: cover;
   background-position: center;
 

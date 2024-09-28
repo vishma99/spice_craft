@@ -13,6 +13,8 @@ const bcrypt = require("bcrypt");
 
 const bodyParser = require("body-parser");
 const { SessionsClient } = require("@google-cloud/dialogflow");
+const { data } = require("autoprefixer");
+const { error } = require("console");
 const port = 5000;
 
 app.use(bodyParser.json());
@@ -643,7 +645,7 @@ app.get("/productreviewVisit/:productId", (req, res) => {
 // spice
 app.post("/spice/:customerId", (req, res) => {
   const customerId = req.params.customerId;
-  const { blendName, weight, weightUnit, ingredients, rate } = req.body;
+  const { blendName, weight, weightUnit, ingredients, rate, fullprice } = req.body; // Add price to the request body
 
   // Convert ingredients and rates to a combined string (combination)
   const combination = ingredients
@@ -652,12 +654,12 @@ app.post("/spice/:customerId", (req, res) => {
 
   const fullWeight = `${weight} ${weightUnit}`;
 
-  // SQL query to insert data including customerId
+  // SQL query to insert data including customerId and price
   const sql = `
-    INSERT INTO spice (\`name\`, \`fullWeight\`, \`combination\`, \`customerId\`) 
-    VALUES (?, ?, ?, ?)
+    INSERT INTO spice (\`name\`, \`fullWeight\`, \`combination\`, \`customerId\`, \`price\`) 
+    VALUES (?, ?, ?, ?, ?)
   `;
-  const values = [blendName, fullWeight, combination, customerId];
+  const values = [blendName, fullWeight, combination, customerId, fullprice]; // Add price to the values array
 
   db.query(sql, values, (err, data) => {
     if (err) {
@@ -686,6 +688,24 @@ app.get("/spiceProducts", (req, res) => {
     return res.json(products);
   });
 });
+
+// previousSpice
+// app.get("/previousSpice", (req, res) => {
+//   const sql = "SELECT spiceId,combination,name,fullWeight FROM spice";
+
+//   db.query(sql, (err, data) => {
+//     if (err) {
+//       console.error("Error fetching spices: ", err);
+//       return res.status(500).json({ error: "Error fetching products" });
+//     }
+//     const spice = data.map((row) => ({
+//       combination: row.combination,
+//       name: row.name,
+//       fullWeight: row.fullWeight,
+//     }));
+//     return res.json(spice);
+//   });
+// });
 
 //admin
 //Add Route to Delete a User Account

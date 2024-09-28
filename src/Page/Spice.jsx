@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import "./spice.css";
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
-// import { useNavigate } from "react-router-dom";
-//import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
@@ -20,7 +18,7 @@ const CustomBlendForm = () => {
   const [rateError, setRateError] = useState(false);
   const [ingredientOptions, setIngredientOptions] = useState([]);
   const [ingredientPrices, setIngredientPrices] = useState({});
-  // const navigate = useNavigate();
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     fetch("http://localhost:8088/spiceProducts")
@@ -31,7 +29,6 @@ const CustomBlendForm = () => {
           acc[product.product_name] = product.price;
           return acc;
         }, {});
-
         setIngredientOptions(options);
         setIngredientPrices(prices);
       })
@@ -66,8 +63,42 @@ const CustomBlendForm = () => {
     setRateError(totalRate !== 100);
   };
 
+  const validateForm = () => {
+    const errors = {};
+
+    if (!weightUnit) errors.weightUnit = "Weight unit is required.";
+    if (!weight) errors.weight = "Weight is required.";
+    if (!blendName) errors.blendName = "Blend name is required.";
+
+    ingredients.forEach((ingredient, index) => {
+      if (!ingredient)
+        errors[`ingredient-${index}`] = `Ingredient ${index + 1} is required.`;
+    });
+    rate.forEach((rateValue, index) => {
+      if (!rateValue)
+        errors[`rate-${index}`] = `Rate for ingredient ${
+          index + 1
+        } is required.`;
+    });
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      Swal.fire({
+        title: "Error!",
+        text: "Please fill out all required fields before submitting.",
+        icon: "error",
+        customClass: {
+          confirmButton: "swal2-confirm",
+        },
+      });
+      return;
+    }
+
     if (!rateError) {
       setSubmittedData({
         spiceCount,
@@ -89,14 +120,26 @@ const CustomBlendForm = () => {
     setRate(["", ""]);
     setBlendName("");
     setRateError(false);
+    setFormErrors({});
   };
 
   const handleBack = () => {
-    setSubmittedData(null); // Clear submitted data to go back to the form
-    setShowSuccessMessage(false); // Hide success message if any
+    setSubmittedData(null);
+    setShowSuccessMessage(false);
   };
 
   const handleSubmiteForm = (e) => {
+    if (!validateForm()) {
+      Swal.fire({
+        title: "Error!",
+        text: "Please fill out all required fields before submitting.",
+        icon: "error",
+        customClass: {
+          confirmButton: "swal2-confirm",
+        },
+      });
+      return; // Exit if validation fails
+    }
     const token = Cookies.get("token");
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -114,7 +157,7 @@ const CustomBlendForm = () => {
         return;
       }
       handleSubmit(e);
-      handleSave(); // Call handleSave if customerId is present
+      handleSave();
     } else {
       Swal.fire({
         title: "Error!",
@@ -126,11 +169,15 @@ const CustomBlendForm = () => {
       });
     }
   };
+
   const handleSave = () => {
     const token = Cookies.get("token");
     if (token) {
       const decodedToken = jwtDecode(token);
       const customerId = decodedToken.customerId;
+
+      // Calculate the total price
+      const totalPrice = getTotalPrice();
 
       fetch(`http://localhost:8088/spice/${customerId}`, {
         method: "POST",
@@ -145,20 +192,18 @@ const CustomBlendForm = () => {
           weight,
           rate,
           blendName,
+          fullprice: totalPrice, // Include total price in the request body
         }),
       })
         .then((res) => {
           if (!res.ok) {
             throw new Error(
-              `Failed to fetch cart items: ${res.status} ${res.statusText}`
+              `Failed to save blend: ${res.status} ${res.statusText}`
             );
           }
           return res.json();
         })
         .then((data) => {
-          console.log(data); // Log response data
-          // setShowSuccessMessage(true);
-
           Swal.fire({
             title: "Success!",
             text: "Spice blend saved successfully!",
@@ -169,7 +214,7 @@ const CustomBlendForm = () => {
           });
         })
         .catch((err) => {
-          console.error(err); // Log any errors
+          console.error(err);
           setShowSuccessMessage(false);
         });
     }
@@ -281,6 +326,9 @@ const CustomBlendForm = () => {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
               />
+              {formErrors.weight && (
+                <span className="error">{formErrors.weight}</span>
+              )}
             </label>
 
             <label>
@@ -308,6 +356,11 @@ const CustomBlendForm = () => {
                           </option>
                         ))}
                     </select>
+                    {formErrors[`ingredient-${index}`] && (
+                      <span className="error">
+                        {formErrors[`ingredient-${index}`]}
+                      </span>
+                    )}
                     <input
                       type="number"
                       required
@@ -317,6 +370,11 @@ const CustomBlendForm = () => {
                       value={rate[index]}
                       onChange={(e) => handleRateChange(index, e.target.value)}
                     />
+                    {formErrors[`rate-${index}`] && (
+                      <span className="error">
+                        {formErrors[`rate-${index}`]}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -333,6 +391,9 @@ const CustomBlendForm = () => {
                 value={blendName}
                 onChange={(e) => setBlendName(e.target.value)}
               />
+              {formErrors.blendName && (
+                <span className="error">{formErrors.blendName}</span>
+              )}
             </label>
             <div className="buttons">
               <button type="button" className="clear" onClick={handleClearForm}>
