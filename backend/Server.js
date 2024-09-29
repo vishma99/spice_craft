@@ -645,25 +645,23 @@ app.get("/productreviewVisit/:productId", (req, res) => {
 // spice
 app.post("/spice/:customerId", (req, res) => {
   const customerId = req.params.customerId;
-  const { blendName, weight, weightUnit, ingredients, rate, fullprice } = req.body; // Add price to the request body
+  const { blendName, weight, weightUnit, ingredients, rate, fullprice } =
+    req.body;
 
-  // Convert ingredients and rates to a combined string (combination)
   const combination = ingredients
     .map((ingredient, index) => `${ingredient}:${rate[index]}`)
     .join(",");
-
   const fullWeight = `${weight} ${weightUnit}`;
 
-  // SQL query to insert data including customerId and price
   const sql = `
     INSERT INTO spice (\`name\`, \`fullWeight\`, \`combination\`, \`customerId\`, \`price\`) 
     VALUES (?, ?, ?, ?, ?)
   `;
-  const values = [blendName, fullWeight, combination, customerId, fullprice]; // Add price to the values array
+  const values = [blendName, fullWeight, combination, customerId, fullprice];
 
-  db.query(sql, values, (err, data) => {
+  db.query(sql, values, (err) => {
     if (err) {
-      console.error("Error saving blend:", err); // Log the error
+      console.error("Error saving blend:", err);
       return res.status(500).json({ error: "Error saving blend" });
     }
 
@@ -689,23 +687,29 @@ app.get("/spiceProducts", (req, res) => {
   });
 });
 
-// previousSpice
-// app.get("/previousSpice", (req, res) => {
-//   const sql = "SELECT spiceId,combination,name,fullWeight FROM spice";
+//previousSpice
+app.get("/previousSpice", (req, res) => {
+  const sql =
+    "SELECT spiceId, combination, name, fullWeight, price FROM spice ORDER BY spiceId DESC LIMIT 3";
 
-//   db.query(sql, (err, data) => {
-//     if (err) {
-//       console.error("Error fetching spices: ", err);
-//       return res.status(500).json({ error: "Error fetching products" });
-//     }
-//     const spice = data.map((row) => ({
-//       combination: row.combination,
-//       name: row.name,
-//       fullWeight: row.fullWeight,
-//     }));
-//     return res.json(spice);
-//   });
-// });
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Error fetching spices: ", err);
+      return res.status(500).json({ error: "Error fetching spices" });
+    }
+
+    // Map the database rows into the spice format
+    const spices = data.map((row) => ({
+      combination: row.combination,
+      name: row.name,
+      fullWeight: row.fullWeight,
+      price: row.price,
+    }));
+
+    return res.json(spices);
+  });
+});
+
 
 //admin
 //Add Route to Delete a User Account

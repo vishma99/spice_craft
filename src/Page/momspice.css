@@ -28,6 +28,9 @@
   cursor: pointer;
   transition: 400ms;
 }
+.cards .card p {
+  color: white;
+}
 
 .cards .card p.tip {
   font-size: 1em;

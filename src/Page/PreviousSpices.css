@@ -1,0 +1,70 @@
+.spices-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.heading h1 {
+  color: #a91d3a;
+  font-size: 50px;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.spices-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.spice-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.spice-card:hover {
+  transform: translateY(-5px);
+}
+
+.spice-info {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+h3 {
+  color: #5a5a5a;
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+p {
+  color: #777;
+  margin: 5px 0;
+}
+
+.add-to-cart-btn {
+  background-color: #a91d3a;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #c73659;
+  color: #fff;
+}

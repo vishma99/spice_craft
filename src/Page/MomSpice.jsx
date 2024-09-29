@@ -9,10 +9,13 @@ export default function MomSpice() {
       <NavBar />
 
       <div className="cards">
-        <div className="card red">
-          <p className="tip">Previous created Spice Blending</p>
-          <p className="second-text">Lorem Ipsum</p>
-        </div>
+        <a href="/previousspice">
+          <div className="card red">
+            <p className="tip">Previous created Spice Blending</p>
+            <p className="second-text">Lorem Ipsum</p>
+          </div>
+        </a>
+
         <a href="/spice">
           <div className="card blue">
             <p className="tip">Create new Spice Blending</p>

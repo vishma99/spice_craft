@@ -176,8 +176,17 @@ const CustomBlendForm = () => {
       const decodedToken = jwtDecode(token);
       const customerId = decodedToken.customerId;
 
-      // Calculate the total price
       const totalPrice = getTotalPrice();
+
+      console.log("Sending data:", {
+        spiceCount,
+        ingredients,
+        weightUnit,
+        weight,
+        rate,
+        blendName,
+        fullprice: totalPrice,
+      });
 
       fetch(`http://localhost:8088/spice/${customerId}`, {
         method: "POST",
@@ -192,7 +201,7 @@ const CustomBlendForm = () => {
           weight,
           rate,
           blendName,
-          fullprice: totalPrice, // Include total price in the request body
+          fullprice: totalPrice,
         }),
       })
         .then((res) => {
@@ -208,13 +217,10 @@ const CustomBlendForm = () => {
             title: "Success!",
             text: "Spice blend saved successfully!",
             icon: "success",
-            customClass: {
-              confirmButton: "swal2-confirm",
-            },
           });
         })
         .catch((err) => {
-          console.error(err);
+          console.error("Error:", err);
           setShowSuccessMessage(false);
         });
     }
@@ -227,9 +233,13 @@ const CustomBlendForm = () => {
   };
 
   const getTotalPrice = () => {
-    return submittedData.ingredients
+    return ingredients
       .reduce((total, ingredient, index) => {
-        return total + calculatePrice(ingredient, submittedData.rate[index]);
+        const price = calculatePrice(ingredient, rate[index]);
+        if (!isNaN(price)) {
+          return total + price;
+        }
+        return total;
       }, 0)
       .toFixed(2);
   };
@@ -239,58 +249,90 @@ const CustomBlendForm = () => {
       <NavBar />
       <div className="countain">
         {submittedData ? (
-          <div className="submitted-details">
-            <h2>
-              <strong>Submitted Blend Details</strong>
-            </h2>
-            <p>
-              <strong>Blend Name:</strong> {submittedData.blendName}
-            </p>
-            <p>
-              <strong>Spice Count:</strong> {submittedData.spiceCount}
-            </p>
-            <p>
-              <strong>Weight:</strong>
-              {submittedData.weight} {submittedData.weightUnit}
-            </p>
+          <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+                Submitted Blend Details
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <p className="text-sm">
+                  <span className="font-semibold">Blend Name:</span>{" "}
+                  {submittedData.blendName}
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">Spice Count:</span>{" "}
+                  {submittedData.spiceCount}
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">Weight:</span>{" "}
+                  {submittedData.weight} {submittedData.weightUnit}
+                </p>
+              </div>
 
-            <table>
-              <thead>
-                <tr>
-                  <th>Ingredient</th>
-                  <th>Rate (%)</th>
-                  <th>RateWeight({submittedData.weightUnit})</th>
-                  <th>Price ($)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submittedData.ingredients.map((ingredient, index) => (
-                  <tr key={index}>
-                    <td>{ingredient}</td>
-                    <td>{submittedData.rate[index]}</td>
-                    <td>
-                      {(submittedData.rate[index] / 100) * submittedData.weight}
-                    </td>
-                    <td>
-                      {calculatePrice(
-                        ingredient,
-                        submittedData.rate[index]
-                      ).toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p>
-              <strong>Total Price: ${getTotalPrice()}</strong>
-            </p>
-            <div className="buttons">
-              <button className="back" onClick={handleBack}>
-                Back
-              </button>
-              <button className="save" onClick={handleSave}>
-                Add To Cart
-              </button>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Ingredient
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Rate (%)
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        RateWeight({submittedData.weightUnit})
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Price ($)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {submittedData.ingredients.map((ingredient, index) => (
+                      <tr key={index}>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          {ingredient}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          {submittedData.rate[index]}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          {(
+                            (submittedData.rate[index] / 100) *
+                            submittedData.weight
+                          ).toFixed(2)}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          {calculatePrice(
+                            ingredient,
+                            submittedData.rate[index]
+                          ).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="mt-4 text-right text-lg font-semibold">
+                <span className="font-bold">Total Price:</span> $
+                {getTotalPrice()}
+              </p>
+
+              <div className="mt-6 flex justify-between">
+                <button
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+                  onClick={handleBack}
+                >
+                  Back
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                  onClick={handleSave}
+                >
+                  Add To Cart
+                </button>
+              </div>
             </div>
           </div>
         ) : (
