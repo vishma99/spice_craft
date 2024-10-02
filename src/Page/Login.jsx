@@ -1,6 +1,6 @@
-import  { useState } from "react";
+import { useState } from "react";
 import "./login.css";
-import { FaUser, FaLock,FaAddressCard } from "react-icons/fa";
+import { FaUser, FaLock, FaAddressCard } from "react-icons/fa";
 import { MdContactPhone } from "react-icons/md";
 import { MdEmail } from "react-icons/md";
 import axios from "axios";
@@ -10,7 +10,7 @@ import Cookies from "js-cookie"; // Import js-cookie
 export default function Login() {
   const [action, setAction] = useState("");
   const [rememberMe, setRememberMe] = useState(false); // State for remember me
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [values, setValues] = useState({
     name: "",
     username: "",
@@ -69,7 +69,13 @@ export default function Login() {
         setAction("");
         setError(""); // Clear error on successful registration
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err.response && err.response.status === 400) {
+          setError("Email already in use"); // Show email error
+        } else {
+          console.log(err);
+        }
+      });
   };
 
   const handleSubmit = (event) => {
@@ -171,7 +177,7 @@ export default function Login() {
                 name="contactNumber"
                 onChange={handleInput}
               />
-             
+
               <MdContactPhone className="icon" />
               {error && <span className="error-message">{error}</span>}
             </div>
@@ -217,7 +223,8 @@ export default function Login() {
             </div>
             <div className="remember-forgot">
               <label>
-                <input type="checkbox" required/>I agree to the terms & conditions
+                <input type="checkbox" required />I agree to the terms &
+                conditions
               </label>
             </div>
             <button type="submit" name="submit">

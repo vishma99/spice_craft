@@ -75,47 +75,41 @@ db.connect(function (err) {
   }
   console.log("connected");
 });
-// login
-
-// app.post("/register", (req, res) => {
-//   const sql =
-//     "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
-//   const values = [
-//     req.body.name,
-//     req.body.email,
-//     req.body.contactNumber,
-//     req.body.address,
-//     req.body.username,
-//     req.body.password,
-//   ];
-//   db.query(sql, [values], (err, data) => {
-//     if (err) return res.json(err);
-//     return res.json(data);
-//   });
-// });
 
 app.post("/register", async (req, res) => {
   const { name, email, contactNumber, address, username, password } = req.body;
 
   try {
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const sql =
-      "INSERT INTO registercustomer(`name`,`email`,`contactNumber`,`address`,`username`,`password`) VALUES(?)";
-    const values = [
-      name,
-      email,
-      contactNumber,
-      address,
-      username,
-      hashedPassword,
-    ];
-
-    db.query(sql, [values], (err, data) => {
+    // First, check if the email already exists in the database
+    const checkEmailQuery = "SELECT * FROM registercustomer WHERE email = ?";
+    db.query(checkEmailQuery, [email], async (err, result) => {
       if (err) return res.json({ error: err.message });
-      return res.json({ status: "success", data });
+
+      if (result.length > 0) {
+        // Email already exists
+        return res.status(400).json({ error: "Email already in use" });
+      } else {
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Insert the new user into the database
+        const insertQuery =
+          "INSERT INTO registercustomer(`name`, `email`, `contactNumber`, `address`, `username`, `password`) VALUES(?)";
+        const values = [
+          name,
+          email,
+          contactNumber,
+          address,
+          username,
+          hashedPassword,
+        ];
+
+        db.query(insertQuery, [values], (err, data) => {
+          if (err) return res.json({ error: err.message });
+          return res.json({ status: "success", data });
+        });
+      }
     });
   } catch (err) {
     return res.json({ error: err.message });
@@ -235,19 +229,6 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-// Get cart items for a customer
-// app.get("/cart/:customerId", verifyToken, (req, res) => {
-//   const customerId = req.params.customerId;
-//   const sql = "SELECT * FROM cart WHERE customerId = ?";
-//   db.query(sql, [customerId], (err, result) => {
-//     if (err) {
-//       console.error("Error fetching cart items:", err);
-//       return res.status(500).json({ error: "Error fetching cart items" });
-//     }
-//     return res.json(result);
-//   });
-// });
-
 // file upload
 
 const storage = multer.diskStorage({
@@ -260,23 +241,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// app.post("/addProduct", upload.single("file"), (req, res) => {
-//   const sql =
-//     "INSERT INTO product(`product_name`,`price`,`discription`,`photo`) VALUES(?)";
-//   const values = [
-//     req.body.name,
-//     req.body.price,
-
-//     req.body.discription,
-//     req.file.filename,
-//   ];
-//   db.query(sql, [values], (err, data) => {
-//     if (err) return res.json({ error: "error signup query" });
-
-//     return res.json({ Status: "Success" });
-//   });
-// });
-
 app.use(express.json());
 
 app.post("/addProduct", upload.single("photo"), (req, res) => {
@@ -284,10 +248,6 @@ app.post("/addProduct", upload.single("photo"), (req, res) => {
 
   console.log("Received fields:", req.body);
   console.log("Received file:", req.file);
-
-  // if (!req.file) {
-  //   return res.status(400).json({ error: 'Photo is required' });
-  // }
 
   const photo = req.file.filename;
   console.log("photo", photo);
@@ -325,15 +285,6 @@ app.post("/inquiry", upload.single("file"), (req, res) => {
     return res.json({ Status: "Success" });
   });
 });
-
-// app.post('/upload',upload.single('image'), (req, res) => {
-// const image = req.file.filename;
-// const sql = "UPDATE product SET photo = ?";
-// db.query(sql, [image],(err, result)=>{
-//   if(err) return res.json({Message: "Error"});
-//   return res.json({Status: "Success"});
-// })
-// })
 
 // shop page
 app.get("/card", (req, res) => {
@@ -376,73 +327,6 @@ app.delete("/cart/:customerId/:productId", (req, res) => {
     });
   });
 });
-
-//add to cart
-
-// app.post("/addtocart", verifyToken, (req, res) => {
-//   const {
-//     userId,
-//     productId,
-//     quantity,
-//     name,
-//     price,
-//     size,
-//     photo,
-//     description,
-//   } = req.body;
-//   const sqlCheck = "SELECT * FROM cart WHERE customerId = ? AND productId = ?";
-//   const sqlInsert =
-//     "INSERT INTO cart (customerId, productId, quantity, name, price, size, photo, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-//   const sqlUpdate =
-//     "UPDATE cart SET quantity = quantity + ? WHERE customerId = ? AND productId = ?";
-
-//   db.query(sqlCheck, [userId, productId], (err, result) => {
-//     if (err) {
-//       console.error("Error checking cart:", err);
-//       return res.status(500).json({ error: "Error checking cart" });
-//     }
-//     if (result.length > 0) {
-//       db.query(
-//         sqlUpdate,
-//         [quantity, userId, productId],
-//         (err, updateResult) => {
-//           if (err) {
-//             console.error("Error updating cart:", err);
-//             return res.status(500).json({ error: "Error updating cart" });
-//           }
-//           return res.json({
-//             success: true,
-//             message: "Cart updated successfully",
-//           });
-//         }
-//       );
-//     } else {
-//       db.query(
-//         sqlInsert,
-//         [
-//           userId,
-//           productId,
-//           quantity,
-//           name,
-//           price,
-//           size,
-//           photo,
-//           description,
-//         ],
-//         (err, insertResult) => {
-//           if (err) {
-//             console.error("Error adding to cart:", err);
-//             return res.status(500).json({ error: "Error adding to cart" });
-//           }
-//           return res.json({
-//             success: true,
-//             message: "Item added to cart successfully",
-//           });
-//         }
-//       );
-//     }
-//   });
-// });
 
 // Search endpoint
 app.get("/search", (req, res) => {
@@ -520,45 +404,6 @@ app.get("/cart/:customerId", verifyToken, (req, res) => {
     return res.json(result); // Assuming `result` is an array of cart items
   });
 });
-
-// app.get("/cart/:customerId", verifyToken, (req, res) => {
-//   const customerId = req.params.customerId;
-//   const sql =
-//     "SELECT * FROM cart JOIN product ON cart.productId = product.productId WHERE cart.customerId = ?";
-//   db.query(sql, [customerId], (err, result) => {
-//     if (err) {
-//       console.error("Error fetching cart items sever:", err); // Detailed error log
-//       return res
-//         .status(500)
-//         .json({ error: "Error fetching cart items", details: err.message });
-//     }
-//     if (!result || result.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ error: "No items found in cart for this customer." });
-//     }
-//     return res.json(result);
-//   });
-// });
-
-// app.get("/cart", verifyToken, (req, res) => {
-//   const userId = req.userId; // Get userId from token via verifyToken middleware
-//   const sql = "SELECT * FROM cart WHERE customerId = ?";
-//   db.query(sql, [userId], (err, result) => {
-//     if (err) {
-//       console.error("Error fetching cart items:", err);
-//       return res.status(500).json({ error: "Error fetching cart items" });
-//     }
-//     return res.json(result);
-//   });
-// });
-
-//add to cart
-
-// app.get('/addtocart', (req, res) => {
-//   const productId = req.params.productId;
-//   const sql = "SELECT * FROM product WHERE productId = ?";
-// })
 
 // display
 
@@ -710,9 +555,8 @@ app.get("/previousSpice", (req, res) => {
   });
 });
 
-
 //admin
-//Add Route to Delete a User Account
+//Delete a User Account
 app.delete("/registercustomerAdmin/:customerId", (req, res) => {
   const customerId = req.params.customerId;
   const sql = "DELETE FROM registercustomer WHERE customerId = ?";
@@ -745,38 +589,90 @@ app.delete("/registerProductAdmin/:productId", (req, res) => {
   });
 });
 
-// update product
-
 // Update Product
-app.put("/updateProduct/:productId", (req, res) => {
-  const { productId } = req.params;
-  const { productName, price, description } = req.body;
-  const sql =
-    "UPDATE product SET product_name = ?, price = ?, description = ? WHERE product_id = ?";
-  db.query(sql, [productName, price, description, productId], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ productId, productName, price, description });
+app.put("/updateProduct/:id", upload.single("photo"), (req, res) => {
+  const productId = req.params.id;
+  const { product_name, price, discription } = req.body;
+  const newPhoto = req.file ? req.file.filename : null;
+
+  // First, retrieve the current product data to check the existing photo
+  db.query(
+    "SELECT photo FROM product WHERE productId = ?",
+    [productId],
+    (err, result) => {
+      if (err) {
+        console.error("Error retrieving product:", err);
+        return res.status(500).send("Internal Server Error");
+      }
+
+      // If no new photo is uploaded, keep the old photo
+      const currentPhoto = result[0].photo;
+      const photoToUse = newPhoto ? newPhoto : currentPhoto;
+
+      // Now, update the product in the database
+      const query = `
+      UPDATE product
+      SET product_name = ?, price = ?, discription = ?, photo = ?
+      WHERE productId = ?
+    `;
+      const values = [product_name, price, discription, photoToUse, productId];
+
+      db.query(query, values, (err, updateResult) => {
+        if (err) {
+          console.error("Error updating product:", err);
+          return res.status(500).send("Internal Server Error");
+        }
+
+        res.status(200).json({
+          productId,
+          product_name,
+          price,
+          discription,
+          photo: photoToUse,
+        });
+      });
+    }
+  );
+});
+
+//user profile
+// get user profile
+app.get("/userprofile/:customerId", (req, res) => {
+  const sql = "SELECT * FROM registercustomer WHERE customerId = ?";
+
+  db.query(sql, [req.params.customerId], (err, data) => {
+    if (err) {
+      console.error("Error fetching user profile:", err);
+      return res.status(500).json({ error: "Error fetching user profile" });
+    }
+    return res.json(data);
   });
 });
 
-// Modify Route to Add a Product
+// update user profile
+app.put("/updateUser", upload.single("photo"), (req, res) => {
+  const { customerId, username, contactNumber, gender, address, name } =
+    req.body;
+  const photo = req.file.filename;
 
-// app.post('/addproduct', upload.single('file'), (req, res) => {
-//   const sql = 'INSERT INTO product( `productID`,`product_name`,`price`,`photo`) VALUES(?)';
-//   const values = [
-//     req.body.name,
-//     req.body.price,
-//     req.body.description,
-//     req.file.filename,
-//   ];
-//   db.query(sql, [values], (err, data) => {
-//     if (err) {
-//       console.error("Error adding product:", err);
-//       return res.status(500).json({ error: "Error adding product" });
-//     }
-//     return res.json({ success: true, message: "Product added successfully" });
-//   });
-// });
+  const sql =
+    "UPDATE registercustomer SET username = ?, contactNumber = ?, gender = ?, photo = ?, address = ?, name= ? WHERE customerId = ?";
+
+  db.query(
+    sql,
+    [username, contactNumber, gender, photo, address, name, customerId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating user:", err);
+        return res.status(500).json({ error: "Error updating user" });
+      }
+      return res.json({
+        success: true,
+        message: "Profile updated successfully",
+      });
+    }
+  );
+});
 
 app.listen(8088, () => {
   console.log("listening");

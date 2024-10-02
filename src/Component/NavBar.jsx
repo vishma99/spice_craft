@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import "../Page/navbar.css";
 import { NavDropdown } from "react-bootstrap";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 export default function NavBar() {
   const [username, setUsername] = useState(null);
@@ -56,7 +56,7 @@ export default function NavBar() {
             Our Product
           </Navbar.Link>
           <Navbar.Link className="homePage" href="/momspice">
-          Spice Blending
+            Spice Blending
           </Navbar.Link>
           <Navbar.Link className="homePage" href="/contact">
             Contact Us
@@ -68,21 +68,24 @@ export default function NavBar() {
 
         <div className="flex md:order-2">
           {username ? (
-            <span className="username-display"> 
-            <NavDropdown className="homePage" href="/user" title={`Hello, ${username}`} > 
-            <NavDropdown.Item className="homePage" as={Link} to="/user">
-        Profile
-      </NavDropdown.Item>
+            <span className="username-display">
+              <NavDropdown
+                className="homePage"
+                href="/user"
+                title={`Hello, ${username}`}
+              >
+                <NavDropdown.Item
+                  className="homePage"
+                  as={Link}
+                  to="/user"
+                >
+                  Profile
+                </NavDropdown.Item>
 
-            <NavDropdown.Item className="homePage" onClick={handleLogout}>Log out</NavDropdown.Item>
-            
-            
-            
-            </NavDropdown> 
-            
-            
-            
-            
+                <NavDropdown.Item className="homePage" onClick={handleLogout}>
+                  Log out
+                </NavDropdown.Item>
+              </NavDropdown>
             </span>
           ) : (
             <Button className="button1">

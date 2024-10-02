@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Footer from "../Component/Footer";
 import AdminNavbar from "../Component/AdminNavbar";
+import "./dashboard.css";
+import Swal from "sweetalert2";
 
 export default function Dashboard() {
   const [data1, setData1] = useState([]);
@@ -16,6 +18,9 @@ export default function Dashboard() {
   });
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState(null);
+
   useEffect(() => {
     fetch("http://localhost:8088/registercustomerAdmin")
       .then((res) => res.json())
@@ -45,16 +50,29 @@ export default function Dashboard() {
   }, []);
 
   const handleDeleteUser = (customerId) => {
-    fetch(`http://localhost:8088/registercustomerAdmin/${customerId}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.success) {
-          setData1(data1.filter((user) => user.customerId !== customerId));
-        }
-      })
-      .catch((err) => console.log(err));
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8088/registercustomerAdmin/${customerId}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((response) => {
+            if (response.success) {
+              setData1(data1.filter((user) => user.customerId !== customerId));
+              Swal.fire("Deleted!", "The user has been deleted.", "success");
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+    });
   };
 
   const handleInputChange = (e) => {
@@ -65,6 +83,15 @@ export default function Dashboard() {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setNewProduct({ ...newProduct, photo: file });
+
+    // Create an image preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result); // This will hold the base64 URL of the image
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAddProduct = async (e) => {
@@ -73,19 +100,13 @@ export default function Dashboard() {
     const formData = new FormData();
     formData.append("product_name", newProduct.product_name);
     formData.append("price", newProduct.price);
-    formData.append("discription", newProduct.discription); // Ensure correct spelling
+    formData.append("discription", newProduct.discription);
 
-    // Check if newProduct.photo is a valid File object
     if (newProduct.photo && newProduct.photo instanceof File) {
-      formData.append("photo", newProduct.photo); // Ensure photo is correctly appended
+      formData.append("photo", newProduct.photo);
     } else {
       console.error("Photo is not a valid file");
       return;
-    }
-
-    // Log FormData contents
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
     }
 
     try {
@@ -102,55 +123,117 @@ export default function Dashboard() {
       const result = await response.json();
       console.log(result);
 
-      if (result.success) {
-        // Handle success, e.g., update state or UI
+      if (response.ok) {
+        Swal.fire("Success", "Product added successfully!", "success");
+      } else {
+        Swal.fire("Error", result.error || "Failed to add product", "error");
       }
     } catch (error) {
       console.error("Error adding product:", error);
+      Swal.fire("Error", "Failed to add product", "error");
     }
   };
 
   const handleDeleteProduct = (productId) => {
-    fetch(`http://localhost:8088/registerProductAdmin/${productId}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.success) {
-          setData2(data2.filter((product) => product.productId !== productId));
-        }
-      })
-      .catch((err) => console.log(err));
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8088/registercustomerAdmin/${productId}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((response) => {
+            if (response.success) {
+              setData2(
+                data2.filter((product) => product.productId !== productId)
+              );
+              Swal.fire("Deleted!", "The product has been deleted.", "success");
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+    });
   };
+
   const handleChangeProduct = (productId) => {
     const product = data2.find((p) => p.productId === productId);
     setEditingProduct(product);
+    setImagePreviews(`http://localhost:8088/image/${product.photo}`);
   };
-
-  const handleUpdateProduct = (e) => {
-    e.preventDefault();
-    const { productId, productName, price, description } = editingProduct;
-
-    fetch(`http://localhost:8088/updateProduct/${productId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ productName, price, description }),
-    })
-      .then((res) => res.json())
-      .then((updatedProduct) => {
-        setData2(
-          data2.map((p) => (p.productId === productId ? updatedProduct : p))
-        );
-        setEditingProduct(null);
-      })
-      .catch(console.error);
-  };
-
   const handleInputChanges = (e) => {
     const { name, value } = e.target;
     setEditingProduct({ ...editingProduct, [name]: value });
+  };
+
+  const handleFileChanges = (e) => {
+    const file = e.target.files[0];
+    setEditingProduct({ ...editingProduct, photo: file });
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviews(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData();
+    formData.append("product_name", editingProduct.product_name);
+    formData.append("price", editingProduct.price);
+    formData.append("discription", editingProduct.discription);
+
+    // Only append the file if a new file is uploaded
+    //  if (editingProduct.photo && editingProduct.photo instanceof File) {
+    formData.append("photo", editingProduct.photo); // Attach the file
+    //}
+
+    try {
+      const productId = editingProduct.productId; // Get the productId from editingProduct
+      const response = await fetch(
+        `http://localhost:8088/updateProduct/${productId}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      const updatedProduct = await response.json();
+
+      // Update local state with the new product data
+      setData2(
+        data2.map((p) =>
+          p.productId === updatedProduct.productId ? updatedProduct : p
+        )
+      );
+
+      // Clear editing state
+      setEditingProduct(null);
+      setImagePreviews(null);
+      if (response.ok) {
+        Swal.fire("Success", "Product updated successfully!", "success");
+      } else {
+        Swal.fire("Error", Error || "Failed to update product", "error");
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      Swal.fire("Error", "Failed to update profile", "error");
+    }
   };
 
   return (
@@ -237,7 +320,7 @@ export default function Dashboard() {
           Add Product
         </button>
         {showAddProductForm && (
-          <form onSubmit={handleAddProduct}>
+          <form onSubmit={handleAddProduct} className="dash">
             <input
               type="text"
               name="product_name"
@@ -246,7 +329,7 @@ export default function Dashboard() {
               required
             />
             <input
-              type="text"
+              type="number"
               name="price"
               onChange={handleInputChange}
               placeholder="Price"
@@ -256,10 +339,24 @@ export default function Dashboard() {
               type="text"
               name="discription"
               onChange={handleInputChange}
-              placeholder="discription"
+              placeholder="Discription"
               required
             />
             <input type="file" onChange={handleFileChange} />
+
+            {imagePreview && (
+              <div>
+                <img
+                  src={imagePreview}
+                  alt="Image Preview"
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+            )}
 
             <button type="submit" name="submit">
               Add Product
@@ -298,31 +395,43 @@ export default function Dashboard() {
 
       {/* Update Form */}
       {editingProduct && (
-        <form onSubmit={handleUpdateProduct}>
+        <form onSubmit={handleUpdateProduct} className="dash">
           <input
             type="text"
             name="product_name"
             value={editingProduct.product_name}
             onChange={handleInputChanges}
+            required
           />
           <input
-            type="text"
+            type="number"
             name="price"
             value={editingProduct.price}
             onChange={handleInputChanges}
+            required
           />
           <textarea
             name="discription"
             value={editingProduct.discription}
             onChange={handleInputChanges}
+            required
           />
-          <img
-            src={`http://localhost:8088/image/${editingProduct.photo}`}
-            alt={editingProduct.name}
-            className="w-20 h-20 object-cover"
-          />
+          <input type="file" onChange={handleFileChanges} />
+
+          {imagePreviews && (
+            <div>
+              <img
+                src={imagePreviews}
+                alt="Preview"
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              />
+            </div>
+          )}
+
           <button type="submit">Update</button>
-          <button onClick={() => setEditingProduct(null)}>Cancel</button>
+          <button type="button" onClick={() => setEditingProduct(null)}>
+            Cancel
+          </button>
         </form>
       )}
 

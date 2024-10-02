@@ -1,0 +1,54 @@
+.dash {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.dash input[type="text"],
+.dash input[type="file"],
+.dash button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.dash input[type="text"]:focus,
+.dash input[type="number"]:focus,
+.dash input[type="file"]:focus {
+  outline: none;
+  border-color: #c73659;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.dash input[type="file"] {
+  padding: 5px;
+  font-size: 14px;
+}
+
+.dash button {
+  background-color: #a91d3a;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.dash button:hover {
+  background-color: #c73659;
+}
+
+.dash button:active {
+  background-color: #c73659;
+}
+
+.dash input[required] {
+  border-left: 3px solid #a91d3a;
+}
