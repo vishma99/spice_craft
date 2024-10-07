@@ -15,6 +15,7 @@ const bodyParser = require("body-parser");
 const { SessionsClient } = require("@google-cloud/dialogflow");
 const { data } = require("autoprefixer");
 const { error } = require("console");
+const { comment } = require("postcss");
 const port = 5000;
 
 app.use(bodyParser.json());
@@ -552,6 +553,56 @@ app.get("/previousSpice", (req, res) => {
     }));
 
     return res.json(spices);
+  });
+});
+
+//old all
+app.get("/oldSpice", (req, res) => {
+  const sql =
+    "SELECT spiceId, combination, name, fullWeight, price,comment FROM spice";
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Error fetching spices: ", err);
+      return res.status(500).json({ error: "Error fetching spices" });
+    }
+
+    // Map the database rows into the spice format
+    const spices = data.map((row) => ({
+      spiceId: row.spiceId,
+      combination: row.combination,
+      name: row.name,
+      fullWeight: row.fullWeight,
+      price: row.price,
+      comment: row.comment,
+    }));
+
+    return res.json(spices);
+  });
+});
+
+// Backend route to handle comment submission
+app.post("/addComment", (req, res) => {
+  const { spiceId, comment } = req.body;
+
+  // Debugging logs to see what data is being received
+  console.log("Received spiceId:", spiceId); // This should not be undefined
+  console.log("Received comment:", comment);
+
+  if (!spiceId || !comment) {
+    return res.status(400).send("Missing spiceId or comment");
+  }
+
+  // Update query to add comment to the specific spiceId
+  const query = `UPDATE spice SET comment = CONCAT(comment, '\n', ?) WHERE spiceId = ?`;
+
+  db.query(query, [comment, spiceId], (err, result) => {
+    if (err) {
+      console.error("Error saving comment:", err);
+      return res.status(500).send("Error saving comment to the database");
+    }
+    console.log("Result from the query:", result);
+    res.status(200).send("Comment added successfully");
   });
 });
 

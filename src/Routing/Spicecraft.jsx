@@ -18,6 +18,7 @@ import PopupChatbox from "../Component/PopupChatbox";
 import ProductReview from "../Page/ProductReview";
 import MomSpice from "../Page/MomSpice";
 import PreviousSpice from "../Page/PreviousSpice";
+import Oldspice from "../Page/Oldspice";
 
 export default function Spicecraft() {
   return (
@@ -49,6 +50,7 @@ export default function Spicecraft() {
           </Route>
           <Route path="/momspice" element={<MomSpice />}></Route>
           <Route path="previousspice" element={<PreviousSpice />}></Route>
+          <Route path="/old" element={<Oldspice />}></Route>
         </Routes>
         <PopupChatbox />
       </BrowserRouter>
