@@ -5,6 +5,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import "../Page/Chatbot.css";
 import ChatHistory from "../Component/ChatHistory";
 import Loading from "../Component/Loading";
+import { Icon } from "@mui/material";
+import { IconsManifest } from "react-icons/lib";
 
 const Chatbot = () => {
   const [userInput, setUserInput] = useState("");
@@ -52,10 +54,18 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-4">Chatbot</h1>
+    <div className="chatbot">
+        <header>
+        <h2>Chatbot</h2>
+        </header>
+      <ul className="chatbox">
+        <li className="chat incoming">
+            <span></span>
+            <p>Hi!</p>
+        </li>
+      </ul>
 
-      <div className="chat-container rounded-lg shadow-md p-4">
+      <div className="chat-container rounded-lg shadow-md p-5">
         <ChatHistory chatHistory={chatHistory} />
         <Loading isLoading={isLoading} />
       </div>
@@ -63,24 +73,25 @@ const Chatbot = () => {
       <div className="flex mt-4">
         <input
           type="text"
-          className="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-grow px-4 py-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Type your message..."
           value={userInput}
           onChange={handleUserInput}
         />
+        </div>
         <button
-          className="px-4 py-2 ml-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
+          className="px-2 py-1 ml-1 rounded-lg bg-red-500 text-white hover:bg-red-800 focus:outline-none"
           onClick={sendMessage}
           disabled={isLoading}
         >
           Send
         </button>
-      </div>
+      
       <button
-        className="mt-4 block px-4 py-2 rounded-lg bg-gray-400 text-white hover:bg-gray-500 focus:outline-none"
+        className="mt-4 block px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-800 focus:outline-none"
         onClick={clearChat}
       >
-        Clear Chat
+        Clear
       </button>
     </div>
   );

@@ -1,7 +1,32 @@
 .Chatbot {
+    position: fixed;
+    right: 10px; 
+    bottom: 80px;
+    width: 720px;
+    overflow: hidden;
+    background-color: #ffffff;
+    border-radius: 15px;
     text-align: center;
+    height: 50%;
   }
-  
+  .chatbot header{
+    background: #5f0311;
+    padding: 8px 0;
+    text-align: center;
+    color: #ffffff;
+  }
+
+  .chatbox .incoming p{
+    height: 32px;
+    width: 32px;
+    color: #750909;
+    background: #ffffff;
+    text-align: center;
+    line-height: 32px;
+    border-radius: 4px;
+    padding: 4px 4px 4px 4px;
+
+  }
   .Chatbot-logo {
     height: 40vmin;
     pointer-events: none;
@@ -137,14 +162,14 @@
   /* Chat History styles */
   .chat-container {
     width: 100%;
-    max-height: 80%;
-    overflow-y: auto;
+    max-height: 50%;
+    overflow-y: 50%;
     border-radius: 10px;
     background-color: #f3f4f6; /* Light gray background */
   }
   
   .message {
-    display: flex;
+    display: auto;
     align-items: flex-start;
     padding: 0.5rem 1rem;
     margin-bottom: 0.5rem;
@@ -172,4 +197,3 @@
   .avatar:hover {
     opacity: 0.8;
   }
-  
