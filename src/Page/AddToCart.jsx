@@ -77,18 +77,6 @@ export default function AddToCart() {
       return;
     }
 
-    // if (count === 0) {
-    //   Swal.fire({
-    //     title: "Error!",
-    //     text: "Quantity must be greater than zero.",
-    //     icon: "error",
-    //     customClass: {
-    //       confirmButton: "swal2-confirm",
-    //     },
-    //   });
-    //   return;
-    // }
-
     if (cart.some((item) => item.productId === product.productId)) {
       Swal.fire({
         title: "Info!",

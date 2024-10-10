@@ -5,6 +5,7 @@ import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
 import "./PreviousSpices.css";
 import { Link } from "react-router-dom";
+import PreviousSpices from "./PreviousSpice";
 
 const OldSpice = () => {
   const [spices, setSpices] = useState([]);
@@ -81,6 +82,7 @@ const OldSpice = () => {
   return (
     <div>
       <NavBar />
+      <PreviousSpices />
       <div className="spices-container">
         <div className="heading">
           <h1>Previous Spice Blends</h1>

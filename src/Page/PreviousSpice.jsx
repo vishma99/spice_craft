@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import NavBar from "../Component/NavBar";
-import Footer from "../Component/Footer";
 import "./PreviousSpices.css";
 import { Link } from "react-router-dom";
 
@@ -9,26 +7,42 @@ const PreviousSpices = () => {
   const [spices, setSpices] = useState([]);
 
   useEffect(() => {
+    // Fetch good spice IDs from the backend
     axios
-      .get("http://localhost:5000/previousSpice")
+      .get("http://localhost:5000/getGoodSpiceIds")
       .then((response) => {
-        if (Array.isArray(response.data)) {
-          setSpices(response.data);
+        const goodSpiceIds = response.data.spiceIds;
+
+        // Make a request to get the spice details using the good spice IDs
+        if (goodSpiceIds.length > 0) {
+          axios
+            .post("http://localhost:5000/receiveGoodComments", {
+              spiceIds: goodSpiceIds,
+            })
+            .then((response) => {
+              if (Array.isArray(response.data)) {
+                setSpices(response.data);
+              } else {
+                console.error("API response is not an array:", response.data);
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching spice details:", error);
+            });
         } else {
-          console.error("API response is not an array:", response.data);
+          console.log("No good spices found");
         }
       })
       .catch((error) => {
-        console.error("Error fetching previous spices:", error);
+        console.error("Error fetching good spice IDs:", error);
       });
   }, []);
 
   return (
     <div>
-      <NavBar />
       <div className="spices-container">
         <div className="heading">
-          <h1>Previous Spice Blends</h1>
+          <h1>Top Reviewed Spices</h1>
         </div>
 
         <div className="spices-grid">
@@ -46,6 +60,9 @@ const PreviousSpices = () => {
                   <p>
                     <strong>Price:</strong> ${spice.price}
                   </p>
+                  <p>
+                    <strong>Comments:</strong> {spice.comment}
+                  </p>
                 </div>
                 <Link className="btn add-to-cart-btn" to="/cart">
                   Add to Cart
@@ -57,7 +74,6 @@ const PreviousSpices = () => {
           )}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

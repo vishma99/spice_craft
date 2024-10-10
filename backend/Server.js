@@ -405,6 +405,68 @@ app.get("/cart/:customerId", verifyToken, (req, res) => {
     return res.json(result); // Assuming `result` is an array of cart items
   });
 });
+app.get("/spiceses/:customerId", (req, res) => {
+  const customerId = req.params.customerId;
+  const sql =
+    "SELECT spiceId, name, fullWeight, price FROM spice WHERE customerId = ?";
+
+  db.query(sql, [customerId], (err, result) => {
+    // Added comma here
+    if (err) {
+      console.error("Error fetching spices: ", err);
+      return res.status(500).json({ error: "Error fetching spices" });
+    }
+
+    // Map the database rows into the spice format using result
+    const spices = result.map((row) => ({
+      spiceId: row.spiceId,
+      name: row.name,
+      fullWeight: row.fullWeight,
+      price: row.price,
+    }));
+
+    return res.json(spices);
+  });
+});
+
+app.delete("/spice/:spiceId", (req, res) => {
+  const spiceId = req.params.spiceId;
+  console.log("Received DELETE request for productId:", spiceId);
+
+  const sql = "DELETE FROM spice WHERE spiceId = ?";
+  db.query(sql, [spiceId], (err, result) => {
+    if (err) {
+      console.error("Error deleting product:", err);
+      return res.status(500).json({ error: "Error deleting product" });
+    }
+    console.log("Delete result:", result);
+    if (result.affectedRows > 0) {
+      return res.json({ success: true });
+    } else {
+      return res.status(404).json({ error: "Product not found" });
+    }
+  });
+});
+
+// app.get("/spiceses/:customerId", verifyToken, (req, res) => {
+//   const customerId = req.params.customerId;
+//   const sql = "SELECT * FROM spice WHERE customerId = ?";
+
+//   db.query(sql, [customerId], (err, result) => {
+//     if (err) {
+//       console.error("Error fetching spice items:", err);
+//       return res.status(500).json({ error: "Error fetching spice items" });
+//     }
+
+//     if (result.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ message: "No spices found for this customer" });
+//     }
+
+//     return res.json(result);
+//   });
+// });
 
 // display
 
@@ -534,25 +596,74 @@ app.get("/spiceProducts", (req, res) => {
 });
 
 //previousSpice
-app.get("/previousSpice", (req, res) => {
-  const sql =
-    "SELECT spiceId, combination, name, fullWeight, price FROM spice ORDER BY spiceId DESC LIMIT 3";
+// app.get("/previousSpice", (req, res) => {
+//   const sql =
+//     "SELECT spiceId, combination, name, fullWeight, price FROM spice ORDER BY spiceId DESC LIMIT 3";
 
-  db.query(sql, (err, data) => {
+//   db.query(sql, (err, data) => {
+//     if (err) {
+//       console.error("Error fetching spices: ", err);
+//       return res.status(500).json({ error: "Error fetching spices" });
+//     }
+
+//     // Map the database rows into the spice format
+//     const spices = data.map((row) => ({
+//       combination: row.combination,
+//       name: row.name,
+//       fullWeight: row.fullWeight,
+//       price: row.price,
+//     }));
+
+//     return res.json(spices);
+//   });
+// });
+
+let goodSpiceIds = [];
+
+// API route to receive good spice IDs from Python script
+app.post("/receiveComments", (req, res) => {
+  const { spiceId } = req.body; // Python script sends "spiceId" key
+
+  if (Array.isArray(spiceId) && spiceId.length > 0) {
+    goodSpiceIds = spiceId; // Store the good spice IDs in memory
+    console.log(`Received good spice IDs: ${goodSpiceIds}`);
+    res.status(200).json({ message: "Good spice IDs received" });
+  } else {
+    res.status(400).json({ message: "Invalid spice IDs data" });
+  }
+});
+
+// API route to send the stored good spice IDs to React frontend
+app.get("/getGoodSpiceIds", (req, res) => {
+  res.json({ spiceIds: goodSpiceIds });
+});
+
+// API route to fetch spice details based on good spice IDs
+app.post("/receiveGoodComments", (req, res) => {
+  const { spiceIds } = req.body;
+
+  if (!spiceIds || !Array.isArray(spiceIds) || spiceIds.length === 0) {
+    return res.status(400).json({ error: "No valid spice IDs received." });
+  }
+
+  const sql = `SELECT spiceId, combination, name, fullWeight, price ,comment FROM spice WHERE spiceId IN (?)`;
+
+  db.query(sql, [spiceIds], (err, data) => {
     if (err) {
       console.error("Error fetching spices: ", err);
       return res.status(500).json({ error: "Error fetching spices" });
     }
 
-    // Map the database rows into the spice format
     const spices = data.map((row) => ({
+      spiceId: row.spiceId,
       combination: row.combination,
       name: row.name,
       fullWeight: row.fullWeight,
       price: row.price,
+      comment: row.comment,
     }));
 
-    return res.json(spices);
+    res.json(spices);
   });
 });
 

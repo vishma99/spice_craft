@@ -127,7 +127,6 @@ const CustomBlendForm = () => {
     setSubmittedData(null);
     setShowSuccessMessage(false);
   };
-
   const handleSubmiteForm = (e) => {
     if (!validateForm()) {
       Swal.fire({
@@ -157,7 +156,6 @@ const CustomBlendForm = () => {
         return;
       }
       handleSubmit(e);
-      handleSave();
     } else {
       Swal.fire({
         title: "Error!",
@@ -170,7 +168,49 @@ const CustomBlendForm = () => {
     }
   };
 
-  const handleSave = () => {
+  //const handleAddToCart = () => {
+  // if (!validateForm()) {
+  //   Swal.fire({
+  //     title: "Error!",
+  //     text: "Please fill out all required fields before submitting.",
+  //     icon: "error",
+  //     customClass: {
+  //       confirmButton: "swal2-confirm",
+  //     },
+  //   });
+  //   return; // Exit if validation fails
+  // }
+  // const token = Cookies.get("token");
+  // if (token) {
+  //   const decodedToken = jwtDecode(token);
+  //   const customerId = decodedToken.customerId;
+
+  //   if (!customerId) {
+  //     Swal.fire({
+  //       title: "Error!",
+  //       text: "You can't add items to the cart without logging in.",
+  //       icon: "error",
+  //       customClass: {
+  //         confirmButton: "swal2-confirm",
+  //       },
+  //     });
+  //     return;
+  //   }
+  //   handleSubmit(e);
+  // handleSave();
+  // } else {
+  //   Swal.fire({
+  //     title: "Error!",
+  //     text: "You need to log in to submit the form.",
+  //     icon: "error",
+  //     customClass: {
+  //       confirmButton: "swal2-confirm",
+  //     },
+  //   });
+  // }
+  //};
+
+  const handleAddToCart = () => {
     const token = Cookies.get("token");
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -215,7 +255,7 @@ const CustomBlendForm = () => {
         .then((data) => {
           Swal.fire({
             title: "Success!",
-            text: "Spice blend saved successfully!",
+            text: "Spice blend is added to cart.",
             icon: "success",
           });
         })
@@ -328,7 +368,7 @@ const CustomBlendForm = () => {
                 </button>
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                  onClick={handleSave}
+                  onClick={handleAddToCart}
                 >
                   Add To Cart
                 </button>
