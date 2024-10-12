@@ -5,6 +5,7 @@ const mysql = require("mysql");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const { spawn } = require("child_process");
 
 // const upload = multer({ storage: multer.memoryStorage() });
 
@@ -627,7 +628,9 @@ app.post("/receiveComments", (req, res) => {
   if (Array.isArray(spiceId) && spiceId.length > 0) {
     goodSpiceIds = spiceId; // Store the good spice IDs in memory
     console.log(`Received good spice IDs: ${goodSpiceIds}`);
-    res.status(200).json({ message: "Good spice IDs received" });
+    res
+      .status(200)
+      .json({ message: "Good spice IDs received", spiceIds: goodSpiceIds });
   } else {
     res.status(400).json({ message: "Invalid spice IDs data" });
   }
@@ -718,6 +721,7 @@ app.post("/addComment", (req, res) => {
 });
 
 //admin
+
 //Delete a User Account
 app.delete("/registercustomerAdmin/:customerId", (req, res) => {
   const customerId = req.params.customerId;
@@ -747,6 +751,26 @@ app.delete("/registerProductAdmin/:productId", (req, res) => {
       return res.json({ success: true });
     } else {
       return res.status(404).json({ error: "Product not found" });
+    }
+  });
+});
+
+//Delete a inquiry
+app.delete("/inquiryAdmin/:inquiryId", (req, res) => {
+  const inquiryId = req.params.inquiryId;
+  console.log("Received DELETE request for inquiryId:", inquiryId);
+
+  const sql = "DELETE FROM inquiry WHERE inquiryId = ?";
+  db.query(sql, [inquiryId], (err, result) => {
+    if (err) {
+      console.error("Error deleting inquiryId:", err);
+      return res.status(500).json({ error: "Error deleting inquiryId" });
+    }
+    console.log("Delete result:", result);
+    if (result.affectedRows > 0) {
+      return res.json({ success: true });
+    } else {
+      return res.status(404).json({ error: "inquiryId not found" });
     }
   });
 });
@@ -834,6 +858,41 @@ app.put("/updateUser", upload.single("photo"), (req, res) => {
       });
     }
   );
+});
+
+app.post("/classify-comments", (req, res) => {
+  const pythonProcess = spawn("python", [
+    "classify_comments.py",
+    db.config.host,
+    db.config.port.toString(),
+    db.config.user,
+    db.config.password || "", // Use empty string if password is null
+    db.config.database,
+    "http://localhost:5000/receiveComments",
+  ]);
+
+  let pythonOutput = "";
+  let pythonError = "";
+
+  pythonProcess.stdout.on("data", (data) => {
+    pythonOutput += data.toString();
+  });
+
+  pythonProcess.stderr.on("data", (data) => {
+    pythonError += data.toString();
+    console.error(`Python script error: ${data}`);
+  });
+
+  pythonProcess.on("close", (code) => {
+    console.log(`Python script finished with code ${code}`);
+    if (pythonError) {
+      res
+        .status(500)
+        .json({ message: "Classification failed", error: pythonError });
+    } else {
+      res.json({ message: "Classification complete", output: pythonOutput });
+    }
+  });
 });
 
 app.listen(8088, () => {

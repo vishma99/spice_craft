@@ -2,20 +2,38 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  height: 65vh; /* Makes the container take the full height of the viewport */
-  justify-content: center; /* Centers items vertically */
-  align-items: center; /* Centers items horizontally */
+  height: 65vh; /* Takes up the full height */
+  justify-content: center; /* Centers vertically */
+  align-items: center; /* Centers horizontally */
+
+  /* Background image and transparency */
+  background-image: url("/src/Image/momspice.jpg"); /* Replace with your image URL */
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  position: relative;
 }
 
-.cards .red {
-  background-color: #a91d3a;
-}
-
-.cards .blue {
-  background-color: #a91d3a;
+.cards::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(
+    119,
+    102,
+    102,
+    0.5
+  ); /* Semi-transparent black overlay */
+  z-index: 0; /* Keeps it behind the card content */
 }
 
 .cards .card {
+  position: relative; /* Cards need to be on top of the overlay */
+  z-index: 1; /* Ensures the cards are above the overlay */
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,6 +46,15 @@
   cursor: pointer;
   transition: 400ms;
 }
+
+.cards .card.red {
+  background-color: #a91d3a;
+}
+
+.cards .card.blue {
+  background-color: #a91d3a;
+}
+
 .cards .card p {
   color: white;
 }
@@ -42,10 +69,10 @@
 }
 
 .cards .card:hover {
-  transform: scale(1.1, 1.1);
+  transform: scale(1.1);
 }
 
 .cards:hover > .card:not(:hover) {
   filter: blur(10px);
-  transform: scale(0.9, 0.9);
+  transform: scale(0.9);
 }

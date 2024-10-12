@@ -168,48 +168,6 @@ const CustomBlendForm = () => {
     }
   };
 
-  //const handleAddToCart = () => {
-  // if (!validateForm()) {
-  //   Swal.fire({
-  //     title: "Error!",
-  //     text: "Please fill out all required fields before submitting.",
-  //     icon: "error",
-  //     customClass: {
-  //       confirmButton: "swal2-confirm",
-  //     },
-  //   });
-  //   return; // Exit if validation fails
-  // }
-  // const token = Cookies.get("token");
-  // if (token) {
-  //   const decodedToken = jwtDecode(token);
-  //   const customerId = decodedToken.customerId;
-
-  //   if (!customerId) {
-  //     Swal.fire({
-  //       title: "Error!",
-  //       text: "You can't add items to the cart without logging in.",
-  //       icon: "error",
-  //       customClass: {
-  //         confirmButton: "swal2-confirm",
-  //       },
-  //     });
-  //     return;
-  //   }
-  //   handleSubmit(e);
-  // handleSave();
-  // } else {
-  //   Swal.fire({
-  //     title: "Error!",
-  //     text: "You need to log in to submit the form.",
-  //     icon: "error",
-  //     customClass: {
-  //       confirmButton: "swal2-confirm",
-  //     },
-  //   });
-  // }
-  //};
-
   const handleAddToCart = () => {
     const token = Cookies.get("token");
     if (token) {

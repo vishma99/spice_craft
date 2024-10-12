@@ -9,9 +9,21 @@ const PreviousSpices = () => {
   useEffect(() => {
     // Fetch good spice IDs from the backend
     axios
-      .get("http://localhost:5000/getGoodSpiceIds")
+      .post("http://localhost:5000/classify-comments")
       .then((response) => {
-        const goodSpiceIds = response.data.spiceIds;
+        console.log(response.data);
+        const outputString = response.data.output;
+
+        // Extract the spice IDs from the output string
+        const spiceIdsMatch = outputString.match(/\[([0-9, ]+)\]/); // Find the spice IDs inside square brackets
+        let goodSpiceIds = [];
+
+        if (spiceIdsMatch && spiceIdsMatch[1]) {
+          // Convert the string of IDs to an array of numbers
+          goodSpiceIds = spiceIdsMatch[1]
+            .split(",")
+            .map((id) => parseInt(id.trim()));
+        }
 
         // Make a request to get the spice details using the good spice IDs
         if (goodSpiceIds.length > 0) {
@@ -64,7 +76,10 @@ const PreviousSpices = () => {
                     <strong>Comments:</strong> {spice.comment}
                   </p>
                 </div>
-                <Link className="btn add-to-cart-btn" to="/cart">
+                <Link
+                  className="btn add-to-cart-btn"
+                  //onClick={handleAddToCart}
+                >
                   Add to Cart
                 </Link>
               </div>

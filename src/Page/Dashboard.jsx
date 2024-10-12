@@ -236,6 +236,31 @@ export default function Dashboard() {
     }
   };
 
+  const handleDeleteInquiry = (inquiryId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8088/inquiryAdmin/${inquiryId}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((response) => {
+            if (response.success) {
+              setData4(data4.filter((user) => user.inquiryId !== inquiryId));
+              Swal.fire("Deleted!", "The inquiry has been deleted.", "success");
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+    });
+  };
   return (
     <div>
       <AdminNavbar />
@@ -482,21 +507,25 @@ export default function Dashboard() {
         <table style={{ width: "100%", height: "100px" }}>
           <thead>
             <tr>
-              <th>InquiryId</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Contact Number</th>
+
               <th>Message</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {data4.map((d, i) => (
               <tr key={i}>
-                <td>{d.inquiryId}</td>
                 <td>{d.name}</td>
                 <td>{d.email}</td>
-                <td>{d.contactNumber}</td>
+
                 <td>{d.message}</td>
+                <td>
+                  <button onClick={() => handleDeleteInquiry(d.inquiryId)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

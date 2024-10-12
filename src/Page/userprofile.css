@@ -1,76 +1,103 @@
-General container styling .user-profile-container {
-  display: flex;
-  justify-content: center;
-  margin: 20px;
-  padding: 0 10px;
-}
+/* General container styling */
 .user-profile-container {
   display: flex;
   justify-content: center;
+  padding: 40px 20px;
+  position: relative; /* Needed for the overlay */
+  min-height: 100vh; /* Ensure it covers the full height */
+}
+
+/* Overlay for background transparency */
+.user-profile-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/src/Image/userprofile.png"); /* Replace with your image path */
+  background-size: cover; /* Cover the entire area */
+  background-position: center; /* Center the background image */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  opacity: 0.25; /* Adjust opacity for background image */
+  z-index: 1; /* Place it behind the content */
 }
 
 /* Form styling */
 .profile-form {
+  position: relative; /* Ensure it sits above the overlay */
   width: 100%;
   max-width: 600px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85); /* More opaque form background */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 2; /* Place it above the overlay */
 }
 
 /* Profile photo container */
 .profile-photo-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
-  cursor: pointer; /* Makes the entire area clickable */
+  margin-bottom: 20px;
 }
 
 .profile-photo-label {
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer; /* Makes the label clickable */
+  cursor: pointer;
 }
 
 .profile-photo-preview {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%; /* Makes the image a circle */
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ccc;
+  border: 3px solid #a91d3a;
 }
 
 .profile-photo-placeholder {
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  background-color: #eee;
+  background-color: #f1f3f5;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #888;
-  font-size: 14px;
-  border: 2px solid #ccc;
+  font-size: 16px;
+  border: 3px solid #a91d3a;
 }
+
+/* Styling the email section */
 .emailusername {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 30px;
 }
-.emailusername h1 {
-  font-size: 13px;
-  color: #888;
+
+/* Header styling */
+.profile-form h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center; /* Center the main topic */
 }
 
-.profile-form h2 {
-  font-size: 1.75rem;
-  margin-bottom: 20px;
+/* Sub-header styling */
+.profile-form h1 {
+  font-size: 14px; /* Keeping existing size, adjust as needed */
+  color: #555;
+  text-align: center; /* Center the sub-topic */
+}
+
+/* Center the paragraph */
+.profile-form p {
+  text-align: center; /* Center the paragraph */
 }
 
 /* General text styling */
@@ -86,41 +113,29 @@ General container styling .user-profile-container {
 }
 
 .profile-form td {
-  padding: 10px 0;
+  padding: 12px 0;
   font-size: 1rem;
-}
-.profile-form .file {
-  color: #fff;
-  /* margin-bottom: 95px; */
 }
 
 .profile-form .text {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .profile-form label {
   margin-right: 10px;
 }
-.profile-form .radio {
-  color: #a91d3a;
-}
-.profile-form .radio:hover {
-  color: #a91d3a;
-  background-color: #a91d3a;
-}
 
-.profile-form input[type="file"] {
-  width: 100%;
+.profile-form .radio {
+  margin-right: 15px;
 }
 
 /* Button styling */
 .btn {
-  margin-right: 10px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -134,6 +149,7 @@ General container styling .user-profile-container {
 .save-btn {
   background-color: #a91d3a;
   color: #fff;
+  transition: background-color 0.3s ease;
 }
 
 .save-btn:hover {
@@ -143,13 +159,13 @@ General container styling .user-profile-container {
 /* Media query for responsiveness */
 @media screen and (max-width: 600px) {
   .profile-form {
-    padding: 15px;
+    padding: 20px;
   }
 
   .profile-photo-preview,
   .profile-photo-placeholder {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
   }
 
   .btn {
