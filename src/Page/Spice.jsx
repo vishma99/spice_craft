@@ -186,6 +186,23 @@ const CustomBlendForm = () => {
         fullprice: totalPrice,
       });
 
+      fetch(`http://localhost:8088/spice1/${customerId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          spiceCount,
+          ingredients,
+          weightUnit,
+          weight,
+          rate,
+          blendName,
+          fullprice: totalPrice,
+        }),
+      });
+
       fetch(`http://localhost:8088/spice/${customerId}`, {
         method: "POST",
         headers: {

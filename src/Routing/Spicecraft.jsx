@@ -19,6 +19,7 @@ import ProductReview from "../Page/ProductReview";
 import MomSpice from "../Page/MomSpice";
 import PreviousSpice from "../Page/PreviousSpice";
 import Oldspice from "../Page/Oldspice";
+import PaymentGateway from "../PaymentGateWay/Payment";
 // import Pay from "../Page/Pay";
 
 export default function Spicecraft() {
@@ -53,6 +54,7 @@ export default function Spicecraft() {
           <Route path="previousspice" element={<PreviousSpice />}></Route>
           <Route path="/old" element={<Oldspice />}></Route>
           {/* <Route path="/pay" element={<Pay />}></Route> */}
+          <Route path="/payment" element={<PaymentGateway />}></Route>
         </Routes>
         <PopupChatbox />
       </BrowserRouter>

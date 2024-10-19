@@ -5,6 +5,7 @@ import "./dashboard.css";
 import Swal from "sweetalert2";
 
 export default function Dashboard() {
+  const [activeSection, setActiveSection] = useState(""); // Track the active section
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
@@ -84,10 +85,9 @@ export default function Dashboard() {
     const file = event.target.files[0];
     setNewProduct({ ...newProduct, photo: file });
 
-    // Create an image preview
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreview(reader.result); // This will hold the base64 URL of the image
+      setImagePreview(reader.result);
     };
     if (file) {
       reader.readAsDataURL(file);
@@ -125,6 +125,7 @@ export default function Dashboard() {
 
       if (response.ok) {
         Swal.fire("Success", "Product added successfully!", "success");
+        setData2([...data2, result.product]); // Update the product list
       } else {
         Swal.fire("Error", result.error || "Failed to add product", "error");
       }
@@ -162,11 +163,12 @@ export default function Dashboard() {
     });
   };
 
-  const handleChangeProduct = (productId) => {
+  const handleEditProduct = (productId) => {
     const product = data2.find((p) => p.productId === productId);
     setEditingProduct(product);
     setImagePreviews(`http://localhost:8088/image/${product.photo}`);
   };
+
   const handleInputChanges = (e) => {
     const { name, value } = e.target;
     setEditingProduct({ ...editingProduct, [name]: value });
@@ -186,22 +188,17 @@ export default function Dashboard() {
   };
 
   const handleUpdateProduct = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
     const formData = new FormData();
     formData.append("product_name", editingProduct.product_name);
     formData.append("price", editingProduct.price);
     formData.append("discription", editingProduct.discription);
-
-    // Only append the file if a new file is uploaded
-    //  if (editingProduct.photo && editingProduct.photo instanceof File) {
-    formData.append("photo", editingProduct.photo); // Attach the file
-    //}
+    formData.append("photo", editingProduct.photo);
 
     try {
-      const productId = editingProduct.productId; // Get the productId from editingProduct
       const response = await fetch(
-        `http://localhost:8088/updateProduct/${productId}`,
+        `http://localhost:8088/updateProduct/${editingProduct.productId}`,
         {
           method: "PUT",
           body: formData,
@@ -215,322 +212,231 @@ export default function Dashboard() {
 
       const updatedProduct = await response.json();
 
-      // Update local state with the new product data
       setData2(
         data2.map((p) =>
           p.productId === updatedProduct.productId ? updatedProduct : p
         )
       );
 
-      // Clear editing state
       setEditingProduct(null);
       setImagePreviews(null);
-      if (response.ok) {
-        Swal.fire("Success", "Product updated successfully!", "success");
-      } else {
-        Swal.fire("Error", Error || "Failed to update product", "error");
-      }
+      Swal.fire("Success", "Product updated successfully!", "success");
     } catch (error) {
       console.error("Error updating product:", error);
-      Swal.fire("Error", "Failed to update profile", "error");
+      Swal.fire("Error", "Failed to update product", "error");
     }
   };
 
-  const handleDeleteInquiry = (inquiryId) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`http://localhost:8088/inquiryAdmin/${inquiryId}`, {
-          method: "DELETE",
-        })
-          .then((res) => res.json())
-          .then((response) => {
-            if (response.success) {
-              setData4(data4.filter((user) => user.inquiryId !== inquiryId));
-              Swal.fire("Deleted!", "The inquiry has been deleted.", "success");
-            }
-          })
-          .catch((err) => console.log(err));
-      }
-    });
-  };
   return (
-    <div>
-      <AdminNavbar />
-      <div
-        className="contact-box-container mx-auto"
-        style={{ fontWeight: "bold", fontSize: "16px" }}
-      >
-        <div className="contact-box">
-          <h2>No. of customers</h2>
-          <h2>{data1.length}</h2>
-        </div>
-
-        <div className="contact-box">
-          <h2>No. of products</h2>
-          <h2>{data2.length}</h2>
-        </div>
-
-        <div className="contact-box">
-          <h2>No. of orders</h2>
-          <h2>{data3.length}</h2>
-        </div>
+    <div className="dashboard-container">
+      <div className="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+          <li>
+            <a href="#" onClick={() => setActiveSection("users")}>
+              Users
+            </a>
+          </li>
+          <li>
+            <a href="#" onClick={() => setActiveSection("products")}>
+              Products
+            </a>
+          </li>
+          <li>
+            <a href="#" onClick={() => setActiveSection("orders")}>
+              Orders
+            </a>
+          </li>
+        </ul>
+        <button>Logout</button>
       </div>
 
-      <div style={{ padding: "50px" }}>
-        <h2
-          style={{
-            fontWeight: "bold",
-            fontSize: "18px",
-            paddingBottom: "30px",
-          }}
-        >
-          Customer
-        </h2>
-        <hr style={{ paddingBottom: "30px" }} />
-        <table style={{ width: "100%", height: "100px" }}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Contact No</th>
-              <th>Address</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data1.map((d, i) => (
-              <tr key={i}>
-                <td>{d.name}</td>
-                <td>{d.email}</td>
-                <td>{d.contactNumber}</td>
-                <td>{d.address}</td>
-                <td>
-                  <button onClick={() => handleDeleteUser(d.customerId)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Content Area */}
+      <div className="dash">
+        <AdminNavbar />
+        {activeSection === "users" && (
+          <div>
+            <h2>Users</h2>
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Contact No</th>
+                  <th>Address</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data1.map((d, i) => (
+                  <tr key={i}>
+                    <td>{d.name}</td>
+                    <td>{d.email}</td>
+                    <td>{d.contactNumber}</td>
+                    <td>{d.address}</td>
+                    <td>
+                      <button onClick={() => handleDeleteUser(d.customerId)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      <div style={{ padding: "50px" }}>
-        <h2
-          style={{
-            fontWeight: "bold",
-            fontSize: "18px",
-            paddingBottom: "30px",
-          }}
-        >
-          Product
-        </h2>
-        <button
-          style={{
-            backgroundColor: "#A91D3A",
-            borderRadius: "10px",
-            color: "#fff",
-            marginBottom: "20px",
-          }}
-          onClick={() => setShowAddProductForm(!showAddProductForm)}
-        >
-          Add Product
-        </button>
-        {showAddProductForm && (
-          <form onSubmit={handleAddProduct} className="dash">
-            <input
-              type="text"
-              name="product_name"
-              onChange={handleInputChange}
-              placeholder="Product Name"
-              required
-            />
-            <input
-              type="number"
-              name="price"
-              onChange={handleInputChange}
-              placeholder="Price"
-              required
-            />
-            <input
-              type="text"
-              name="discription"
-              onChange={handleInputChange}
-              placeholder="Discription"
-              required
-            />
-            <input type="file" onChange={handleFileChange} />
-
-            {imagePreview && (
-              <div>
-                <img
-                  src={imagePreview}
-                  alt="Image Preview"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "cover",
-                  }}
-                />
-              </div>
-            )}
-
-            <button type="submit" name="submit">
+        {activeSection === "products" && (
+          <div>
+            <h2>Products</h2>
+            <button
+              onClick={() => setShowAddProductForm(!showAddProductForm)}
+              style={{ marginBottom: "20px" }}
+            >
               Add Product
             </button>
-          </form>
+
+            {showAddProductForm && (
+              <form onSubmit={handleAddProduct} className="dash">
+                <input
+                  type="text"
+                  name="product_name"
+                  onChange={handleInputChange}
+                  placeholder="Product Name"
+                  required
+                />
+                <input
+                  type="number"
+                  name="price"
+                  onChange={handleInputChange}
+                  placeholder="Price"
+                  required
+                />
+                <input
+                  type="text"
+                  name="discription"
+                  onChange={handleInputChange}
+                  placeholder="Description"
+                  required
+                />
+                <input type="file" onChange={handleFileChange} />
+
+                {imagePreview && (
+                  <div>
+                    <img
+                      src={imagePreview}
+                      alt="Image Preview"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                )}
+
+                <button type="submit">Add Product</button>
+              </form>
+            )}
+
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data2.map((d, i) => (
+                  <tr key={i}>
+                    <td>{d.product_name}</td>
+                    <td>{d.price}</td>
+                    <td>
+                      <button onClick={() => handleEditProduct(d.productId)}>
+                        Edit
+                      </button>
+                      <button onClick={() => handleDeleteProduct(d.productId)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {editingProduct && (
+              <form onSubmit={handleUpdateProduct} className="dash">
+                <input
+                  type="text"
+                  name="product_name"
+                  value={editingProduct.product_name}
+                  onChange={handleInputChanges}
+                  required
+                />
+                <input
+                  type="number"
+                  name="price"
+                  value={editingProduct.price}
+                  onChange={handleInputChanges}
+                  required
+                />
+                <textarea
+                  name="discription"
+                  value={editingProduct.discription}
+                  onChange={handleInputChanges}
+                  required
+                />
+                <input type="file" onChange={handleFileChanges} />
+
+                {imagePreviews && (
+                  <div>
+                    <img
+                      src={imagePreviews}
+                      alt="Image Preview"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                )}
+
+                <button type="submit">Update Product</button>
+                <button onClick={() => setEditingProduct(null)}>Cancel</button>
+              </form>
+            )}
+          </div>
         )}
-        <hr style={{ paddingBottom: "30px" }} />
-        <table style={{ width: "100%", height: "100px" }}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Price($)</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data2.map((d, i) => (
-              <tr key={i}>
-                <td>{d.product_name}</td>
-                <td>{d.price}</td>
-                <td>
-                  <button onClick={() => handleDeleteProduct(d.productId)}>
-                    Delete
-                  </button>
-                </td>
-                <td>
-                  <button onClick={() => handleChangeProduct(d.productId)}>
-                    Change
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+        {activeSection === "orders" && (
+          <div>
+            <h2>Orders</h2>
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th>OrderId</th>
+                  <th>CustomerId</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data3.map((d, i) => (
+                  <tr key={i}>
+                    <td>{d.cartId}</td>
+                    <td>{d.customerId}</td>
+                    <td>{d.price}</td>
+                    <td>{d.quantity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {/* Update Form */}
-      {editingProduct && (
-        <form onSubmit={handleUpdateProduct} className="dash">
-          <input
-            type="text"
-            name="product_name"
-            value={editingProduct.product_name}
-            onChange={handleInputChanges}
-            required
-          />
-          <input
-            type="number"
-            name="price"
-            value={editingProduct.price}
-            onChange={handleInputChanges}
-            required
-          />
-          <textarea
-            name="discription"
-            value={editingProduct.discription}
-            onChange={handleInputChanges}
-            required
-          />
-          <input type="file" onChange={handleFileChanges} />
-
-          {imagePreviews && (
-            <div>
-              <img
-                src={imagePreviews}
-                alt="Preview"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-
-          <button type="submit">Update</button>
-          <button type="button" onClick={() => setEditingProduct(null)}>
-            Cancel
-          </button>
-        </form>
-      )}
-
-      <div style={{ padding: "50px" }}>
-        <h2
-          style={{
-            fontWeight: "bold",
-            fontSize: "18px",
-            paddingBottom: "30px",
-          }}
-        >
-          Orders
-        </h2>
-        <hr style={{ paddingBottom: "30px" }} />
-        <table style={{ width: "100%", height: "100px" }}>
-          <thead>
-            <tr>
-              <th>OrderId</th>
-              <th>CustomerId</th>
-              <th>Price</th>
-              <th>Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data3.map((d, i) => (
-              <tr key={i}>
-                <td>{d.cartId}</td>
-                <td>{d.customerId}</td>
-                <td>{d.price}</td>
-                <td>{d.quantity}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div style={{ padding: "50px" }}>
-        <h2
-          style={{
-            fontWeight: "bold",
-            fontSize: "18px",
-            paddingBottom: "30px",
-          }}
-        >
-          Inquiry
-        </h2>
-        <hr style={{ paddingBottom: "30px" }} />
-        <table style={{ width: "100%", height: "100px" }}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-
-              <th>Message</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data4.map((d, i) => (
-              <tr key={i}>
-                <td>{d.name}</td>
-                <td>{d.email}</td>
-
-                <td>{d.message}</td>
-                <td>
-                  <button onClick={() => handleDeleteInquiry(d.inquiryId)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
       <Footer />
     </div>
   );

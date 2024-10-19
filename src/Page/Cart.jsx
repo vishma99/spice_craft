@@ -1,45 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import NavBar from "../Component/NavBar";
 import Footer from "../Component/Footer";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import axios from "axios";
+import PaymentGateway from "../PaymentGateWay/Payment"; // Import PaymentGateway
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [spices, setSpices] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-
-  useEffect(() => {
-    fetchCartItems();
-  }, []);
-
-  // Calculate total price whenever cartItems or spices change
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [cartItems, spices]);
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      const customerId = decodedToken.customerId;
-
-      axios
-        .get(`http://localhost:5000/spiceses/${customerId}`)
-        .then((response) => {
-          if (Array.isArray(response.data)) {
-            setSpices(response.data);
-          } else {
-            console.error("API response is not an array:", response.data);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching previous spices:", error);
-        });
-    }
-  }, []);
+  const paymentGatewayRef = useRef(); // Reference for PaymentGateway component
 
   const fetchCartItems = () => {
     const token = Cookies.get("token");
@@ -60,12 +32,14 @@ const Cart = () => {
           }
           return res.json();
         })
-        .then((data) => setCartItems(data))
+        .then((data) => {
+          setCartItems(data);
+        })
         .catch((err) => console.log(err));
     }
   };
 
-  const calculateTotalPrice = () => {
+  const calculateTotalPrice = useCallback(() => {
     // Calculate the total from cart items
     const cartTotal = cartItems.reduce(
       (acc, item) => acc + item.price * item.quantity,
@@ -77,7 +51,8 @@ const Cart = () => {
 
     // Set the total price as the sum of both
     setTotalPrice(cartTotal + spiceTotal);
-  };
+    console.log(totalPrice);
+  }, [cartItems, spices, totalPrice]);
 
   const removeItem = (productId) => {
     Swal.fire({
@@ -133,7 +108,7 @@ const Cart = () => {
     });
   };
 
-  const removeItem1 = (spiceId) => {
+  const removeItem1 = (spiceCartId) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -144,13 +119,15 @@ const Cart = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:8088/spice/${spiceId}`, {
+        fetch(`http://localhost:8088/spice/${spiceCartId}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
           .then((response) => {
             if (response.success) {
-              setSpices(spices.filter((spices) => spices.spiceId !== spiceId));
+              setSpices(
+                spices.filter((spices) => spices.spiceCartId !== spiceCartId)
+              );
               Swal.fire("Deleted!", "The product has been deleted.", "success");
             }
           })
@@ -168,6 +145,78 @@ const Cart = () => {
       return null;
     }
   };
+  const order = async () => {
+    const token = Cookies.get("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const customerId = decodedToken.customerId;
+
+      try {
+        // Log the payload being sent
+        console.log(
+          "Submitting order with customerId:",
+          customerId,
+          "and totalPrice:",
+          totalPrice
+        );
+
+        const response = await axios.post(
+          `http://localhost:8088/order/${customerId}`,
+          {
+            customerId, // Ensure customerId is properly passed
+            price: totalPrice, // Ensure totalPrice is passed
+          }
+        );
+
+        // if (response.data.Status === "Success") {
+        //   Swal.fire(
+        //     "Order Placed!",
+        //     "Your order has been placed successfully.",
+        //     "success"
+        //   );
+        // } else {
+        //   console.log("Unexpected response from server:", response.data);
+        // }
+      } catch (error) {
+        // Swal.fire(
+        //   "Error!",
+        //   "Something went wrong while placing your order.",
+        //   "error"
+        // );
+        console.error("Error placing order:", error); // Log the error for debugging
+      }
+    }
+  };
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const customerId = decodedToken.customerId;
+
+      axios
+        .get(`http://localhost:5000/spiceses/${customerId}`)
+        .then((response) => {
+          if (Array.isArray(response.data)) {
+            setSpices(response.data);
+          } else {
+            console.error("API response is not an array:", response.data);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching previous spices:", error);
+        });
+    }
+  }, []);
+
+  // Calculate total price whenever cartItems or spices change
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [calculateTotalPrice, cartItems, spices]);
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
 
   return (
     <>
@@ -216,31 +265,34 @@ const Cart = () => {
                   <h3 className="text-xl font-semibold mt-8">
                     Your Spice Blends:
                   </h3>
-                  {spices.map((item) => (
-                    <div
-                      key={item.spiceId} // Use spiceId as the key
-                      className="flex items-center justify-between border-b-2 py-4"
-                    >
-                      <div className="flex-1 ml-4 px-3">
-                        <h2 className="text-xl font-semibold">{item.name}</h2>
-                        <p>Weight: {item.fullWeight}g</p>
-                        <p className="text-lg font-semibold">
-                          Price: ${item.price}
-                        </p>
-                        <button
-                          onClick={() => removeItem1(item.spiceId)}
-                          className=" "
-                          style={{
-                            backgroundColor: "#A91D3A",
-                            color: "#fff",
-                            borderRadius: "10px",
-                          }}
-                        >
-                          Remove
-                        </button>
+                  {spices.map((item) => {
+                    console.log(item); // Debugging: Check the structure of each spice item
+                    return (
+                      <div
+                        key={item.spiceCartId}
+                        className="flex items-center justify-between border-b-2 py-4"
+                      >
+                        <div className="flex-1 ml-4 px-3">
+                          <h2 className="text-xl font-semibold">{item.name}</h2>
+                          <p>Weight: {item.fullWeight}g</p>
+                          <p className="text-lg font-semibold">
+                            Price: ${item.price}
+                          </p>
+                          <button
+                            onClick={() => removeItem1(item.spiceCartId)}
+                            className=" "
+                            style={{
+                              backgroundColor: "#A91D3A",
+                              color: "#fff",
+                              borderRadius: "10px",
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </>
               )}
               <div className="text-right mt-4">
@@ -248,16 +300,22 @@ const Cart = () => {
                   Total Price: ${totalPrice.toFixed(2)}
                 </h3>
                 <div className="flex-1 ml-4 px-3">
-                  <button
+                  {/* <button
                     className=" "
                     style={{
                       backgroundColor: "#A91D3A",
                       color: "#fff",
                       borderRadius: "10px",
                     }}
+                    onClick={order} // Trigger payment on click
                   >
                     order now
-                  </button>
+                  </button> */}
+                  <PaymentGateway
+                    // onClick={order}
+                    ref={paymentGatewayRef}
+                    totalPrice={totalPrice.toFixed(2)}
+                  />{" "}
                 </div>
               </div>
             </>
@@ -266,6 +324,8 @@ const Cart = () => {
           )}
         </div>
       </div>
+
+      {/* Reference to PaymentGateway */}
       <Footer />
     </>
   );

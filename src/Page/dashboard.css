@@ -1,54 +1,210 @@
-.dash {
+/* Import font */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+/* General body styles */
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f0f2f5;
+  background-size: cover;
+  color: #333;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dashboard container to organize sidebar and main content */
+.dashboard-container {
+  display: flex;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
+  max-width: 1200px;
+  margin: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-left: 250px; /* Offset the sidebar width */
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Main content area to hold sidebar and content */
+.main-content {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically inside the main content */
+  flex: 1; /* Make the main content take up the remaining space next to the sidebar */
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  min-height: 100vh; /* Ensure the content expands to the full viewport height */
+}
+
+/* Sidebar styling */
+.sidebar {
+  width: 250px;
+  background-color: #343a40;
+  padding: 30px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 250px;
+  height: 100vh; /* Full viewport height */
+  background-color: #2c3e50;
+  padding: 20px;
+  position: fixed; /* Keep sidebar fixed on the left */
+  top: 0;
+  left: 0;
+}
+
+.sidebar h2 {
+  font-size: 24px;
+  color: #fff;
+  text-align: center;
   margin-bottom: 20px;
 }
 
-.dash input[type="text"],
-.dash input[type="file"],
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin: 20px 0;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #fff;
+  background-color: #495057;
+  padding: 15px;
+  display: block;
+  border-radius: 8px;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.sidebar a:hover {
+  background-color: #ff6f61;
+  color: white;
+}
+
+.sidebar button {
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.sidebar button:hover {
+  background-color: #ff8a71;
+}
+
+/* Main content section */
+.dash {
+  flex-grow: 1;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Content sections */
+.dash h2 {
+  font-size: 28px;
+  color: #ff6f61;
+  margin-bottom: 20px;
+}
+
+.dash table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dash table th,
+.dash table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.dash table th {
+  background-color: #f4f4f4;
+}
+
 .dash button {
+  background-color: #b51800;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.dash button:hover {
+  background-color: #ff8a71;
+}
+
+.dash input[type="text"],
+.dash input[type="number"],
+.dash textarea,
+.dash input[type="file"] {
   width: 100%;
   padding: 10px;
-  margin: 10px 0;
+  margin: 12px 0;
   font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  border-radius: 6px;
+  border: 1px solid #ddd;
   box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .dash input[type="text"]:focus,
 .dash input[type="number"]:focus,
+.dash textarea:focus,
 .dash input[type="file"]:focus {
   outline: none;
-  border-color: #c73659;
-  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  border-color: #ff6f61;
+  box-shadow: 0 0 8px rgba(255, 111, 97, 0.5);
 }
 
 .dash input[type="file"] {
-  padding: 5px;
+  padding: 8px;
   font-size: 14px;
 }
 
-.dash button {
-  background-color: #a91d3a;
-  color: white;
-  border: none;
-  cursor: pointer;
+/* Footer styles */
+footer {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #f0f2f5;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  margin-top: auto; /* Ensure it pushes to the bottom when content is less */
 }
 
-.dash button:hover {
-  background-color: #c73659;
-}
+/* Media Queries */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
 
-.dash button:active {
-  background-color: #c73659;
-}
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+  }
 
-.dash input[required] {
-  border-left: 3px solid #a91d3a;
+  .dash {
+    margin: 0 10px;
+    padding: 20px;
+  }
 }

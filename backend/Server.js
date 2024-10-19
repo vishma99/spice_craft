@@ -7,6 +7,9 @@ const multer = require("multer");
 const path = require("path");
 const { spawn } = require("child_process");
 
+const crypto = require("crypto");
+const md5 = require("crypto-js/md5");
+
 // const upload = multer({ storage: multer.memoryStorage() });
 
 const jwt = require("jsonwebtoken");
@@ -409,7 +412,7 @@ app.get("/cart/:customerId", verifyToken, (req, res) => {
 app.get("/spiceses/:customerId", (req, res) => {
   const customerId = req.params.customerId;
   const sql =
-    "SELECT spiceId, name, fullWeight, price FROM spice WHERE customerId = ?";
+    "SELECT spiceCartId, name, fullWeight, price FROM spice_cart WHERE customerId = ?";
 
   db.query(sql, [customerId], (err, result) => {
     // Added comma here
@@ -420,7 +423,7 @@ app.get("/spiceses/:customerId", (req, res) => {
 
     // Map the database rows into the spice format using result
     const spices = result.map((row) => ({
-      spiceId: row.spiceId,
+      spiceCartId: row.spiceCartId,
       name: row.name,
       fullWeight: row.fullWeight,
       price: row.price,
@@ -430,12 +433,12 @@ app.get("/spiceses/:customerId", (req, res) => {
   });
 });
 
-app.delete("/spice/:spiceId", (req, res) => {
-  const spiceId = req.params.spiceId;
-  console.log("Received DELETE request for productId:", spiceId);
+app.delete("/spice/:spiceCartId", (req, res) => {
+  const spiceCartId = req.params.spiceCartId;
+  console.log("Received DELETE request for productId:", spiceCartId);
 
-  const sql = "DELETE FROM spice WHERE spiceId = ?";
-  db.query(sql, [spiceId], (err, result) => {
+  const sql = "DELETE FROM spice_cart WHERE spiceCartId = ?";
+  db.query(sql, [spiceCartId], (err, result) => {
     if (err) {
       console.error("Error deleting product:", err);
       return res.status(500).json({ error: "Error deleting product" });
@@ -578,6 +581,52 @@ app.post("/spice/:customerId", (req, res) => {
   });
 });
 
+app.post("/spice1/:customerId", (req, res) => {
+  const customerId = req.params.customerId;
+  const { blendName, weight, weightUnit, ingredients, rate, fullprice } =
+    req.body;
+
+  const combination = ingredients
+    .map((ingredient, index) => `${ingredient}:${rate[index]}`)
+    .join(",");
+  const fullWeight = `${weight} ${weightUnit}`;
+
+  const sql = `
+    INSERT INTO spice_cart (\`name\`, \`fullWeight\`, \`combination\`, \`customerId\`, \`price\`) 
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  const values = [blendName, fullWeight, combination, customerId, fullprice];
+
+  db.query(sql, values, (err) => {
+    if (err) {
+      console.error("Error saving blend:", err);
+      return res.status(500).json({ error: "Error saving blend" });
+    }
+
+    return res.json({ Status: "Success" });
+  });
+});
+
+app.post("/spices/:customerId", (req, res) => {
+  const customerId = req.params.customerId;
+  const { blendName, fullprice, combination, fullWeight } = req.body;
+
+  const sql = `
+    INSERT INTO spice_cart (\`name\`, \`fullWeight\`, \`combination\`, \`customerId\`, \`price\`) 
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  const values = [blendName, fullWeight, combination, customerId, fullprice];
+
+  db.query(sql, values, (err) => {
+    if (err) {
+      console.error("Error saving blend:", err);
+      return res.status(500).json({ error: "Error saving blend" });
+    }
+
+    return res.json({ Status: "Success" });
+  });
+});
+
 app.get("/spiceProducts", (req, res) => {
   const sql = "SELECT product_name, price FROM product";
 
@@ -673,7 +722,7 @@ app.post("/receiveGoodComments", (req, res) => {
 //old all
 app.get("/oldSpice", (req, res) => {
   const sql =
-    "SELECT spiceId, combination, name, fullWeight, price,comment FROM spice";
+    "SELECT DISTINCT spiceId, combination,customerId, name, fullWeight, price,comment FROM spice";
 
   db.query(sql, (err, data) => {
     if (err) {
@@ -892,6 +941,125 @@ app.post("/classify-comments", (req, res) => {
     } else {
       res.json({ message: "Classification complete", output: pythonOutput });
     }
+  });
+});
+
+app.post("/payment", (req, res) => {
+  const { price } = req.body;
+  console.log(req.body)
+  const formattedPrice = parseFloat(price).toFixed(2);
+  const data = {
+    merchantId: "1228429",
+    return_url: "http://localhost:5173/",
+    cancel_url: "http://localhost:5173/ca",
+    notify_url: "http://sample.com/notify",
+    merchantSecret: "Mjg1MzMxMTExNzQwMDM3ODQ4NzYyNTU3NjA0ODk5MTIwMTM0NTg2OQ==",
+    first_name: "Akila",
+    last_name: "Gunasekara",
+    email: "akilagunasekara@gmail.com",
+    phone: "0770473392",
+    address: "No.1, Galle Road",
+    city: "Colombo",
+    country: "Sri Lanka",
+    orderId: "12345",
+    items: "Chair",
+    currency: "USD",
+    amount: formattedPrice,
+  };
+
+  const hash = generateHash(data);
+
+  // Create a new object that includes both data and hash
+  const responseData = {
+    ...data,
+    hash: hash,
+  };
+
+  res.send(responseData);
+  console.log(`Server Data is ${responseData}`);
+});
+
+function generateUniqueId() {
+  return "ItemNo" + Math.random().toString(36).substr(2, 9);
+}
+
+function generateHash(data) {
+  const { merchantId, orderId, amount, currency, merchantSecret } = data;
+  const hashedSecret = md5(merchantSecret).toString().toUpperCase();
+  const amountFormated = parseFloat(amount)
+    .toLocaleString("en-us", { minimumFractionDigits: 2 })
+    .replaceAll(",", "");
+  const hash = md5(
+    merchantId + orderId + amountFormated + currency + hashedSecret
+  )
+    .toString()
+    .toUpperCase();
+  return hash;
+}
+
+function numberFormat(amount, decimals) {
+  return amount.toFixed(decimals).replace(".", "");
+}
+
+app.post("/order/:customerId", (req, res) => {
+  const customerId = req.params.customerId;
+  const { price } = req.body; // Extract price from the request body
+
+  const data = {
+    merchantId: "1228429",
+    return_url: "http://localhost:5173/",
+    cancel_url: "http://localhost:5173/ca",
+    notify_url: "http://sample.com/notify",
+    merchantSecret: "Mjg1MzMxMTExNzQwMDM3ODQ4NzYyNTU3NjA0ODk5MTIwMTM0NTg2OQ==",
+    first_name: "Akila",
+    last_name: "Gunasekara",
+    email: "akilagunasekara@gmail.com",
+    phone: "0770473392",
+    address: "No.1, Galle Road",
+    city: "Colombo",
+    country: "Sri Lanka",
+    orderId: "12345",
+    items: "Chair",
+    currency: "LKR",
+    amount: price,
+  };
+
+  const hash = generateHash(data);
+
+  // Create a new object that includes both data and hash
+  const responseData = {
+    ...data,
+    hash: hash,
+  };
+
+  res.send(responseData);
+  console.log(`Server Data is ${responseData}`);
+  // Check if the required fields are provided
+  if (!price || !customerId) {
+    return res
+      .status(400)
+      .json({ error: "Missing required parameters: price or customerId" });
+  }
+
+  // SQL query to insert order into the database
+  const sql = `
+    INSERT INTO \`order\` (\`customerId\`, \`price\`)
+    VALUES (?, ?)
+  `;
+
+  const values = [customerId, price];
+
+  // Execute the SQL query
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Error inserting order into the database:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error while inserting order" });
+    }
+
+    // Respond with success if the insertion was successful
+    return res.json({ Status: "Success", orderId: result.insertId });
   });
 });
 
