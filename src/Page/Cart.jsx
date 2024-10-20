@@ -311,11 +311,13 @@ const Cart = () => {
                   >
                     order now
                   </button> */}
-                  <PaymentGateway
-                    // onClick={order}
-                    ref={paymentGatewayRef}
-                    totalPrice={totalPrice.toFixed(2)}
-                  />{" "}
+                  <button>
+                    <PaymentGateway
+                      onClick={order}
+                      ref={paymentGatewayRef}
+                      totalPrice={totalPrice.toFixed(2)}
+                    />{" "}
+                  </button>
                 </div>
               </div>
             </>

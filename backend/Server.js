@@ -452,26 +452,6 @@ app.delete("/spice/:spiceCartId", (req, res) => {
   });
 });
 
-// app.get("/spiceses/:customerId", verifyToken, (req, res) => {
-//   const customerId = req.params.customerId;
-//   const sql = "SELECT * FROM spice WHERE customerId = ?";
-
-//   db.query(sql, [customerId], (err, result) => {
-//     if (err) {
-//       console.error("Error fetching spice items:", err);
-//       return res.status(500).json({ error: "Error fetching spice items" });
-//     }
-
-//     if (result.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ message: "No spices found for this customer" });
-//     }
-
-//     return res.json(result);
-//   });
-// });
-
 // display
 
 app.get("/registercustomerAdmin", (req, res) => {
@@ -645,28 +625,6 @@ app.get("/spiceProducts", (req, res) => {
   });
 });
 
-//previousSpice
-// app.get("/previousSpice", (req, res) => {
-//   const sql =
-//     "SELECT spiceId, combination, name, fullWeight, price FROM spice ORDER BY spiceId DESC LIMIT 3";
-
-//   db.query(sql, (err, data) => {
-//     if (err) {
-//       console.error("Error fetching spices: ", err);
-//       return res.status(500).json({ error: "Error fetching spices" });
-//     }
-
-//     // Map the database rows into the spice format
-//     const spices = data.map((row) => ({
-//       combination: row.combination,
-//       name: row.name,
-//       fullWeight: row.fullWeight,
-//       price: row.price,
-//     }));
-
-//     return res.json(spices);
-//   });
-// });
 
 let goodSpiceIds = [];
 

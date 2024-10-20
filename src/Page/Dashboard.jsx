@@ -17,7 +17,7 @@ export default function Dashboard() {
     discription: "",
     photo: null,
   });
-  const [showAddProductForm, setShowAddProductForm] = useState(false);
+
   const [editingProduct, setEditingProduct] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imagePreviews, setImagePreviews] = useState(null);
@@ -94,25 +94,11 @@ export default function Dashboard() {
     }
   };
 
-  const handleAddProduct = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("product_name", newProduct.product_name);
-    formData.append("price", newProduct.price);
-    formData.append("discription", newProduct.discription);
-
-    if (newProduct.photo && newProduct.photo instanceof File) {
-      formData.append("photo", newProduct.photo);
-    } else {
-      console.error("Photo is not a valid file");
-      return;
-    }
-
+  const handleAddProduct = async (formData) => {
     try {
       const response = await fetch("http://localhost:8088/addProduct", {
         method: "POST",
-        body: formData,
+        body: formData, // FormData containing the file and other inputs
       });
 
       if (!response.ok) {
@@ -125,7 +111,7 @@ export default function Dashboard() {
 
       if (response.ok) {
         Swal.fire("Success", "Product added successfully!", "success");
-        setData2([...data2, result.product]); // Update the product list
+        // Optionally refresh the product list or update the UI
       } else {
         Swal.fire("Error", result.error || "Failed to add product", "error");
       }
@@ -146,7 +132,7 @@ export default function Dashboard() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:8088/registercustomerAdmin/${productId}`, {
+        fetch(`http://localhost:8088/registerProductAdmin/${productId}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -165,8 +151,88 @@ export default function Dashboard() {
 
   const handleEditProduct = (productId) => {
     const product = data2.find((p) => p.productId === productId);
-    setEditingProduct(product);
-    setImagePreviews(`http://localhost:8088/image/${product.photo}`);
+
+    Swal.fire({
+      title: "Edit Product",
+      html: `
+    <form id="editProductForm" class="dash">
+      <input type="text" id="product_name" value="${
+        product.product_name
+      }" placeholder="Product Name" required style="display: block; margin-bottom: 10px; width: 100%;" />
+      <input type="number" id="price" value="${
+        product.price
+      }" placeholder="Price" required style="display: block; margin-bottom: 10px; width: 100%;" />
+      <textarea id="discription" placeholder="Description" required style="display: block; margin-bottom: 10px; width: 100%;">${
+        product.discription
+      }</textarea>
+      <input type="file" id="photo" name="photo" style="display: none;" /> <!-- Hide the file input -->
+      <div id="imagePreview" style="cursor: pointer; margin-bottom: 10px;"> 
+        ${
+          product.photo
+            ? `<img src="http://localhost:8088/image/${product.photo}" id="currentImage" style="width: 100px; height: 100px; object-fit: cover;" />`
+            : ""
+        }
+      </div>
+    </form>
+  `,
+      showCancelButton: true,
+      confirmButtonText: "Update Product",
+      didOpen: () => {
+        const photoInput = document.getElementById("photo");
+        const imagePreview = document.getElementById("imagePreview");
+
+        // Make the image preview clickable, triggering the file input click
+        imagePreview.addEventListener("click", () => {
+          photoInput.click(); // Trigger file input click when imagePreview is clicked
+        });
+
+        // Event listener for when a new file is selected
+        photoInput.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              imagePreview.innerHTML = `<img src="${e.target.result}" style="width: 100px; height: 100px; object-fit: cover;" />`;
+            };
+            reader.readAsDataURL(file); // Read the new image file as a data URL
+          }
+        });
+      },
+      preConfirm: () => {
+        const product_name = document.getElementById("product_name").value;
+        const price = document.getElementById("price").value;
+        const discription = document.getElementById("discription").value;
+        const photo = document.getElementById("photo").files[0];
+
+        if (!product_name || !price || !discription) {
+          Swal.showValidationMessage("Please fill in all fields.");
+          return false;
+        }
+
+        return {
+          product_name,
+          price,
+          discription,
+          photo,
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { product_name, price, discription, photo } = result.value;
+
+        // Prepare FormData for the update
+        const formData = new FormData();
+        formData.append("product_name", product_name);
+        formData.append("price", price);
+        formData.append("discription", discription);
+        if (photo) {
+          formData.append("photo", photo);
+        }
+
+        // Call your update product function
+        handleUpdateProduct(product.productId, formData);
+      }
+    });
   };
 
   const handleInputChanges = (e) => {
@@ -187,18 +253,10 @@ export default function Dashboard() {
     }
   };
 
-  const handleUpdateProduct = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("product_name", editingProduct.product_name);
-    formData.append("price", editingProduct.price);
-    formData.append("discription", editingProduct.discription);
-    formData.append("photo", editingProduct.photo);
-
+  const handleUpdateProduct = async (productId, formData) => {
     try {
       const response = await fetch(
-        `http://localhost:8088/updateProduct/${editingProduct.productId}`,
+        `http://localhost:8088/updateProduct/${productId}`,
         {
           method: "PUT",
           body: formData,
@@ -218,8 +276,6 @@ export default function Dashboard() {
         )
       );
 
-      setEditingProduct(null);
-      setImagePreviews(null);
       Swal.fire("Success", "Product updated successfully!", "success");
     } catch (error) {
       console.error("Error updating product:", error);
@@ -232,6 +288,11 @@ export default function Dashboard() {
       <div className="sidebar">
         <h2>Admin Dashboard</h2>
         <ul>
+          <li>
+            <a href="#" onClick={() => setActiveSection("")}>
+              Home
+            </a>
+          </li>
           <li>
             <a href="#" onClick={() => setActiveSection("users")}>
               Users
@@ -254,6 +315,25 @@ export default function Dashboard() {
       {/* Content Area */}
       <div className="dash">
         <AdminNavbar />
+        {activeSection === "" && (
+          <div
+            className="contact-box-container mx-auto"
+            style={{ fontWeight: "bold", fontSize: "16px" }}
+          >
+            <div className="contact-box">
+              <h2>No. of customers</h2>
+              <h2>{data1.length}</h2>
+            </div>
+            <div className="contact-box">
+              <h2>No. of products</h2>
+              <h2>{data2.length}</h2>
+            </div>
+            <div className="contact-box">
+              <h2>No. of orders</h2>
+              <h2>{data3.length}</h2>
+            </div>
+          </div>
+        )}
         {activeSection === "users" && (
           <div>
             <h2>Users</h2>
@@ -290,54 +370,86 @@ export default function Dashboard() {
           <div>
             <h2>Products</h2>
             <button
-              onClick={() => setShowAddProductForm(!showAddProductForm)}
+              onClick={() => {
+                Swal.fire({
+                  title: "Add New Product",
+                  html: `
+          <form id="addProductForm" class="dash">
+            <input type="text" id="product_name" name="product_name" placeholder="Product Name" required style="display: block; margin-bottom: 10px; width: 100%;" />
+            <input type="number" id="price" name="price" placeholder="Price" required style="display: block; margin-bottom: 10px; width: 100%;" />
+            <input type="text" id="discription" name="discription" placeholder="Description" required style="display: block; margin-bottom: 10px; width: 100%;" />
+            <input type="file" id="photo" name="photo" style="display: block; margin-bottom: 10px;" />
+            
+            <div id="imagePreview" style="margin-bottom: 10px;"></div>
+
+          </form>
+        `,
+                  showCancelButton: true,
+                  confirmButtonText: "Add Product",
+                  didOpen: () => {
+                    const photoInput = document.getElementById("photo");
+                    const imagePreview =
+                      document.getElementById("imagePreview");
+
+                    photoInput.addEventListener("change", () => {
+                      const file = photoInput.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          imagePreview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" style="width: 100px; height: 100px; object-fit: cover;" />`;
+                        };
+                        reader.readAsDataURL(file);
+                      } else {
+                        imagePreview.innerHTML = ""; // Clear preview if no file is selected
+                      }
+                    });
+                  },
+                  preConfirm: () => {
+                    const product_name =
+                      document.getElementById("product_name").value;
+                    const price = document.getElementById("price").value;
+                    const discription =
+                      document.getElementById("discription").value;
+                    const photo = document.getElementById("photo").files[0];
+
+                    if (!product_name || !price || !discription || !photo) {
+                      Swal.showValidationMessage(
+                        "Please fill in all fields and select a photo."
+                      );
+                      return false;
+                    }
+
+                    // Pass form data to the handler
+                    return {
+                      product_name,
+                      price,
+                      discription,
+                      photo,
+                    };
+                  },
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    // Get the form values
+                    const { product_name, price, discription, photo } =
+                      result.value;
+
+                    // Prepare FormData
+                    const formData = new FormData();
+                    formData.append("product_name", product_name);
+                    formData.append("price", price);
+                    formData.append("discription", discription);
+                    formData.append("photo", photo);
+
+                    // Call your handleAddProduct function to submit the data
+                    handleAddProduct(formData);
+                  }
+                });
+              }}
               style={{ marginBottom: "20px" }}
+              type="submit"
             >
               Add Product
             </button>
-
-            {showAddProductForm && (
-              <form onSubmit={handleAddProduct} className="dash">
-                <input
-                  type="text"
-                  name="product_name"
-                  onChange={handleInputChange}
-                  placeholder="Product Name"
-                  required
-                />
-                <input
-                  type="number"
-                  name="price"
-                  onChange={handleInputChange}
-                  placeholder="Price"
-                  required
-                />
-                <input
-                  type="text"
-                  name="discription"
-                  onChange={handleInputChange}
-                  placeholder="Description"
-                  required
-                />
-                <input type="file" onChange={handleFileChange} />
-
-                {imagePreview && (
-                  <div>
-                    <img
-                      src={imagePreview}
-                      alt="Image Preview"
-                      style={{
-                        width: "100px",
-                        height: "100px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                )}
-
-                <button type="submit">Add Product</button>
-              </form>
-            )}
 
             <table style={{ width: "100%" }}>
               <thead>
