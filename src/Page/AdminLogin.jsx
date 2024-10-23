@@ -1,9 +1,7 @@
-
-import React, { useState } from "react";
+import  { useState } from "react";
 import "./login.css";
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie"; // Import js-cookie

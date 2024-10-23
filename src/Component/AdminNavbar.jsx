@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Navbar } from "flowbite-react";
-// import jwt_decode from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import "../Page/navbar.css";
-import { NavDropdown } from "react-bootstrap";
-import { Link } from 'react-router-dom';
 
 export default function AdminNavbar() {
   const [username, setUsername] = useState(null);
@@ -21,8 +18,6 @@ export default function AdminNavbar() {
       }
     }
   }, []);
-
-
 
   return (
     <div>
@@ -41,9 +36,7 @@ export default function AdminNavbar() {
         </Navbar.Brand>
         <Navbar.Toggle />
 
-
-
-        <h1 style={{fontSize:'30px'}}>Admin Dashboard</h1>
+        <h1 style={{ fontSize: "30px" }}>Admin Dashboard</h1>
         {/* <Navbar.Collapse>
           <Navbar.Link className="homePage" href="/">
             Home
@@ -63,13 +56,11 @@ export default function AdminNavbar() {
         </Navbar.Collapse> */}
 
         <div className="flex md:order-2">
-          
-            <Button className="button1">
-              <a href="/admin">Login</a>
-            </Button>
-          
+          <Button className="button1">
+            <a href="/admin">Login</a>
+          </Button>
         </div>
       </Navbar>
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Footer from "../Component/Footer";
+import AdminFooter from "../Component/AdminFooter";
 import AdminNavbar from "../Component/AdminNavbar";
 import "./dashboard.css";
 import Swal from "sweetalert2";
@@ -9,7 +9,6 @@ export default function Dashboard() {
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
-  const [data4, setData4] = useState([]);
 
   const [newProduct, setNewProduct] = useState({
     product_name: "",
@@ -23,30 +22,24 @@ export default function Dashboard() {
   const [imagePreviews, setImagePreviews] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8088/registercustomerAdmin")
-      .then((res) => res.json())
-      .then((data1) => setData1(data1))
-      .catch((err) => console.log(err));
-  }, []);
-
-  useEffect(() => {
-    fetch("http://localhost:8088/productAdmin")
-      .then((res) => res.json())
-      .then((data2) => setData2(data2))
-      .catch((err) => console.log(err));
-  }, []);
-
-  useEffect(() => {
-    fetch("http://localhost:8088/orderAdmin")
-      .then((res) => res.json())
-      .then((data3) => setData3(data3))
-      .catch((err) => console.log(err));
-  }, []);
-
-  useEffect(() => {
-    fetch("http://localhost:8088/inquiryAdmin")
-      .then((res) => res.json())
-      .then((data4) => setData4(data4))
+    Promise.all([
+      fetch("http://localhost:8088/registercustomerAdmin").then((res) =>
+        res.json()
+      ),
+      fetch("http://localhost:8088/productAdmin").then((res) => res.json()),
+      fetch("http://localhost:8088/orderAdmin").then((res) => res.json()),
+    ])
+      .then(([customerData, productData, orderData]) => {
+        console.log("Order Data:", orderData); // Log the order data
+        setData1(customerData);
+        setData2(productData);
+        if (Array.isArray(orderData)) {
+          setData3(orderData);
+        } else {
+          console.error("Order data is not an array:", orderData);
+          setData3([]); // Ensure data3 is an empty array if the response is unexpected
+        }
+      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -528,28 +521,30 @@ export default function Dashboard() {
             <table style={{ width: "100%" }}>
               <thead>
                 <tr>
-                  <th>OrderId</th>
-                  <th>CustomerId</th>
+                  <th>Customer Name</th>
                   <th>Price</th>
-                  <th>Quantity</th>
                 </tr>
               </thead>
               <tbody>
-                {data3.map((d, i) => (
-                  <tr key={i}>
-                    <td>{d.cartId}</td>
-                    <td>{d.customerId}</td>
-                    <td>{d.price}</td>
-                    <td>{d.quantity}</td>
+                {Array.isArray(data3) ? (
+                  data3.map((order, index) => (
+                    <tr key={index}>
+                      <td>{order.name}</td>
+                      <td>{order.price}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3}>No orders available.</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         )}
       </div>
 
-      <Footer />
+      <AdminFooter setActiveSection={setActiveSection} />
     </div>
   );
 }

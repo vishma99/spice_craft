@@ -157,7 +157,8 @@ const Cart = () => {
           "Submitting order with customerId:",
           customerId,
           "and totalPrice:",
-          totalPrice
+          totalPrice,
+          
         );
 
         const response = await axios.post(
@@ -165,6 +166,7 @@ const Cart = () => {
           {
             customerId, // Ensure customerId is properly passed
             price: totalPrice, // Ensure totalPrice is passed
+            
           }
         );
 

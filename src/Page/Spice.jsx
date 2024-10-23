@@ -5,6 +5,7 @@ import Footer from "../Component/Footer";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
+import jsPDF from "jspdf";
 
 const CustomBlendForm = () => {
   const [spiceCount, setSpiceCount] = useState(2);
@@ -258,6 +259,37 @@ const CustomBlendForm = () => {
       }, 0)
       .toFixed(2);
   };
+  const handleDownload = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Spice Blend Details", 10, 10);
+
+    doc.setFontSize(12);
+    doc.text(`Blend Name: ${submittedData.blendName}`, 10, 20);
+    doc.text(`Spice Count: ${submittedData.spiceCount}`, 10, 30);
+    doc.text(
+      `Weight: ${submittedData.weight} ${submittedData.weightUnit}`,
+      10,
+      40
+    );
+
+    submittedData.ingredients.forEach((ingredient, index) => {
+      const ingredientLine = `Ingredient ${index + 1}: ${ingredient} - Rate: ${
+        submittedData.rate[index]
+      }%`;
+      doc.text(ingredientLine, 10, 50 + index * 10);
+    });
+
+    doc.text(
+      `Total Price: $${getTotalPrice()}`,
+      10,
+      60 + submittedData.ingredients.length * 10
+    );
+
+    // Save the PDF
+    doc.save(`${submittedData.blendName}_blend.pdf`);
+  };
 
   return (
     <div>
@@ -340,6 +372,12 @@ const CustomBlendForm = () => {
                   onClick={handleBack}
                 >
                   Back
+                </button>
+                <button
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                  onClick={handleDownload} // Attach the download handler
+                >
+                  Download PDF
                 </button>
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button, Navbar } from "flowbite-react";
-// import jwt_decode from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import "../Page/navbar.css";
@@ -74,11 +73,7 @@ export default function NavBar() {
                 href="/user"
                 title={`Hello, ${username}`}
               >
-                <NavDropdown.Item
-                  className="homePage"
-                  as={Link}
-                  to="/user"
-                >
+                <NavDropdown.Item className="homePage" as={Link} to="/user">
                   Profile
                 </NavDropdown.Item>
 

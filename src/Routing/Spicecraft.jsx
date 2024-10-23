@@ -5,7 +5,6 @@ import AddtoCard from "../Page/AddToCart";
 import Login from "../Page/Login";
 import About from "../Page/About";
 import Contact from "../Page/Contact";
-
 import Sign from "../Page/Sign";
 import Cart from "../Page/Cart";
 import Dashboard from "../Page/Dashboard";
@@ -20,7 +19,6 @@ import MomSpice from "../Page/MomSpice";
 import PreviousSpice from "../Page/PreviousSpice";
 import Oldspice from "../Page/Oldspice";
 import PaymentGateway from "../PaymentGateWay/Payment";
-// import Pay from "../Page/Pay";
 
 export default function Spicecraft() {
   return (
@@ -33,11 +31,7 @@ export default function Spicecraft() {
           <Route path="/login" element={<Login />}></Route>
           <Route path="/about" element={<About />}></Route>
           <Route path="/contact" element={<Contact />}></Route>
-
           <Route path="/sign" element={<Sign />}></Route>
-          {/* <Route path="/cart" element={<Cart/>}></Route> */}
-          {/* <Route path="/cart/:productId" element={<Cart />}></Route> */}
-
           <Route path="/cart" element={<Cart />}></Route>
           <Route path="/dash" element={<Dashboard />}>
             {" "}
@@ -53,7 +47,6 @@ export default function Spicecraft() {
           <Route path="/momspice" element={<MomSpice />}></Route>
           <Route path="previousspice" element={<PreviousSpice />}></Route>
           <Route path="/old" element={<Oldspice />}></Route>
-          {/* <Route path="/pay" element={<Pay />}></Route> */}
           <Route path="/payment" element={<PaymentGateway />}></Route>
         </Routes>
         <PopupChatbox />

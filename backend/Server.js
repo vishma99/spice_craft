@@ -470,17 +470,17 @@ app.get("/productAdmin", (req, res) => {
   });
 });
 app.get("/orderAdmin", (req, res) => {
-  const sql = "SELECT * FROM cart";
-  db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
-  });
-});
-app.get("/inquiryAdmin", (req, res) => {
-  const sql = "SELECT * FROM inquiry";
-  db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+  const query = `
+    SELECT o.customerId, o.price, r.name AS name
+    FROM \`order\` o
+    JOIN registercustomer r ON o.customerId = r.customerId
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("SQL Error:", err);
+      return res.status(500).json({ error: err });
+    }
+    res.json(results);
   });
 });
 
@@ -624,7 +624,6 @@ app.get("/spiceProducts", (req, res) => {
     return res.json(products);
   });
 });
-
 
 let goodSpiceIds = [];
 
@@ -904,7 +903,7 @@ app.post("/classify-comments", (req, res) => {
 
 app.post("/payment", (req, res) => {
   const { price } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   const formattedPrice = parseFloat(price).toFixed(2);
   const data = {
     merchantId: "1228429",
