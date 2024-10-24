@@ -5,11 +5,11 @@ import { MdContactPhone } from "react-icons/md";
 import { MdEmail } from "react-icons/md";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie"; // Import js-cookie
+import Cookies from "js-cookie"; 
 
 export default function Login() {
   const [action, setAction] = useState("");
-  const [rememberMe, setRememberMe] = useState(false); // State for remember me
+  const [rememberMe, setRememberMe] = useState(false); 
   const [error, setError] = useState("");
   const [values, setValues] = useState({
     name: "",
@@ -67,11 +67,11 @@ export default function Login() {
       .post("http://localhost:8088/register", values)
       .then((res) => {
         setAction("");
-        setError(""); // Clear error on successful registration
+        setError(""); 
       })
       .catch((err) => {
         if (err.response && err.response.status === 400) {
-          setError("Email already in use"); // Show email error
+          setError("Email already in use"); 
         } else {
           console.log(err);
         }
@@ -92,12 +92,18 @@ export default function Login() {
             Cookies.set("token", token); // Session cookie
           }
 
-          navigate("/");
+          navigate("/"); // Redirect to home page
         } else {
-          alert("Incorrect username or password!");
+          alert(res.data.message); // Display error message from the backend
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err.response && err.response.status === 403) {
+          alert("Your account is inactive. Please contact support.");
+        } else {
+          console.error("Error logging in:", err);
+        }
+      });
   };
 
   return (

@@ -20,13 +20,14 @@ export default function Footer() {
               <FlowbiteFooter.Link href="/">Home</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/about">About Us</FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/shop">
-                Our Product
+                Our Products
               </FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/contact">
                 Contact Us
               </FlowbiteFooter.Link>
               <FlowbiteFooter.Link href="/review">Review</FlowbiteFooter.Link>
-              <FlowbiteFooter.Link href="/chat">Chat</FlowbiteFooter.Link>
+
+              <FlowbiteFooter.Link href="/faq">fAQ</FlowbiteFooter.Link>
             </FlowbiteFooter.LinkGroup>
           </div>
           <hr />

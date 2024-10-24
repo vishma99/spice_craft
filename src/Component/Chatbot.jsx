@@ -11,28 +11,26 @@ const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // inislize your Gemeni Api
+  // Initialize your Gemini API
   const genAI = new GoogleGenerativeAI(
     "AIzaSyB3dq9Qh1gKFJ5G_-MQJ3940NrnxUbr_ZQ"
   );
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  // Function to handle user input
+  // Handle user input
   const handleUserInput = (e) => {
     setUserInput(e.target.value);
   };
 
-  // Function to send user message to Gemini
+  // Send user message to Gemini
   const sendMessage = async () => {
     if (userInput.trim() === "") return;
 
     setIsLoading(true);
     try {
-      // call Gemini Api to get a response
       const result = await model.generateContent(userInput);
       const response = await result.response;
-      console.log(response);
-      // add Gemeni's response to the chat history
+
       setChatHistory([
         ...chatHistory,
         { type: "user", message: userInput },
@@ -46,21 +44,22 @@ const Chatbot = () => {
     }
   };
 
-  // Function to clear the chat history
+  // Clear chat history
   const clearChat = () => {
     setChatHistory([]);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-4">Chatbot</h1>
-
-      <div className="chat-container rounded-lg shadow-md p-4">
-        <ChatHistory chatHistory={chatHistory} />
-        <Loading isLoading={isLoading} />
+    <div className="chat-container bg-white shadow-md p-4 rounded-lg h-[400px] w-[300px] flex flex-col justify-between">
+      <div className="chat-header">
+        <span className="chatbot-name">SpiceCraft Bot</span>{" "}
+        {/* Chatbot name */}
       </div>
-
-      <div className="flex mt-4">
+      <div className="overflow-y-auto h-full mb-2">
+        <ChatHistory chatHistory={chatHistory} />
+      </div>
+      <Loading isLoading={isLoading} />
+      <div className="flex">
         <input
           type="text"
           className="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -69,7 +68,7 @@ const Chatbot = () => {
           onChange={handleUserInput}
         />
         <button
-          className="px-4 py-2 ml-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
+          className="px-1 py-1 ml-1 rounded-lg bg-red-500 text-white hover:bg-red-600 focus:outline-none"
           onClick={sendMessage}
           disabled={isLoading}
         >
@@ -77,7 +76,7 @@ const Chatbot = () => {
         </button>
       </div>
       <button
-        className="mt-4 block px-4 py-2 rounded-lg bg-gray-400 text-white hover:bg-gray-500 focus:outline-none"
+        className="mt-2 block px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-500 focus:outline-none"
         onClick={clearChat}
       >
         Clear Chat

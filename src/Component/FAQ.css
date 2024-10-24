@@ -1,0 +1,99 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.faq-container {
+  position: relative;
+  padding: 20px; /* Increased padding for better spacing */
+  color: white; /* Text color for better visibility */
+  text-align: center;
+  background: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Added a dark background overlay for contrast */
+  border-radius: 10px; /* Rounded corners for the container */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+  justify-content: center; /* Center items vertically */
+  min-height: 100vh; /* Ensure it takes at least full viewport height */
+}
+
+.floating-message {
+  position: relative; /* Changed from absolute to relative */
+  margin: 20px; /* Add margin for spacing */
+  background: rgba(255, 223, 223, 0.7);
+  color: black;
+  padding: 10px 10px;
+  border-radius: 15px;
+  animation: float 4s ease-in-out infinite;
+  font-size: 2em; /* Increased font size for better visibility */
+  text-align: center; /* Center text alignment */
+}
+
+.faq-list {
+  max-width: 800px;
+  margin: 10px auto 0; /* Added margin to the top to move the list down */
+  padding: 20px 0; /* Added padding around the list */
+}
+
+.faq-item {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Lighter semi-transparent background */
+  margin: 10px auto;
+  padding: 15px;
+  border-radius: 8px;
+  transition: background 0.3s ease; /* Smooth transition */
+  color: white; /* Ensures text color is white for visibility */
+}
+
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.2); /* Lighten on hover */
+}
+
+.faq-question {
+  font-size: 1.5em;
+  cursor: pointer; /* Indicate that this is clickable */
+  text-align: left; /* Align text to the left */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5); /* Underline for distinction */
+  padding-bottom: 5px; /* Space between question and underline */
+  margin-bottom: 10px; /* Margin below question */
+}
+
+.faq-answer {
+  font-size: 1em;
+  margin-top: 10px;
+  text-align: left; /* Align text to the left */
+  padding-left: 20px; /* Indentation for answers */
+  font-style: italic; /* Italicize answers for differentiation */
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Background styling */
+.faq-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/src/Image/spice.jpg"); /* Keep the same image */
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px);
+  z-index: -1; /* Send the background to the back */
+}

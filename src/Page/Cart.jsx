@@ -157,16 +157,14 @@ const Cart = () => {
           "Submitting order with customerId:",
           customerId,
           "and totalPrice:",
-          totalPrice,
-          
+          totalPrice
         );
 
         const response = await axios.post(
-          `http://localhost:8088/order/${customerId}`,
+          `http://localhost:8088/order1/${customerId}`,
           {
             customerId, // Ensure customerId is properly passed
             price: totalPrice, // Ensure totalPrice is passed
-            
           }
         );
 
@@ -227,40 +225,73 @@ const Cart = () => {
         <div className="bg-white shadow-md rounded-lg p-6">
           {cartItems.length > 0 ? (
             <>
-              {cartItems.map((item) => (
-                <div
-                  key={item.productId}
-                  className="flex items-center justify-between border-b-2 py-4"
-                >
-                  <img
-                    src={`http://localhost:8088/image/${item.photo}`}
-                    alt={item.name}
-                    className="w-20 h-20 object-cover"
-                  />
-                  <div className="flex-1 ml-4 px-3">
-                    <h2 className="text-xl font-semibold">{item.name}</h2>
-                    <p>{item.description}</p>
-                    <p className="text-gray-500">{item.size}</p>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-lg font-semibold">
-                      ${item?.price * item?.quantity}
-                    </span>
-                    <span className="mx-4">{item.quantity}</span>
-                    <button
-                      onClick={() => removeItem(item.productId)}
-                      className=" "
-                      style={{
-                        backgroundColor: "#A91D3A",
-                        color: "#fff",
-                        borderRadius: "10px",
-                      }}
+              <table className="w-full text-left table-auto border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="p-4">Image</th>
+                    <th className="p-4">Product Name</th>
+                    <th className="p-4">Weight</th>
+                    <th className="p-4">Price</th>
+                    <th className="p-4">Quantity</th>
+                    <th className="p-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cartItems.map((item) => (
+                    <tr
+                      key={item.productId}
+                      className="border-b hover:bg-gray-100"
                     >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
+                      <td className="p-4">
+                        <img
+                          src={`http://localhost:8088/image/${item.photo}`}
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      </td>
+                      <td className="p-4">
+                        <span className="font-semibold">
+                          {item.product_name}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span>{item.size}</span>
+                      </td>
+                      <td className="p-4">
+                        <span className="text-lg font-semibold">
+                          ${item?.price}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center">
+                          {/* <button
+                            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                            onClick={() => decreaseQuantity(item.productId)}
+                          >
+                            -
+                          </button> */}
+                          <span className="mx-2">{item.quantity}</span>
+                          {/* <button
+                            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                            onClick={() => increaseQuantity(item.productId)}
+                          >
+                            +
+                          </button> */}
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => removeItem(item.productId)}
+                          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
               {/* Spice Data Display */}
               {spices.length > 0 && (
                 <>

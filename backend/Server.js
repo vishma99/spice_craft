@@ -4,27 +4,20 @@ const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
 const multer = require("multer");
-const path = require("path");
 const { spawn } = require("child_process");
-
-const crypto = require("crypto");
 const md5 = require("crypto-js/md5");
-
-// const upload = multer({ storage: multer.memoryStorage() });
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
 const bodyParser = require("body-parser");
 const { SessionsClient } = require("@google-cloud/dialogflow");
-const { data } = require("autoprefixer");
-const { error } = require("console");
-const { comment } = require("postcss");
 const port = 5000;
 
+app.use(cors());
+app.use(express.json());
+app.use(express.static("public"));
 app.use(bodyParser.json());
 
-const projectId = "your-project-id"; // Replace with your Dialogflow project ID
+const projectId = "your-project-id";
 const sessionClient = new SessionsClient({ projectId });
 
 app.post("/api/dialogflow", async (req, res) => {
@@ -58,12 +51,6 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-// const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.use(express.static("public"));
-
 // Set up the connection to database
 const db = mysql.createConnection({
   host: "localhost",
@@ -81,6 +68,8 @@ db.connect(function (err) {
   console.log("connected");
 });
 
+// login page
+//use register from
 app.post("/register", async (req, res) => {
   const { name, email, contactNumber, address, username, password } = req.body;
 
@@ -121,9 +110,9 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// signup
-const SECRET_KEY = "your_secret_key"; // Change this to your actual secret key
+const SECRET_KEY = "your_secret_key";
 
+// login from
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const sql = "SELECT * FROM registercustomer WHERE `email` = ?";
@@ -133,17 +122,25 @@ app.post("/login", (req, res) => {
       console.error("Database error:", err);
       return res.json({ error: err.message });
     }
+
     if (data.length > 0) {
       const user = data[0];
+
+      // Check if the user is active
+      if (user.userstate === 0) {
+        console.log("User is inactive");
+        return res.json({
+          status: "fail",
+          message: "Your account is inactive. Please contact support.",
+        });
+      }
 
       console.log("User found:", user);
 
       try {
-        // Compare provided password with hashed password in database
         const match = await bcrypt.compare(password, user.password);
         if (match) {
           console.log("Passwords match");
-          // Passwords match, generate a JWT token
           const token = jwt.sign(
             {
               id: user.id,
@@ -153,52 +150,6 @@ app.post("/login", (req, res) => {
               contactNumber: user.contactNumber,
               customerId: user.customerId,
             },
-            SECRET_KEY,
-            { expiresIn: "24h" }
-          );
-          return res.json({ status: "success", token });
-        } else {
-          console.log("Passwords do not match");
-          return res.json({ status: "fail", message: "Invalid credentials" });
-        }
-      } catch (compareError) {
-        console.error("bcrypt compare error:", compareError);
-        return res.json({
-          status: "fail",
-          message: "Error comparing passwords",
-        });
-      }
-    } else {
-      console.log("User not found");
-      return res.json({ status: "fail", message: "User not found" });
-    }
-  });
-});
-
-//admin log
-
-app.post("/admin", (req, res) => {
-  const { email, password } = req.body;
-  const sql = "SELECT * FROM admin WHERE `email` = ?";
-
-  db.query(sql, [email], async (err, data) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.json({ error: err.message });
-    }
-    if (data.length > 0) {
-      const user = data[0];
-
-      console.log("User found:", user);
-
-      try {
-        // Compare provided password with hashed password in database
-        const match = await bcrypt.compare(password, user.password);
-        if (match) {
-          console.log("Passwords match");
-          // Passwords match, generate a JWT token
-          const token = jwt.sign(
-            { id: user.id, username: user.username, email: user.email },
             SECRET_KEY,
             { expiresIn: "24h" }
           );
@@ -291,7 +242,7 @@ app.post("/inquiry", upload.single("file"), (req, res) => {
   });
 });
 
-// shop page
+// shop page---------------------------------------------------------------------------------------------------------------------------------
 app.get("/card", (req, res) => {
   const sql = "SELECT * FROM product";
   db.query(sql, (err, result) => {
@@ -299,6 +250,7 @@ app.get("/card", (req, res) => {
     return res.json(result);
   });
 });
+//----------------------------------------------------------------------------------------------------------------------------------------------
 
 // add to card
 app.get("/card/:productId/:userId?", (req, res) => {
@@ -314,22 +266,6 @@ app.get("/card/:productId/:userId?", (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
     return res.json(result[0]); // Assuming productId is unique, return the first row
-  });
-});
-
-// delete item
-app.delete("/cart/:customerId/:productId", (req, res) => {
-  const { customerId, productId } = req.params;
-  const sql = "DELETE FROM cart WHERE customerId = ? AND productId = ?";
-  db.query(sql, [customerId, productId], (err, result) => {
-    if (err) {
-      console.error("Error deleting cart item:", err);
-      return res.status(500).json({ error: "Error deleting cart item" });
-    }
-    return res.json({
-      success: true,
-      message: "Cart item deleted successfully",
-    });
   });
 });
 
@@ -349,6 +285,7 @@ app.get("/search", (req, res) => {
   });
 });
 
+// add to cart page----------------------------------------------------------------------------------------------------------------------
 app.post("/addtocart", (req, res) => {
   const { customerId, productId, quantity, size } = req.body;
   const sqlCheck = "SELECT * FROM cart WHERE customerId = ? AND productId = ?";
@@ -396,6 +333,7 @@ app.post("/addtocart", (req, res) => {
   });
 });
 
+// cart page------------------------------------------------------------------------------------------------------------------------------
 //get from cart
 app.get("/cart/:customerId", verifyToken, (req, res) => {
   const customerId = req.params.customerId;
@@ -409,6 +347,22 @@ app.get("/cart/:customerId", verifyToken, (req, res) => {
     return res.json(result); // Assuming `result` is an array of cart items
   });
 });
+// delete item
+app.delete("/cart/:customerId/:productId", (req, res) => {
+  const { customerId, productId } = req.params;
+  const sql = "DELETE FROM cart WHERE customerId = ? AND productId = ?";
+  db.query(sql, [customerId, productId], (err, result) => {
+    if (err) {
+      console.error("Error deleting cart item:", err);
+      return res.status(500).json({ error: "Error deleting cart item" });
+    }
+    return res.json({
+      success: true,
+      message: "Cart item deleted successfully",
+    });
+  });
+});
+
 app.get("/spiceses/:customerId", (req, res) => {
   const customerId = req.params.customerId;
   const sql =
@@ -451,41 +405,23 @@ app.delete("/spice/:spiceCartId", (req, res) => {
     }
   });
 });
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
-// display
-
-app.get("/registercustomerAdmin", (req, res) => {
-  const sql = "SELECT * FROM registercustomer";
+// fag page--------------------------------------------------------------------------------------------------------------------------------
+app.get("/faqAdmin", (req, res) => {
+  const sql = "SELECT * FROM `faq`";
   db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
-  });
-});
-
-app.get("/productAdmin", (req, res) => {
-  const sql = "SELECT * FROM product";
-  db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
-  });
-});
-app.get("/orderAdmin", (req, res) => {
-  const query = `
-    SELECT o.customerId, o.price, r.name AS name
-    FROM \`order\` o
-    JOIN registercustomer r ON o.customerId = r.customerId
-  `;
-  db.query(query, (err, results) => {
     if (err) {
-      console.error("SQL Error:", err);
-      return res.status(500).json({ error: err });
+      console.error("Error fetching FAQ:", err);
+      return res.json(err);
     }
-    res.json(results);
+    console.log("FAQ data:", data); // Log the data to verify it's fetched correctly
+    return res.json(data);
   });
 });
 
+// review page--------------------------------------------------------------------------------------------------------------------------------
 // review
-
 app.post("/review", upload.single("file"), (req, res) => {
   const sql = "INSERT INTO review(`comment`,`name` ,`rating`) VALUES(?)";
   const values = [req.body.comment, req.body.name, req.body.rating];
@@ -497,7 +433,6 @@ app.post("/review", upload.single("file"), (req, res) => {
 });
 
 // get review
-
 app.get("/reviewVisit", (req, res) => {
   const sql = "SELECT * FROM review";
   db.query(sql, (err, data) => {
@@ -505,6 +440,8 @@ app.get("/reviewVisit", (req, res) => {
     return res.json(data);
   });
 });
+
+//-----------------------------------------------------------------------------------------------------------------------------------
 
 app.post("/productreview", (req, res) => {
   const sql =
@@ -534,7 +471,7 @@ app.get("/productreviewVisit/:productId", (req, res) => {
   });
 });
 
-// spice
+// spice page ------------------------------------------------------------------------------------------------------------------
 app.post("/spice/:customerId", (req, res) => {
   const customerId = req.params.customerId;
   const { blendName, weight, weightUnit, ingredients, rate, fullprice } =
@@ -643,6 +580,7 @@ app.post("/receiveComments", (req, res) => {
 });
 
 // API route to send the stored good spice IDs to React frontend
+// nlp
 app.get("/getGoodSpiceIds", (req, res) => {
   res.json({ spiceIds: goodSpiceIds });
 });
@@ -676,7 +614,8 @@ app.post("/receiveGoodComments", (req, res) => {
   });
 });
 
-//old all
+//old all page-------------------------------------------------------------------------------------------------------------------
+
 app.get("/oldSpice", (req, res) => {
   const sql =
     "SELECT DISTINCT spiceId, combination,customerId, name, fullWeight, price,comment FROM spice";
@@ -723,41 +662,6 @@ app.post("/addComment", (req, res) => {
     }
     console.log("Result from the query:", result);
     res.status(200).send("Comment added successfully");
-  });
-});
-
-//admin
-
-//Delete a User Account
-app.delete("/registercustomerAdmin/:customerId", (req, res) => {
-  const customerId = req.params.customerId;
-  const sql = "DELETE FROM registercustomer WHERE customerId = ?";
-  db.query(sql, [customerId], (err, result) => {
-    if (err) {
-      console.error("Error deleting user:", err);
-      return res.status(500).json({ error: "Error deleting user" });
-    }
-    return res.json({ success: true, message: "User deleted successfully" });
-  });
-});
-
-//Delete product
-app.delete("/registerProductAdmin/:productId", (req, res) => {
-  const productId = req.params.productId;
-  console.log("Received DELETE request for productId:", productId);
-
-  const sql = "DELETE FROM product WHERE productId = ?";
-  db.query(sql, [productId], (err, result) => {
-    if (err) {
-      console.error("Error deleting product:", err);
-      return res.status(500).json({ error: "Error deleting product" });
-    }
-    console.log("Delete result:", result);
-    if (result.affectedRows > 0) {
-      return res.json({ success: true });
-    } else {
-      return res.status(404).json({ error: "Product not found" });
-    }
   });
 });
 
@@ -827,7 +731,8 @@ app.put("/updateProduct/:id", upload.single("photo"), (req, res) => {
   );
 });
 
-//user profile
+//user profile-------------------------------------------------------------------------------------------------------------
+
 // get user profile
 app.get("/userprofile/:customerId", (req, res) => {
   const sql = "SELECT * FROM registercustomer WHERE customerId = ?";
@@ -962,6 +867,28 @@ app.post("/order/:customerId", (req, res) => {
   const customerId = req.params.customerId;
   const { price } = req.body; // Extract price from the request body
 
+  if (!price || !customerId) {
+    return res
+      .status(400)
+      .json({ error: "Missing required parameters: price or customerId" });
+  }
+  const sql = `
+    INSERT INTO \`order\` (\`customerId\`, \`price\`)
+    VALUES (?, ?)
+  `;
+  const values = [customerId, price];
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Error inserting order into the database:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error while inserting order" });
+    }
+
+    // Respond with success if the insertion was successful
+    return res.json({ Status: "Success", orderId: result.insertId });
+  });
+
   const data = {
     merchantId: "1228429",
     return_url: "http://localhost:5173/",
@@ -992,31 +919,159 @@ app.post("/order/:customerId", (req, res) => {
   res.send(responseData);
   console.log(`Server Data is ${responseData}`);
   // Check if the required fields are provided
-  if (!price || !customerId) {
-    return res
-      .status(400)
-      .json({ error: "Missing required parameters: price or customerId" });
-  }
 
   // SQL query to insert order into the database
-  const sql = `
-    INSERT INTO \`order\` (\`customerId\`, \`price\`)
-    VALUES (?, ?)
-  `;
-
-  const values = [customerId, price];
 
   // Execute the SQL query
+});
+
+// admin-----------------------------------------------------------------------------------------------------------------------------------
+//admin log
+app.post("/admin", (req, res) => {
+  const { email, password } = req.body;
+  const sql = "SELECT * FROM admin WHERE `email` = ?";
+
+  db.query(sql, [email], async (err, data) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({ error: err.message });
+    }
+    if (data.length > 0) {
+      const user = data[0];
+
+      console.log("User found:", user);
+
+      try {
+        const match = await bcrypt.compare(password, user.password);
+        if (match) {
+          console.log("Passwords match");
+          const token = jwt.sign(
+            { id: user.id, username: user.username, email: user.email },
+            SECRET_KEY,
+            { expiresIn: "24h" }
+          );
+          return res.json({ status: "success", token });
+        } else {
+          console.log("Passwords do not match");
+          return res.json({ status: "fail", message: "Invalid credentials" });
+        }
+      } catch (compareError) {
+        console.error("bcrypt compare error:", compareError);
+        return res.json({
+          status: "fail",
+          message: "Error comparing passwords",
+        });
+      }
+    } else {
+      console.log("User not found");
+      return res.json({ status: "fail", message: "User not found" });
+    }
+  });
+});
+
+//Delete a User Account
+app.put("/registercustomerAdmin/:customerId", (req, res) => {
+  console.log("ïn delete user");
+  const customerId = req.params.customerId;
+  const { isActive } = req.body; // Expecting `isActive` boolean in the request body
+
+  const sql = "UPDATE registercustomer SET userstate = ? WHERE customerId = ?";
+  db.query(sql, [isActive, customerId], (err, result) => {
+    if (err) {
+      console.error("Error updating user status:", err);
+      return res.status(500).json({ error: "Error updating user status" });
+    }
+    return res.json({
+      success: true,
+      message: `User ${isActive ? "activated" : "deactivated"} successfully`,
+    });
+  });
+});
+
+//add faq
+app.post("/addfaq", (req, res) => {
+  const { question, answer } = req.body; // req.body is already parsed JSON
+
+  console.log("Received fields:", req.body);
+
+  const sql = "INSERT INTO faq(question, answer) VALUES (?, ?)";
+  const values = [question, answer];
+
   db.query(sql, values, (err, result) => {
     if (err) {
-      console.error("Error inserting order into the database:", err);
-      return res
-        .status(500)
-        .json({ error: "Database error while inserting order" });
+      console.error("Error inserting data:", err);
+      return res.status(500).json({ error: err.message });
     }
+    res.status(200).json({
+      success: true,
+      faq: { id: result.insertId, question, answer },
+    });
+  });
+});
 
-    // Respond with success if the insertion was successful
-    return res.json({ Status: "Success", orderId: result.insertId });
+//Delete a Faq
+app.delete("/faq/:faqId", (req, res) => {
+  const faqId = req.params.faqId;
+  const sql = "DELETE FROM faq WHERE faqId = ?";
+  db.query(sql, [faqId], (err, result) => {
+    if (err) {
+      console.error("Error deleting user:", err);
+      return res.status(500).json({ error: "Error deleting faq" });
+    }
+    return res.json({ success: true, message: "Faq deleted successfully" });
+  });
+});
+
+//Delete product
+app.delete("/registerProductAdmin/:productId", (req, res) => {
+  const productId = req.params.productId;
+  console.log("Received DELETE request for productId:", productId);
+
+  const sql = "DELETE FROM product WHERE productId = ?";
+  db.query(sql, [productId], (err, result) => {
+    if (err) {
+      console.error("Error deleting product:", err);
+      return res.status(500).json({ error: "Error deleting product" });
+    }
+    console.log("Delete result:", result);
+    if (result.affectedRows > 0) {
+      return res.json({ success: true });
+    } else {
+      return res.status(404).json({ error: "Product not found" });
+    }
+  });
+});
+
+// get order
+app.get("/orderAdmin", (req, res) => {
+  const query = `
+    SELECT o.customerId, o.price, r.contactNumber AS contactNumber, r.address AS address, r.name AS name
+    FROM \`order\` o
+    JOIN registercustomer r ON o.customerId = r.customerId
+`;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("SQL Error:", err);
+      return res.status(500).json({ error: err });
+    }
+    res.json(results);
+  });
+});
+// get customer
+app.get("/registercustomerAdmin", (req, res) => {
+  const sql = "SELECT * FROM registercustomer";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+// get product
+app.get("/productAdmin", (req, res) => {
+  const sql = "SELECT * FROM product";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
   });
 });
 

@@ -47,26 +47,17 @@ export default function Home() {
         <h2>Our Features</h2>
         <div className="home-features">
           <div className="home-feature">
-            <img
-              src="https://hqorganics.com/cdn/shop/files/HQO_Banner_2024.jpg?v=1706829323&width=1500"
-              alt="Quality Spices"
-            />
+            <img src="/src/Image/home1.jpg" alt="Quality Spices" />
             <h3>Premium Quality</h3>
             <p>Only the finest spices, sourced ethically and sustainably.</p>
           </div>
           <div className="home-feature">
-            <img
-              src="https://images.unsplash.com/photo-1529517986296-847580704921?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHNwaWNlc3xlbnwwfHwwfHx8MA%3D%3D"
-              alt="Ethically Sourced"
-            />
+            <img src="/src/Image/home2.jpg" alt="Ethically Sourced" />
             <h3>Ethically Sourced</h3>
             <p>Supporting farmers and ensuring fair trade practices.</p>
           </div>
           <div className="home-feature">
-            <img
-              src="https://cdnimg.webstaurantstore.com/uploads/blog/2019/11/dospicesexpire3.jpg"
-              alt="Custom Spice Blends"
-            />
+            <img src="/src/Image/home3.jpg" alt="Custom Spice Blends" />
             <h3>Custom Spice Blends</h3>
             <p>
               Create your own unique spice blends with our high-quality
@@ -74,10 +65,7 @@ export default function Home() {
             </p>
           </div>
           <div className="home-feature">
-            <img
-              src="https://static.wixstatic.com/media/3b1ff1_bb027b3c90484b5cbd645bb8cf9d09a0~mv2_d_5208_3648_s_4_2.jpg/v1/fill/w_980,h_686,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/3b1ff1_bb027b3c90484b5cbd645bb8cf9d09a0~mv2_d_5208_3648_s_4_2.jpg"
-              alt="Global Delivery"
-            />
+            <img src="/src/Image/home4.jpg" alt="Global Delivery" />
             <h3>Global Delivery</h3>
             <p>
               Fast shipping to bring our spices to your doorstep, no matter

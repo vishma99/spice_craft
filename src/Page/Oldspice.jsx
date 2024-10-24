@@ -218,7 +218,7 @@ const OldSpice = () => {
                           )
                         } // make sure spice.spiceId exists
                       >
-                        Add to Comment
+                        Add Comments
                       </button>
                     </td>
                   </tr>

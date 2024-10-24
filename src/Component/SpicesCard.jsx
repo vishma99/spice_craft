@@ -136,7 +136,7 @@ function SpicesCard(props) {
                 onClick={() => handleClick(props.productId)}
                 // disabled={product.productId?.quantity}
               >
-                Add to card
+                Add to cart
               </Link>
             </td>
           </tr>

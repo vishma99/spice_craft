@@ -3,12 +3,14 @@ import AdminFooter from "../Component/AdminFooter";
 import AdminNavbar from "../Component/AdminNavbar";
 import "./dashboard.css";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState(""); // Track the active section
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
+  const [data4, setData4] = useState([]);
 
   const [newProduct, setNewProduct] = useState({
     product_name: "",
@@ -28,11 +30,13 @@ export default function Dashboard() {
       ),
       fetch("http://localhost:8088/productAdmin").then((res) => res.json()),
       fetch("http://localhost:8088/orderAdmin").then((res) => res.json()),
+      fetch("http://localhost:8088/faqAdmin").then((res) => res.json()),
     ])
-      .then(([customerData, productData, orderData]) => {
-        console.log("Order Data:", orderData); // Log the order data
+      .then(([customerData, productData, orderData, faqData]) => {
+        console.log("FAQ Data:", faqData); // Add this to log FAQ data
         setData1(customerData);
         setData2(productData);
+        setData4(faqData);
         if (Array.isArray(orderData)) {
           setData3(orderData);
         } else {
@@ -42,6 +46,50 @@ export default function Dashboard() {
       })
       .catch((err) => console.log(err));
   }, []);
+
+  const handleToggleUserState = async (customerId, isActive) => {
+    try {
+      // PUT request to update user state (activate/deactivate)
+      const response = await axios.put(
+        `http://localhost:8088/registercustomerAdmin/${customerId}`,
+        {
+          isActive: isActive, // Set isActive to true or false
+        }
+      );
+
+      if (response.data.success) {
+        // If successful, you can update the UI or state accordingly
+        console.log(response.data.message);
+        // Optionally, refetch the data or update local state to reflect the change
+        // fetchData();
+        Promise.all([
+          fetch("http://localhost:8088/registercustomerAdmin").then((res) =>
+            res.json()
+          ),
+          fetch("http://localhost:8088/productAdmin").then((res) => res.json()),
+          fetch("http://localhost:8088/orderAdmin").then((res) => res.json()),
+          fetch("http://localhost:8088/faqAdmin").then((res) => res.json()),
+        ])
+          .then(([customerData, productData, orderData, faqData]) => {
+            console.log("FAQ Data:", faqData); // Add this to log FAQ data
+            setData1(customerData);
+            setData2(productData);
+            setData4(faqData);
+            if (Array.isArray(orderData)) {
+              setData3(orderData);
+            } else {
+              console.error("Order data is not an array:", orderData);
+              setData3([]); // Ensure data3 is an empty array if the response is unexpected
+            }
+          })
+          .catch((err) => console.log(err));
+      } else {
+        console.error("Failed to update user status");
+      }
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
+  };
 
   const handleDeleteUser = (customerId) => {
     Swal.fire({
@@ -62,6 +110,32 @@ export default function Dashboard() {
             if (response.success) {
               setData1(data1.filter((user) => user.customerId !== customerId));
               Swal.fire("Deleted!", "The user has been deleted.", "success");
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+    });
+  };
+
+  const handleDeleteFaq = (faqId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8088/faq/${faqId}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((response) => {
+            if (response.success) {
+              setData4(data4.filter((faq) => faq.customerId !== faqId));
+              Swal.fire("Deleted!", "The faq has been deleted.", "success");
             }
           })
           .catch((err) => console.log(err));
@@ -111,6 +185,35 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error adding product:", error);
       Swal.fire("Error", "Failed to add product", "error");
+    }
+  };
+  const handleAddfaq = async (faqData) => {
+    try {
+      const response = await fetch("http://localhost:8088/addfaq", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // Indicate that you're sending JSON
+        },
+        body: JSON.stringify(faqData), // Send the FAQ data as a JSON string
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      console.log(result);
+
+      if (response.ok) {
+        Swal.fire("Success", "FAQ added successfully!", "success");
+        // Optionally refresh the product list or update the UI
+      } else {
+        Swal.fire("Error", result.error || "Failed to add FAQ", "error");
+      }
+    } catch (error) {
+      console.error("Error adding FAQ:", error);
+      Swal.fire("Error", "Failed to add FAQ", "error");
     }
   };
 
@@ -301,6 +404,11 @@ export default function Dashboard() {
               Orders
             </a>
           </li>
+          <li>
+            <a href="#" onClick={() => setActiveSection("faq")}>
+              FAQ
+            </a>
+          </li>
         </ul>
         <button>Logout</button>
       </div>
@@ -348,9 +456,23 @@ export default function Dashboard() {
                     <td>{d.contactNumber}</td>
                     <td>{d.address}</td>
                     <td>
-                      <button onClick={() => handleDeleteUser(d.customerId)}>
-                        Delete
-                      </button>
+                      {d.userstate ? (
+                        <button
+                          onClick={() =>
+                            handleToggleUserState(d.customerId, false)
+                          }
+                        >
+                          Deactivate
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleToggleUserState(d.customerId, true)
+                          }
+                        >
+                          Activate
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -448,7 +570,7 @@ export default function Dashboard() {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Price</th>
+                  <th>Price for 100</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -523,6 +645,10 @@ export default function Dashboard() {
                 <tr>
                   <th>Customer Name</th>
                   <th>Price</th>
+                  <th>contact Number</th>
+                  <th>address</th>
+                  <th>quantity</th>
+                  <th>product_name</th>
                 </tr>
               </thead>
               <tbody>
@@ -531,11 +657,84 @@ export default function Dashboard() {
                     <tr key={index}>
                       <td>{order.name}</td>
                       <td>{order.price}</td>
+                      <td>{order.contactNumber}</td>
+                      <td>{order.address}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td colSpan={3}>No orders available.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {activeSection === "faq" && (
+          <div>
+            <h2>FAQ</h2>
+            <button
+              onClick={() => {
+                Swal.fire({
+                  title: "Add FAQ",
+                  html: `
+    <form id="addFaqForm" class="dash">
+      <input type="text" id="question" name="question" placeholder="Question" required style="display: block; margin-bottom: 10px; width: 100%;" />
+      <input type="text" id="answer" name="answer" placeholder="Answer" required style="display: block; margin-bottom: 10px; width: 100%;" />
+    </form>
+  `,
+                  showCancelButton: true,
+                  confirmButtonText: "Add FAQ",
+                  preConfirm: () => {
+                    const question = document.getElementById("question").value;
+                    const answer = document.getElementById("answer").value;
+
+                    return { question, answer };
+                  },
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    const { question, answer } = result.value;
+
+                    // Send JSON data to the backend
+                    handleAddfaq({ question, answer });
+                  }
+                });
+              }}
+              style={{ marginBottom: "20px" }}
+              type="submit"
+            >
+              Add FAQ
+            </button>
+
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th>Question</th>
+                  <th>Answer</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.isArray(data4) ? (
+                  data4.map(
+                    (
+                      faq,
+                      index // map over data4 instead of data3
+                    ) => (
+                      <tr key={index}>
+                        <td>{faq.question}</td>
+                        <td>{faq.answer}</td>
+                        <td>
+                          <button onClick={() => handleDeleteFaq(faq.faqId)}>
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  )
+                ) : (
+                  <tr>
+                    <td colSpan={3}>No FAQ available.</td>
                   </tr>
                 )}
               </tbody>

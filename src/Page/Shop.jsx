@@ -48,7 +48,7 @@ export default function Shop() {
       <NavBar />
 
       <div className="heading">
-        <h1>Our Product</h1>
+        <h1>Our Products</h1>
       </div>
 
       <div className="filter-container" style={{ paddingLeft: "50px" }}>

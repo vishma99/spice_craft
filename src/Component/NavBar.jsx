@@ -60,6 +60,9 @@ export default function NavBar() {
           <Navbar.Link className="homePage" href="/contact">
             Contact Us
           </Navbar.Link>
+          <Navbar.Link className="homePage" href="/rarespices">
+            Rare Spices
+          </Navbar.Link>
           <Navbar.Link className="homePage" href="/cart">
             <i className="fa-solid fa-cart-shopping"></i>
           </Navbar.Link>

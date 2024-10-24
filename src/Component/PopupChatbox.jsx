@@ -13,7 +13,7 @@ const PopupChatbox = () => {
     <div>
       {/* Chatbot Avatar */}
       <div
-        className="fixed bottom-4 right-4 p-2 bg-blue-500 rounded-full cursor-pointer"
+        className="fixed bottom-4 right-4 p-2 bg-red-500 rounded-full cursor-pointer"
         onClick={toggleChatbox}
       >
         <img
@@ -25,14 +25,17 @@ const PopupChatbox = () => {
 
       {/* Chatbox Popup */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 w-80 h-96 bg-white rounded-lg shadow-lg p-4">
-          <Chatbot />
-          <button
-            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
-            onClick={toggleChatbox}
-          >
-            Close
-          </button>
+        <div className="fixed bottom-4 right-4 w-80 h-96 bg-white rounded-lg shadow-lg">
+          {/* Chatbot Content */}
+          <div className="relative h-full">
+            <Chatbot />
+            <button
+              className="absolute top-2 right-2 bg-red-400 text-white p-1 "
+              onClick={toggleChatbox}
+            >
+              ✖️
+            </button>
+          </div>
         </div>
       )}
     </div>

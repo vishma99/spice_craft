@@ -10,15 +10,15 @@ export default function MomSpice() {
       <div className="cards">
         <a href="/old">
           <div className="card red">
-            <p className="tip">Previous created Spice Blending</p>
-            <p className="second-text">Lorem Ipsum</p>
+            <p className="tip">Previously created Spice Blending</p>
+            <p className="second-text">Discover the trending blendings.</p>
           </div>
         </a>
 
         <a href="/spice">
           <div className="card blue">
             <p className="tip">Create new Spice Blending</p>
-            <p className="second-text">Lorem Ipsum</p>
+            <p className="second-text">Create and join the collection.</p>
           </div>
         </a>
       </div>
