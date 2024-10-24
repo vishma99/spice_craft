@@ -36,10 +36,16 @@ const AdminFooter = ({ setActiveSection }) => {
                 products
               </FlowbiteFooter.Link>
               <FlowbiteFooter.Link
-                 href="#"
+                href="#"
                 onClick={() => setActiveSection("orders")}
               >
-                Orders
+                orders
+              </FlowbiteFooter.Link>
+              <FlowbiteFooter.Link
+                href="#"
+                onClick={() => setActiveSection("faq")}
+              >
+                faq
               </FlowbiteFooter.Link>
             </FlowbiteFooter.LinkGroup>
           </div>

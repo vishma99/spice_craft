@@ -864,66 +864,27 @@ function numberFormat(amount, decimals) {
 }
 
 app.post("/order/:customerId", (req, res) => {
-  const customerId = req.params.customerId;
-  const { price } = req.body; // Extract price from the request body
+  const { customerId } = req.params;
+  const { price } = req.body;
 
-  if (!price || !customerId) {
-    return res
-      .status(400)
-      .json({ error: "Missing required parameters: price or customerId" });
-  }
-  const sql = `
-    INSERT INTO \`order\` (\`customerId\`, \`price\`)
-    VALUES (?, ?)
-  `;
-  const values = [customerId, price];
-  db.query(sql, values, (err, result) => {
+  const query = "INSERT INTO orders (customerId, price) VALUES (?, ?)";
+
+  db.query(query, [customerId, price], (err, result) => {
     if (err) {
-      console.error("Error inserting order into the database:", err);
-      return res
-        .status(500)
-        .json({ error: "Database error while inserting order" });
+      console.error("Database error:", err);
+      if (!res.headersSent) {
+        // Check if headers were already sent
+        return res.status(500).json({ error: "Database error" });
+      }
+    } else {
+      if (!res.headersSent) {
+        // Ensure headers aren't sent multiple times
+        return res.status(200).json({ message: "Order placed successfully" });
+      }
     }
-
-    // Respond with success if the insertion was successful
-    return res.json({ Status: "Success", orderId: result.insertId });
   });
-
-  const data = {
-    merchantId: "1228429",
-    return_url: "http://localhost:5173/",
-    cancel_url: "http://localhost:5173/ca",
-    notify_url: "http://sample.com/notify",
-    merchantSecret: "Mjg1MzMxMTExNzQwMDM3ODQ4NzYyNTU3NjA0ODk5MTIwMTM0NTg2OQ==",
-    first_name: "Akila",
-    last_name: "Gunasekara",
-    email: "akilagunasekara@gmail.com",
-    phone: "0770473392",
-    address: "No.1, Galle Road",
-    city: "Colombo",
-    country: "Sri Lanka",
-    orderId: "12345",
-    items: "Chair",
-    currency: "LKR",
-    amount: price,
-  };
-
-  const hash = generateHash(data);
-
-  // Create a new object that includes both data and hash
-  const responseData = {
-    ...data,
-    hash: hash,
-  };
-
-  res.send(responseData);
-  console.log(`Server Data is ${responseData}`);
-  // Check if the required fields are provided
-
-  // SQL query to insert order into the database
-
-  // Execute the SQL query
 });
+
 
 // admin-----------------------------------------------------------------------------------------------------------------------------------
 //admin log
@@ -1045,7 +1006,7 @@ app.delete("/registerProductAdmin/:productId", (req, res) => {
 // get order
 app.get("/orderAdmin", (req, res) => {
   const query = `
-    SELECT o.customerId, o.price, r.contactNumber AS contactNumber, r.address AS address, r.name AS name
+    SELECT o.customerId, o.price,o.quantity,o.product_name, r.contactNumber AS contactNumber, r.address AS address, r.name AS name
     FROM \`order\` o
     JOIN registercustomer r ON o.customerId = r.customerId
 `;

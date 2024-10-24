@@ -410,7 +410,7 @@ export default function Dashboard() {
             </a>
           </li>
         </ul>
-        <button>Logout</button>
+        <button onClick={() => setActiveSection("")}>Spice</button>
       </div>
 
       {/* Content Area */}
@@ -421,15 +421,24 @@ export default function Dashboard() {
             className="contact-box-container mx-auto"
             style={{ fontWeight: "bold", fontSize: "16px" }}
           >
-            <div className="contact-box">
+            <div
+              className="contact-box"
+              onClick={() => setActiveSection("users")}
+            >
               <h2>No. of customers</h2>
               <h2>{data1.length}</h2>
             </div>
-            <div className="contact-box">
+            <div
+              className="contact-box"
+              onClick={() => setActiveSection("products")}
+            >
               <h2>No. of products</h2>
               <h2>{data2.length}</h2>
             </div>
-            <div className="contact-box">
+            <div
+              className="contact-box"
+              onClick={() => setActiveSection("orders")}
+            >
               <h2>No. of orders</h2>
               <h2>{data3.length}</h2>
             </div>
@@ -583,6 +592,7 @@ export default function Dashboard() {
                       <button onClick={() => handleEditProduct(d.productId)}>
                         Edit
                       </button>
+                      &nbsp;&nbsp;&nbsp;
                       <button onClick={() => handleDeleteProduct(d.productId)}>
                         Delete
                       </button>
@@ -644,11 +654,13 @@ export default function Dashboard() {
               <thead>
                 <tr>
                   <th>Customer Name</th>
-                  <th>Price</th>
+
                   <th>contact Number</th>
                   <th>address</th>
-                  <th>quantity</th>
+
                   <th>product_name</th>
+                  <th>quantity</th>
+                  <th>Price</th>
                 </tr>
               </thead>
               <tbody>
@@ -656,9 +668,12 @@ export default function Dashboard() {
                   data3.map((order, index) => (
                     <tr key={index}>
                       <td>{order.name}</td>
-                      <td>{order.price}</td>
                       <td>{order.contactNumber}</td>
                       <td>{order.address}</td>
+
+                      <td>{order.product_name}</td>
+                      <td>{order.quantity}</td>
+                      <td>{order.price}</td>
                     </tr>
                   ))
                 ) : (

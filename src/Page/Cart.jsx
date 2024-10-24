@@ -51,8 +51,7 @@ const Cart = () => {
 
     // Set the total price as the sum of both
     setTotalPrice(cartTotal + spiceTotal);
-    console.log(totalPrice);
-  }, [cartItems, spices, totalPrice]);
+  }, [cartItems, spices]);
 
   const removeItem = (productId) => {
     Swal.fire({
@@ -145,45 +144,37 @@ const Cart = () => {
       return null;
     }
   };
+
   const order = async () => {
     const token = Cookies.get("token");
     if (token) {
-      const decodedToken = jwtDecode(token);
-      const customerId = decodedToken.customerId;
+      const customerId = getCustomerIdFromToken(token);
 
       try {
-        // Log the payload being sent
-        console.log(
-          "Submitting order with customerId:",
-          customerId,
-          "and totalPrice:",
-          totalPrice
-        );
-
         const response = await axios.post(
-          `http://localhost:8088/order1/${customerId}`,
+          `http://localhost:8088/order/${customerId}`,
           {
-            customerId, // Ensure customerId is properly passed
-            price: totalPrice, // Ensure totalPrice is passed
+            customerId,
+            price: totalPrice, // Pass total price to the backend
           }
         );
 
-        // if (response.data.Status === "Success") {
-        //   Swal.fire(
-        //     "Order Placed!",
-        //     "Your order has been placed successfully.",
-        //     "success"
-        //   );
-        // } else {
-        //   console.log("Unexpected response from server:", response.data);
-        // }
+        if (response.data.Status === "Success") {
+          Swal.fire(
+            "Order Placed!",
+            "Your order has been placed successfully.",
+            "success"
+          );
+        } else {
+          console.log("Unexpected response from server:", response.data);
+        }
       } catch (error) {
-        // Swal.fire(
-        //   "Error!",
-        //   "Something went wrong while placing your order.",
-        //   "error"
-        // );
-        console.error("Error placing order:", error); // Log the error for debugging
+        console.error("Error placing order:", error);
+        Swal.fire(
+          "Error!",
+          "Something went wrong while placing your order.",
+          "error"
+        );
       }
     }
   };
@@ -264,25 +255,14 @@ const Cart = () => {
                       </td>
                       <td className="p-4">
                         <div className="flex items-center">
-                          {/* <button
-                            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                            onClick={() => decreaseQuantity(item.productId)}
-                          >
-                            -
-                          </button> */}
                           <span className="mx-2">{item.quantity}</span>
-                          {/* <button
-                            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                            onClick={() => increaseQuantity(item.productId)}
-                          >
-                            +
-                          </button> */}
                         </div>
                       </td>
                       <td className="p-4">
                         <button
                           onClick={() => removeItem(item.productId)}
-                          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                          className="px-4 py-2 text-white rounded hover:bg-[#C73659]"
+                          style={{ backgroundColor: "#A91D3A" }}
                         >
                           Remove
                         </button>
@@ -299,7 +279,6 @@ const Cart = () => {
                     Your Spice Blends:
                   </h3>
                   {spices.map((item) => {
-                    console.log(item); // Debugging: Check the structure of each spice item
                     return (
                       <div
                         key={item.spiceCartId}
@@ -307,18 +286,14 @@ const Cart = () => {
                       >
                         <div className="flex-1 ml-4 px-3">
                           <h2 className="text-xl font-semibold">{item.name}</h2>
-                          <p>Weight: {item.fullWeight}g</p>
-                          <p className="text-lg font-semibold">
-                            Price: ${item.price}
-                          </p>
+                          <p>Weight: {item.weight}g</p>
+                          <p>Total Price: {item.price} USD</p>
+                        </div>
+                        <div className="flex">
                           <button
                             onClick={() => removeItem1(item.spiceCartId)}
-                            className=" "
-                            style={{
-                              backgroundColor: "#A91D3A",
-                              color: "#fff",
-                              borderRadius: "10px",
-                            }}
+                            className="px-4 py-2 text-white rounded hover:bg-[#C73659]"
+                            style={{ backgroundColor: "#A91D3A" }}
                           >
                             Remove
                           </button>
@@ -328,39 +303,31 @@ const Cart = () => {
                   })}
                 </>
               )}
-              <div className="text-right mt-4">
-                <h3 className="text-xl font-semibold">
+
+              <div className="text-right mt-8">
+                <h3 className="text-2xl font-semibold">
                   Total Price: ${totalPrice.toFixed(2)}
                 </h3>
-                <div className="flex-1 ml-4 px-3">
-                  {/* <button
-                    className=" "
-                    style={{
-                      backgroundColor: "#A91D3A",
-                      color: "#fff",
-                      borderRadius: "10px",
-                    }}
-                    onClick={order} // Trigger payment on click
-                  >
-                    order now
-                  </button> */}
-                  <button>
-                    <PaymentGateway
-                      onClick={order}
-                      ref={paymentGatewayRef}
-                      totalPrice={totalPrice.toFixed(2)}
-                    />{" "}
-                  </button>
-                </div>
               </div>
+
+              {/* Payment Button */}
+              <button>
+                <PaymentGateway
+                  onPaymentSuccess={order} // Call the order function after payment is successful
+                  ref={paymentGatewayRef}
+                  totalPrice={totalPrice.toFixed(2)}
+                />
+              </button>
             </>
           ) : (
-            <p className="text-gray-500">Your cart is empty</p>
+            <div className="flex items-center justify-center min-h-[30vh]">
+              <h1 className="text-2xl font-bold text-gray-600">
+                Your Cart is Empty
+              </h1>
+            </div>
           )}
         </div>
       </div>
-
-      {/* Reference to PaymentGateway */}
       <Footer />
     </>
   );
